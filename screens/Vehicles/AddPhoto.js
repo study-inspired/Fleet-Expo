@@ -1,0 +1,147 @@
+/**
+ * @format
+ * @flow
+ */
+
+import React from 'react';
+import {
+    StyleSheet,
+    View,
+    Text
+} from 'react-native';
+
+import { Button, Icon } from 'react-native-elements'
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+
+export default class AddPhoto extends React.Component {
+    static navigationOptions = {
+        title: 'Agregar vehículo',
+        headerTitleStyle: {
+            flex: 1,
+            fontFamily: 'aller-lt',
+            textAlign: "center",
+            fontWeight: '200',
+        },
+        headerRight: <View></View>
+    }
+
+    componentDidMount() {
+        this.getPermissionAsync();
+    }
+
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Lo sentimos, necesitamos el permiso de camara para hacer ésto.');
+            }
+        }
+    }
+
+    async _openGalery() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            // aspect: [4, 3],
+        });
+
+        //console.log(result);
+
+        if (!result.cancelled) {
+            //this.setState({ image: result.uri });
+            this.props.navigation.navigate('AttachedPicture', {
+                // You can also display the image using data:
+                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+                image: { uri: result.uri }
+            })
+        }
+    }
+
+    async _openCamera() {
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            // aspect: [4, 3],
+        });
+
+        //console.log(result);
+
+        if (!result.cancelled) {
+            //this.setState({ image: result.uri });
+            this.props.navigation.navigate('AttachedPicture', {
+                // You can also display the image using data:
+                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+                image: { uri: result.uri }
+            })
+        }
+    }
+
+    render() {
+        return (
+            <View style={{ flex: 1, marginHorizontal: 25, flexDirection: 'column' }}>
+                <View style={{ flex: 2, justifyContent: 'center', alignItems: "center" }}>
+                    <Icon type='font-awesome' name="car" size={160} color='#000' />
+                    <Text style={[styles.textoBold, { textAlign: 'center', fontFamily: 'aller-bd', fontSize: 16 }]}>Fotografía del vehículo</Text>
+                </View>
+                <View style={{ flex: 1, marginHorizontal: 25, alignItems: "center" }}>
+                    <Text style={styles.textoNormal}>Asegúrese que la informacón y la imágen sean legibles.</Text>
+                    <Text style={styles.textoNormal}>Sube una foto del vehículo que sea actual.</Text>
+                    <Text style={styles.textoNormal}>Si la imágen no es clara vuelve a tomar otra foto o sube otra imágen.</Text>
+                </View>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: "center" }}>
+                    <Button
+                        type='outline'
+                        icon={
+                            <Icon
+                                type='material-community'
+                                name='camera-iris'
+                                size={64}
+                                color="black"
+                            />
+                        }
+                        buttonStyle={{ marginHorizontal: 4 }}
+                        onPress={this._openCamera.bind(this)}
+                    />
+                    <Button
+                        type='outline'
+                        icon={
+                            <Icon
+                                iconStyle={{
+                                    marginTop: 6,
+                                    marginBottom: 2,
+                                    marginLeft: 8,
+                                    width: 56,
+                                    height: 58,
+                                }}
+                                type='font-awesome'
+                                name='file-photo-o'
+                                size={56}
+                                color="black"
+                            />
+                        }
+                        buttonStyle={{ marginHorizontal: 4 }}
+                        onPress={this._openGalery.bind(this)}
+                    />
+                </View>
+            </View>
+        );
+    }
+
+}
+
+const styles = StyleSheet.create({
+    body: {
+        backgroundColor: '#fff',
+    },
+    textoNormal: {
+        flex: 1,
+        fontFamily: 'aller-lt',
+        fontSize: 15,
+        textAlign: 'justify'
+    },
+    textoBold: {
+        fontFamily: 'aller-bd',
+    }
+});
