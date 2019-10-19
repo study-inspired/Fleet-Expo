@@ -75,16 +75,20 @@ export default class LinkVehicle extends React.Component {
         headerRight: <View></View>,
     }
     state = {
-        selected: null
+        isLoading: true,
+        selected: null,
+        vehiculos: {},
+        mensaje: ''
     }
+
     onPress(nombre) {
         this.setState({ selected: nombre })
-        alert(nombre)
+        // alert(nombre)
     }
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://localhost:3000/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -99,33 +103,39 @@ export default class LinkVehicle extends React.Component {
             const drivers = await result.json();
             console.log(drivers);
 
+            this.setState({ vehiculos: drivers.datos, isLoading: false })
+
         } catch (error) {
             throw error;
         }
     }
 
-    // vincularVehiculo(unidad, propietario, chofer) {
-    //     try {
-    //         const result = await fetch('http://localhost:3000/webservice/interfaz57/vincular_vehiculo', {
-    //             method: 'POST',
-    //             headers: {
-    //                 Accept: 'application/json',
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 p_id_unidad: unidad,
-    //                 p_id_propietario: propietario,
-    //                 p_id_chofer: chofer
-    //             }),
-    //         })
+    vincularVehiculo(unidad, propietario, chofer) {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz57/vincular_vehiculo', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_unidad: unidad,
+                    p_id_propietario: propietario,
+                    p_id_chofer: chofer
+                }),
+            })
 
-    //         const drivers = await result.json();
-    //         console.log(drivers);
+            const datos = await result.json();
 
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
+            // this.setState({
+            //     mensaje: datos.datos.mensaje,
+            // });
+            alert(datos.datos.mensaje)
+            
+        } catch (error) {
+            throw error;
+        }
+    }
 
     render() {
         return (
@@ -190,7 +200,7 @@ export default class LinkVehicle extends React.Component {
                                                     <Text style={styles.texto700}>{v.nombre}</Text>
                                                     <View style={{ width: 16, height: 16, marginTop: 2, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                 </View>
-                                                <Text style={[styles.texto600, {fontSize: 12, marginBottom: 10 }]}>{v.placa}</Text>
+                                                <Text style={[styles.texto600, { fontSize: 12, marginBottom: 10 }]}>{v.placa}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>
