@@ -11,18 +11,19 @@ import {
     View,
     Text,
     Image,
-    StatusBar
+    StatusBar,
+    Alert
 } from 'react-native';
 import { Button, colors, Card } from 'react-native-elements'
 
 const users = [
     {
-        name: 'Laura Gutierrez',
+        nombre: 'Laura Gutierrez',
         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
         auto: {}
     },
     {
-        name: 'Manuel Leyva',
+        nombre: 'Manuel Leyva',
         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
         auto: {
             nombre: 'Chevrolet Aveo',
@@ -31,7 +32,7 @@ const users = [
         },
     },
     {
-        name: 'Leonel Ortega',
+        nombre: 'Leonel Ortega',
         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
         auto: {
             nombre: 'Chevrolet Beat',
@@ -40,7 +41,7 @@ const users = [
         },
     },
     {
-        name: 'Otro',
+        nombre: 'Otro',
         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
         auto: {
             nombre: 'Chevrolet Aveo',
@@ -67,53 +68,92 @@ export default class Drivers extends React.Component {
     }
 
     state = {
-        //loading: true,
+        isLoading: true,
+        hasDrivers: false,
+        drivers: {},
     }
 
-    // async componentDidMount(){
-    //     try {
-    //         const result = await fetch('http://localhost:3000/webservice/interfaz60/obtener_unidades_conductores_propietario',{
-    //             method: 'POST',
-    //             headers: {
-    //                 Accept: 'application/json',
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 p_correo: 'carloslarios.15@gmail.com',
-    //                 p_pass: '123456',
-    //             }),
-    //         })
+    async componentDidMount(){
+        try {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_correo: 'carloslarios.159@gmail.com',
+                    p_pass: '123456',
+                }),
+            })
 
-    //         const drivers = await result.json();
-    //         console.log(drivers);
+            const data = await result.json();
 
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
+            if (data.datos.length != 0) {
+                let drivers = data.datos.map((d)=>{
+                    return {
+                        id: d.id_usuario, 
+                        nombre: `${d.nombre} ${d.apellido.split(' ')[0]}`,
+                        auto: d.marca ? {
+                            nombre: `${d.marca} ${d.modelo}`,
+                            placas: d.placas,
+                            color: d.color.includes('#')?d.color:'#a8a8a8',
+                        } : {},
+                        avatar: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',
+                    }
+                })
+                this.setState({
+                    hasDrivers: true,
+                    drivers: drivers, 
+                    isLoading: false 
+                });
 
-    // desvincularVehiculo(unidad, propietario, chofer) {
-    //     try {
-    //         const result = await fetch('http://localhost:3000/webservice/interfaz69/desvincular_vehiculo', {
-    //             method: 'POST',
-    //             headers: {
-    //                 Accept: 'application/json',
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 p_id_unidad: unidad,
-    //                 p_id_propietario: propietario,
-    //                 p_id_chofer: chofer
-    //             }),
-    //         })
+            } else {
+                Alert.alert('Info', 'No hay conductores!');
+                this.setState({
+                    isLoading: false
+                });
+            }
 
-    //         const drivers = await result.json();
-    //         console.log(drivers);
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
+            this.setState({
+                isLoading: false
+            });
+        }
+    }
 
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
+    async desvincularVehiculo(unidad) {
+        try {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz69/desvincular_vehiculo', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_unidad: unidad,
+                    p_id_propietario: 1,
+                    p_id_chofer1: 1
+                }),
+            })
+
+            const datos = await result.json();
+            if (datos) {
+                if (datos.msg) {
+                    Alert.alert('Hubo un error', datos.msg);
+                } else if (datos.datos){
+                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+                }
+                this.props.navigation.goBack();
+            }
+
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
+        }
+    }
 
     render() {
         return (!this.state.loading &&
@@ -172,11 +212,11 @@ export default class Drivers extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            users.map((u) => {
-                                let vinculado = Object.entries(u.auto).length !== 0;
+                        { !this.state.isLoading && this.state.hasDrivers &&
+                            this.state.drivers.map((d, i) => {
+                                let vinculado = Object.entries(d.auto).length !== 0;
                                 return (
-                                    <Card key={u.name}>
+                                    <Card key={i}>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
                                             <View
                                                 style={{
@@ -191,7 +231,7 @@ export default class Drivers extends React.Component {
                                                         marginLeft: 5
                                                     }}
                                                     resizeMode="cover"
-                                                    source={{ uri: u.avatar }}
+                                                    source={{ uri: d.avatar }}
                                                 />
                                             </View>
                                             <View
@@ -201,12 +241,12 @@ export default class Drivers extends React.Component {
                                                     justifyContent: 'center',
                                                     alignItems: 'center'
                                                 }}>
-                                                <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5 }}>{u.name}</Text>
+                                                <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5 }}>{d.nombre}</Text>
                                                 {vinculado &&
                                                 <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={{fontFamily:'aller-lt', fontSize: 12}}>{u.auto.nombre}</Text>
-                                                    <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: u.auto.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                                                    <Text style={{fontSize: 12, marginBottom: 10, fontFamily: 'aller-lt' }}>{u.auto.placa}</Text>
+                                                    <Text style={{fontFamily:'aller-lt', fontSize: 12}}>{d.auto.nombre}</Text>
+                                                    <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: d.auto.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                    <Text style={{fontSize: 12, marginBottom: 10, fontFamily: 'aller-lt' }}>{d.auto.placas}</Text>
                                                 </View>
                                                 }
                                                 <Button
@@ -217,7 +257,7 @@ export default class Drivers extends React.Component {
                                                         backgroundColor: '#ff8834'
                                                     }}
                                                     titleStyle={{fontFamily: 'aller-lt'}}
-                                                    onPress={() => { !vinculado ? this.props.navigation.navigate('LinkVehicle') : {} }}
+                                                    onPress={() => { !vinculado ? this.props.navigation.navigate('LinkVehicle', {id_propietario: 1, id_chofer: 1}) : this.desvincularVehiculo(d.id) }}
                                                 />
                                             </View>
                                             <Text

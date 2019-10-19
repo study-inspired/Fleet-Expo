@@ -14,7 +14,8 @@ import {
     View,
     Text,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
@@ -76,43 +77,57 @@ export default class LinkVehicle extends React.Component {
     }
     state = {
         isLoading: true,
-        selected: null,
-        vehiculos: {},
-        mensaje: ''
-    }
-
-    onPress(nombre) {
-        this.setState({ selected: nombre })
-        // alert(nombre)
+        hasVehicles: false, 
+        vehicles: {},
     }
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carloslarios.15@gmail.com',
+                    p_correo: 'carloslarios.159@gmail.com',
                     p_pass: '123456',
                 }),
             })
-
-            const drivers = await result.json();
-            console.log(drivers);
-
-            this.setState({ vehiculos: drivers.datos, isLoading: false })
+            
+            const data = await result.json();
+            console.log(data);
+            
+            if (data.datos.length != 0) {
+                let vehicles = data.datos.map((v)=>{
+                    return {
+                        id: v.id_unidad, 
+                        nombre: `${v.marca?v.marca:'Vehículo'} ${v.modelo}`,
+                        placas: v.placas,
+                        color: v.color?v.color:'#a8a8a8',
+                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto,
+                        problema: v.problema?v.problema:''
+                    }
+                })
+                this.setState({
+                    hasVehicles: true,
+                    vehicles: vehicles, 
+                    isLoading: false 
+                });
+            } else {
+                alert('Info','No hay vehiculos!');
+                this.props.navigation.goBack();
+            }
 
         } catch (error) {
-            throw error;
+            alert('Error');
+            console.error(error);
         }
     }
 
-    vincularVehiculo(unidad, propietario, chofer) {
+    async vincularVehiculo(unidad) {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz57/vincular_vehiculo', {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz57/vincular_vehiculo', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -120,20 +135,23 @@ export default class LinkVehicle extends React.Component {
                 },
                 body: JSON.stringify({
                     p_id_unidad: unidad,
-                    p_id_propietario: propietario,
-                    p_id_chofer: chofer
+                    p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
+                    p_id_chofer1: this.props.navigation.getParam('id_chofer', 0)
                 }),
             })
 
             const datos = await result.json();
-
-            // this.setState({
-            //     mensaje: datos.datos.mensaje,
-            // });
-            alert(datos.datos.mensaje)
-            
+            if (datos) {
+                if (datos.msg) {
+                    Alert.alert('Hubo un error', datos.msg);
+                } else if (datos.datos){
+                    Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.')
+                }
+                this.props.navigation.goBack();
+            }
         } catch (error) {
-            throw error;
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
         }
     }
 
@@ -169,15 +187,14 @@ export default class LinkVehicle extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            vehiculos.map((v) => {
+                        {   !this.state.isLoading && this.state.hasVehicles &&
+                            this.state.vehicles.map((v) => {
                                 return (
-                                    <Card key={v.placa}>
+                                    <Card key={v.id}>
                                         <TouchableOpacity
                                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                            onPress={() => { this.props.navigation.navigate('Drivers') }}
+                                            onPress={this.vincularVehiculo.bind(this, v.id)}
                                         >
-
                                             <View
                                                 style={{
                                                     flex: 1,
@@ -197,10 +214,10 @@ export default class LinkVehicle extends React.Component {
                                                     alignItems: 'center'
                                                 }}>
                                                 <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={styles.texto700}>{v.nombre}</Text>
-                                                    <View style={{ width: 16, height: 16, marginTop: 2, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                    <Text style={[styles.texto700, {marginTop: 6}]}>{v.nombre}</Text>
+                                                    <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                 </View>
-                                                <Text style={[styles.texto600, { fontSize: 12, marginBottom: 10 }]}>{v.placa}</Text>
+                                                <Text style={[styles.texto600, { fontSize: 12 }]}>{v.placas}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>
@@ -237,3 +254,4 @@ const styles = StyleSheet.create({
         fontFamily: 'aller-lt'
     }
 });
+
