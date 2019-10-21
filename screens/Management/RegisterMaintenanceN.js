@@ -4,91 +4,83 @@ import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
 export default class RegisterMaintenance extends Component {
-    static navigationOptions = ({ navigation }) => {
-        return {
-            title: 'Registro mantenimiento mecánico',
-            headerTitleStyle: {
-                flex: 1,
-                textAlign: "center",
-                fontFamily: 'aller-bd',
-                fontWeight: '200',
-                fontSize: 14,
-            },
-            headerRight: <View></View>,
-        }
+    static navigationOptions = {
+        title: 'Registro mantenimiento neumático',
+        headerTitleStyle: {
+            flex: 1,
+            textAlign: "center",
+            fontFamily: 'aller-bd',
+            fontWeight: '200',
+            fontSize: 14,
+        },
+        headerRight: <View></View>,
     }
-
-    /**
-     * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
-     */
 
     state = {
         registro: false,
         showDatePicker: false,
-        fecha_servicio: 'Seleccionar',
-        fecha_prog: 'Seleccionar',
-        fecha_garantia: 'Seleccionar',
-        opcion: undefined,
-        descripcion: '',
+        fecha: 'Seleccionar',
         costo: '',
-        kilometraje: '',
-        mecanico: '',
+        motivo: '',
+        llanterataller: '',
+        noneumatico: '',
+        posicion: '',
         vehicle: this.props.navigation.getParam('vehicle', {})
     }
 
-    async registroMecanico() {
+    async Registrarservicio() {
         if (
-            this.state.fecha_servicio == 'Seleccionar' ||
-            this.state.fecha_prog == 'Seleccionar' ||
-            this.state.fecha_servicio == 'Seleccionar' ||
-            this.state.descripcion == '' ||
+            this.state.fecha == 'Seleccionar' ||
             this.state.costo == '' ||
-            this.state.kilometraje == '' ||
-            this.state.mecanico == ''
+            this.state.noneumatico == '' ||
+            this.state.motivo == '' ||
+            this.state.posicion == '' ||
+            this.state.llanterataller == ''
         ) {
-            Alert.alert('Info', 'Llena todos los campos.');
-        } else {
+            Alert.alert('Info', 'Llena todos los campos.')
+        }
+        else {
             try {
-                const result = await fetch('http://192.168.1.67:3000/webservice/interfaz126/registrar_servicio_mecanico', {
+                const result = await fetch('http://localhost:300/webservice/interfaz129/registrar_servicio_neumatico', {
                     method: 'POST',
                     headers: {
                         'Acept': 'aplication/json',
                         'Content-Type': 'aplication/json'
                     },
                     body: JSON.stringify({
-                        fecha_servicio: this.state.fecha_servicio,
-                        fecha_prog: this.state.fecha_prog,
-                        descripcion: this.state.descripcion,
+                        fecha_servicio: this.state.fecha,
                         costo: this.state.costo,
-                        kilometraje: this.state.kilometraje,
-                        mecanico: this.state.mecanico,
-                        fecha_garantia: this.state.fecha_garantia,
-                        estatus: 0,
+                        num_neumaticos: this.state.noneumatico,
+                        motivo: this.state.motivo,
+                        posicion: this.state.posicion,
                         id_unidad: this.state.vehicle.id,
+                        // llantera : this.state.llanterataller                                        
                     })
                 });
-    
+
                 const data = await result.json();
-    
+
                 if (data.msg) {
-                    Alert.alert('Error', data.msg);
+                    Alert.alert('Error', data.msg)
                 } else {
                     this.setState({ registro: true });
                 }
+
             } catch (error) {
                 Alert.alert('Error', 'Ha ocurrido un error.')
                 this.props.navigation.goBack();
             }
         }
+
     }
 
     setDate(date) {
         if (this.state.opcion == 'servicio') {
             this.setState({
-                fecha_servicio: date.toLocaleDateString(),
+                fecha: date.toLocaleDateString(),
                 showDatePicker: false
             })
-        } else if (this.state.opcion == 'prog') {
+        } /*else if (this.state.opcion == 'prog') {
             this.setState({
                 fecha_prog: date.toLocaleDateString(),
                 showDatePicker: false
@@ -98,10 +90,13 @@ export default class RegisterMaintenance extends Component {
                 fecha_garantia: date.toLocaleDateString(),
                 showDatePicker: false
             })
-        }
+        }*/
     }
 
     render() {
+
+        const { vehicle } = this.state;
+
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <Overlay
@@ -160,13 +155,13 @@ export default class RegisterMaintenance extends Component {
                         <Image
                             style={{ width: 150, height: 150, alignSelf: 'center' }}
                             resizeMode="cover"
-                            source={{ uri: this.state.vehicle.imagen }}
+                            source={{ uri: vehicle.imagen }}
                         />
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={[styles.textoBold, { marginTop: 4 }]}>{this.state.vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {this.state.vehicle.placas}</Text>
+                        <Text style={[styles.textoBold, { marginTop: 4 }]}>{vehicle.nombre}</Text>
+                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {vehicle.placas}</Text>
                     </View>
                 </View>
 
@@ -175,8 +170,8 @@ export default class RegisterMaintenance extends Component {
                     <View style={{ marginBottom: 15 }}>
 
                         <View style={styles.views}>
-                            <Text style={styles.texto}>Fecha servicio</Text>
-                            <Button title={this.state.fecha_servicio}
+                            <Text style={styles.texto}>Fecha</Text>
+                            <Button title={this.state.fecha}
                                 titleStyle={{ fontFamily: 'aller-lt', paddingRight: 5, marginBottom: 1 }}
                                 buttonStyle={{ backgroundColor: '#ff8834', height: 30 }}
                                 icon={{
@@ -190,66 +185,44 @@ export default class RegisterMaintenance extends Component {
                         </View>
 
                         <View style={styles.views}>
-                            <Text style={styles.texto}>Fecha programada</Text>
-                            <Button title={this.state.fecha_prog}
-                                titleStyle={{ fontFamily: 'aller-lt', paddingRight: 5, marginBottom: 1 }}
-                                buttonStyle={{ backgroundColor: '#ff8834', height: 30 }}
-                                icon={{
-                                    type: 'material-community',
-                                    name: "calendar",
-                                    size: 16,
-                                    color: "white"
-                                }}
-                                onPress={() => this.setState({ opcion: 'prog', showDatePicker: true })}
-                            />
-                        </View>
-
-                        <View style={styles.views}>
-                            <Text style={styles.texto}>Descripción</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={text => this.setState({ descripcion: text })}
-                            />
-                        </View>
-
-                        <View style={styles.views}>
                             <Text style={styles.texto}>Costo</Text>
                             <TextInput
                                 style={styles.input}
-                                keyboardType="numeric"
+                                keyboardType='decimal-pad'
                                 onChangeText={text => this.setState({ costo: text })}
                             />
                         </View>
 
                         <View style={styles.views}>
-                            <Text style={styles.texto}>Kilometraje</Text>
+                            <Text style={styles.texto}>Motivo</Text>
                             <TextInput
                                 style={styles.input}
-                                keyboardType="numeric"
-                                onChangeText={text => this.setState({ kilometraje: text })}
+                                onChangeText={text => this.setState({ motivo: text })}
                             />
                         </View>
 
                         <View style={styles.views}>
-                            <Text style={styles.texto}>Mecánico o taller</Text>
+                            <Text style={styles.texto}>Llantera o taller</Text>
                             <TextInput
                                 style={styles.input}
-                                onChangeText={text => this.setState({ mecanico: text })}
+                                onChangeText={text => this.setState({ llanterataller: text })}
                             />
                         </View>
 
                         <View style={styles.views}>
-                            <Text style={styles.texto}>Fecha garantía</Text>
-                            <Button title={this.state.fecha_garantia}
-                                titleStyle={{ fontFamily: 'aller-lt', paddingRight: 5, marginBottom: 1 }}
-                                buttonStyle={{ backgroundColor: '#ff8834', height: 30 }}
-                                icon={{
-                                    type: 'material-community',
-                                    name: "calendar",
-                                    size: 16,
-                                    color: "white"
-                                }}
-                                onPress={() => this.setState({ opcion: 'garantia', showDatePicker: true })}
+                            <Text style={styles.texto}># de neumaticos</Text>
+                            <TextInput
+                                style={styles.input}
+                                keyboardType='numeric'
+                                onChangeText={text => this.setState({ noneumatico: text })}
+                            />
+                        </View>
+
+                        <View style={styles.views}>
+                            <Text style={styles.texto}>Posición</Text>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={text => this.setState({ posicion: text })}
                             />
                         </View>
 
@@ -262,7 +235,7 @@ export default class RegisterMaintenance extends Component {
                             }}
                             titleStyle={{ fontFamily: 'aller-lt' }}
                             buttonStyle={{ backgroundColor: '#ff8834' }}
-                            onPress={() => this.registroMecanico()}
+                            onPress={() => this.setState({ registro: true })}
                         />
                     </View>
                     <DateTimePicker
@@ -278,20 +251,12 @@ export default class RegisterMaintenance extends Component {
 }
 
 const styles = StyleSheet.create({
-    input: { 
-        height: 30, 
-        fontFamily: 'aller-lt', 
-        fontSize: 14, 
-        borderColor: 'gray', 
-        borderWidth: 1, 
-        padding: 1, 
-        width: 165, 
-        alignSelf: 'stretch' 
-    },
+    input: { height: 30, fontFamily: 'aller-lt', fontSize: 14, borderColor: 'gray', borderWidth: 1, padding: 1, width: 165, alignSelf: 'stretch' },
     texto: { fontFamily: 'aller-bd', fontSize: 14, paddingRight: 10, alignSelf: 'baseline', marginTop: 5 },
     container: { flex: 1, padding: 20, paddingTop: 30, backgroundColor: '#fff' },
     head: { height: 25, backgroundColor: '#9fd5d1' },
     views: { height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    touchable: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
     textoboton: {
         flex: 4,
         flexDirection: 'column',
@@ -309,3 +274,4 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
 });
+

@@ -51,7 +51,7 @@ import AssignVehicle from '../screens/Management/AssignVehicle';
 import Alerts from '../screens/Management/Alerts';
 import ServiceConsultation from '../screens/Management/ServiceConsultation';
 import RegisterMaintenanceM from '../screens/Management/RegisterMaintenanceM';
-// import RegisterMaintenanceN from '../screens/Management/RegisterMaintenanceN';
+import RegisterMaintenanceN from '../screens/Management/RegisterMaintenanceN';
 import ServicesConsultation from '../screens/Management/ServicesConsultation';
 import TraceRadius from '../screens/Management/TraceRadius';
 import TracePoligon from '../screens/Management/TracePoligon';
@@ -198,7 +198,7 @@ const ManagementStack = createStackNavigator(
     ServicesConsultation: ServicesConsultation,
     ServiceConsultation: ServiceConsultation,
     RegisterMaintenanceM: RegisterMaintenanceM,
-    // RegisterMaintenanceN: RegisterMaintenanceN,
+    RegisterMaintenanceN: RegisterMaintenanceN,
     RegisterGeofence: RegisterGeofence,
     TraceRadius: TraceRadius,
     TracePoligon: TracePoligon

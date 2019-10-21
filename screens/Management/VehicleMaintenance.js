@@ -189,7 +189,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceM', { vehicle: state.vehicle, tipo: 'mecánico' }) }}>
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceM', { vehicle: state.vehicle }) }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="engine-outline" size={24} />
                 </View>
@@ -206,7 +206,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceN', { vehicle: state.vehicle, tipo: 'neumático' }) }} >
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceN', { vehicle: state.vehicle }) }} >
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="circle-slice-8" size={24} />
                 </View>
