@@ -27,14 +27,14 @@ export default class ServicesConsultation extends Component {
         ]
         const tabla = {
             tableHead: ['Fecha', 'Tipo', ''],
-            widthArr: [120, 120, 40],
+            widthArr: [140, 140, 40],
             tableData: Data.map(data => {
                 return [
                     data[0],
                     data[1],
                     <TouchableOpacity
                         onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: vehicle })}>
-                        <Icon type='material' name='remove-red-eye' size={16} />
+                        <Icon type='material' name='remove-red-eye' size={18} />
                     </TouchableOpacity>
                 ]
             })
@@ -75,17 +75,17 @@ export default class ServicesConsultation extends Component {
                         />
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={styles.textoBold}>{vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={styles.textoNormal}>- {vehicle.placa}</Text>
+                        <Text style={[styles.textoBold, {marginTop: 4}]}>{vehicle.nombre}</Text>
+                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        <Text style={[styles.textoNormal, {marginTop: 4}]}>- {vehicle.placas}</Text>
                     </View>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
 
                     <View style={{ margin: 4, alignSelf: 'center' }} >
                         <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Row data={tabla.tableHead} widthArr={tabla.widthArr} style={styles.head} textStyle={styles.text} />
-                            <Rows data={tabla.tableData} widthArr={tabla.widthArr} textStyle={styles.text} />
+                            <Row data={tabla.tableHead} widthArr={tabla.widthArr} style={styles.head} textStyle={[{fontFamily: 'aller-bd'},styles.text]} />
+                            <Rows data={tabla.tableData} widthArr={tabla.widthArr} textStyle={[{fontFamily: 'aller-lt'}, styles.text]} />
                         </Table>
                     </View>
 
@@ -98,12 +98,9 @@ export default class ServicesConsultation extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#808B97' },
-    text: { margin: 6, fontSize: 12 },
+    head: { height: 40, backgroundColor: '#f1f8ff' },
+    text: { margin: 6, fontSize: 14 },
     row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
-    btn: { width: 58, height: 18, backgroundColor: '#78B7BB', borderRadius: 2 },
-    btnText: { textAlign: 'center', color: '#fff' },
     textoBold: {
         fontFamily: 'aller-bd',
         fontSize: 16,

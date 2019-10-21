@@ -10,7 +10,8 @@ import {
     View,
     Text,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
@@ -56,8 +57,55 @@ export default class SelectVehicle extends React.Component {
     }
 
     state = {
+        isLoading: true,
+        hasVehicles: false,
+        vehicles: [],
         nextScreen: this.props.navigation.getParam('nextScreen', ''),
         text: this.props.navigation.getParam('text', 'Seleccione el vehículo'),
+    }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_correo: 'carloslarios.159@gmail.com',
+                    p_pass: '123456',
+                }),
+            })
+            
+            const data = await result.json();
+            console.log(data);
+            
+            if (data.datos.length != 0) {
+                let vehicles = data.datos.map((v)=>{
+                    return {
+                        id: v.id_unidad, 
+                        nombre: `${v.marca} ${v.modelo}`,
+                        placas: v.placas,
+                        color: v.color.includes('#')?v.color:'#a8a8a8',
+                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto
+                    }
+                })
+                this.setState({
+                    hasVehicles: true,
+                    vehicles: vehicles, 
+                    isLoading: false 
+                });
+            } else {
+                alert('Info','No hay vehiculos!');
+                this.props.navigation.goBack();
+            }
+
+        } catch (error) {
+            alert('Error');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
     }
 
     render() {
@@ -91,10 +139,11 @@ export default class SelectVehicle extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            vehiculos.map((v) => {
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        { !this.state.isLoading && this.state.hasVehicles &&
+                            this.state.vehicles.map((v, i) => {
                                 return (
-                                    <Card key={v.placa}>
+                                    <Card key={i}>
                                         <TouchableOpacity
                                             style={styles.touchableOpacity}
                                             onPress={() => { this.props.navigation.navigate(this.state.nextScreen, { vehicle: v }) }}
@@ -113,7 +162,7 @@ export default class SelectVehicle extends React.Component {
                                                     <Text style={[styles.textoBold, { marginBottom: 5 }]}>{v.nombre}</Text>
                                                     <View style={[styles.colorVehiculo, { backgroundColor: v.color }]}></View>
                                                 </View>
-                                                <Text style={[styles.textoNormal, { fontSize: 12, marginBottom: 10 }]}>{v.placa}</Text>
+                                                <Text style={[styles.textoNormal, { fontSize: 12, marginBottom: 10 }]}>{v.placas}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

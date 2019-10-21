@@ -70,6 +70,8 @@ export default class AddPhoto extends React.Component {
 
         if (!result.cancelled) {
             //this.setState({ image: result.uri });
+            console.log(result);
+            
             this.props.navigation.navigate('AttachedPicture', {
                 // You can also display the image using data:
                 //image: { uri: 'data:image/jpeg;base64,' + response.data }

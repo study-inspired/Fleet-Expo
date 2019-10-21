@@ -11,6 +11,7 @@ export default class TraceRadius extends React.Component {
     state = {
         setNombre: false,
         registrado: false,
+        nombre: '',
         LatLng: null,
         radio: 1000,
     }
@@ -25,6 +26,37 @@ export default class TraceRadius extends React.Component {
             fontSize: 18,
         },
         headerRight: <View></View>
+    }
+
+    async registerRadius() {
+        if (this.state.nombre = ! '') {
+            try {
+                const result = await fetch('http://192.168.1.56:3000/webservice/interfaz119/registrar_geocerca', {
+                    method: 'POST',
+                    body: {
+                        nombre: this.state.nombre,
+                        coordenadas: JSON.stringify(this.state.LatLng),
+                        radio: this.state.radio
+                    }
+                })
+
+                const data = await result.json();
+                if (data) {
+                    if (datos.msg) {
+                        Alert.alert('Hubo un error', datos.msg);
+                    } else if (datos.datos) {
+                        this.setState({
+                            setNombre: false,
+                            registrado: true
+                        })
+                    }
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.');
+            }
+        } else {
+            Alert.alert('Campo requerido!', 'Escribe el nombre de la geocerca.');
+        }
     }
 
     render() {
@@ -46,11 +78,16 @@ export default class TraceRadius extends React.Component {
                                 />
                             </View>
                             <View>
-                                <Input label='Nombre de la geocerca trazada:' />
+                                <Input
+                                    label='Nombre de la geocerca trazada:'
+                                    labelStyle={{ fontFamily: 'aller-lt' }}
+                                    onChangeText={text => this.setState({ nombre: text })}
+                                />
                                 <Button
                                     title='Siguiente'
+                                    titleStyle={{ fontFamily: 'aller-lt' }}
                                     buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                    onPress={() => { this.setState({ setNombre: false, registrado: true }) }}
+                                    onPress={this.registerRadius.bind(this)}
                                 />
                             </View>
                         </View>
@@ -78,6 +115,7 @@ export default class TraceRadius extends React.Component {
                                 <Button
                                     title='Siguiente'
                                     buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
+                                    titleStyle={{ fontFamily: 'aller-lt' }}
                                     onPress={() => { this.setState({ registrado: false }); this.props.navigation.pop(2) }}
                                 />
                             </View>
@@ -126,7 +164,8 @@ export default class TraceRadius extends React.Component {
                         this.state.LatLng &&
                         <MapView.Marker
                             coordinate={this.state.LatLng}
-                            title='Centro' />
+                            title='Centro'
+                        />
 
                     }
 
@@ -152,14 +191,14 @@ export default class TraceRadius extends React.Component {
                         title='Registrar geocerca'
                         icon={{ name: 'check-circle', color: 'white' }}
                         buttonStyle={{ marginHorizontal: 15, marginVertical: 5, backgroundColor: '#ff8834' }}
-                        titleStyle={{fontFamily: 'aller-lt'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => this.setState({ setNombre: true })}
                     />
                     <Button
                         title='Volver a trazar'
                         icon={{ name: 'replay', color: 'white' }}
                         buttonStyle={{ marginHorizontal: 15, marginVertical: 5, backgroundColor: '#ff8834' }}
-                        titleStyle={{fontFamily: 'aller-lt'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => this.setState({ LatLng: null, radio: 1000 })}
                     />
                 </View>

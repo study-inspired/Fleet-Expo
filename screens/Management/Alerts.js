@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
@@ -13,16 +13,11 @@ export default class Alerts extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHead: ['Fecha', 'Hora', 'Concepto de alerta', 'Vehiculo'],
-            widthArr: [50, 50, 160, 80],
-            tableData: [
-                ['24/08/19', '12:34 pm', 'Temperatura del refrigerante del mot', 'Chevrolet (Rojo) COL-4568R'],
-                ['12/05/19', '09:25 am', 'Cambio de carril rápido', 'Chevrolet (Rojo) COL-4568R'],
-                ['04/02/19', '02:40 pm', 'Salida de la geocerca', 'Chevrolet (Rojo) COL-4568R'],
-                ['25/04/19', '10:30 am', 'Tiempo excesivo de inactividad del m', 'Nissan (Azul) COL-4555R'],
-                ['10/10/19', '11:40 am', 'Choque', 'Nissan (Azul) COL-4555R'],
-                ['17/05/19', '04:25 pm', 'Cambio de carril rapido', 'Nissan (Azul) COL-4555R'],
-            ]
+            isLoading: true,
+            hasAlerts: false,
+            tableHead: ['Fecha', 'Hora', 'Concepto de alerta'],
+            widthArr: [80, 80, 160],
+            alerts: []
         }
     }
 
@@ -38,13 +33,62 @@ export default class Alerts extends Component {
         headerRight: <View></View>
     }
 
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  p_id_unidad: this.state.vehicle.id
+                }),
+            });
+
+            const data = await result.json();
+
+            if (data.datos.length != 0) {
+                let alerts = Object.values(data).map((v, i) => {
+                    if (i == 0) {
+                        return new Date(v).toLocaleDateString();
+                    } else if (i == 1) {
+                        let date = new Date();
+                        let hm = v.split(':');
+                        date.setHours(hm[0]);
+                        date.setMinutes(hm[1]);
+                        return date.toLocaleTimeString();
+                    } else {
+                        return v;
+                    }
+                });
+                alerts.pop();
+                this.setState({
+                    alerts: alerts,
+                    hasAlerts: true,
+                    isLoading: false
+                });
+            } else {
+                Alert.alert('Info', 'No hay alertas registradas!');
+                this.setState({
+                    isLoading: false
+                });
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
+    }
+
+
     render() {
         const state = this.state;
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ height: 70, flexDirection: 'row', alignContent:'center' }}>
-                    <Icon type='font-awesome' name="warning" size={52} containerStyle={{ flex: 1, marginTop:8, alignSelf:'center' }} />
+                <View style={{ height: 70, flexDirection: 'row', alignContent: 'center' }}>
+                    <Icon type='font-awesome' name="warning" size={52} containerStyle={{ flex: 1, marginTop: 8, alignSelf: 'center' }} />
                     <Button
                         type='clear'
                         icon={{
@@ -70,27 +114,29 @@ export default class Alerts extends Component {
                     />
                 </View>
 
-
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-                    <View style={{ margin: 4 }} style={{ alignSelf: 'center' }} >
-                        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Row data={state.tableHead} widthArr={state.widthArr} style={styles.head} textStyle={styles.text} />
-                            <Rows data={state.tableData} widthArr={state.widthArr} textStyle={styles.text} />
-                        </Table>
+                <View style={{ margin: 4 }} style={{ alignSelf: 'center' }} >
+                    <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                        <Row data={state.tableHead} widthArr={state.widthArr} style={styles.head} textStyle={[styles.text, { fontFamily: 'aller-bd' }]} />
+                    </Table>
+                    { state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} /> }
+                    { !state.isLoading && state.hasAlerts &&
+                    <View style={{ flex: 1 }}>
+                        <ScrollView contentInsetAdjustmentBehavior="automatic">
+                            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                                <Rows data={state.alerts} widthArr={state.widthArr} textStyle={[styles.text, { fontFamily: 'aller-lt' }]} />
+                            </Table>
+                        </ScrollView>
                     </View>
-                </ScrollView>
+                    }
+                </View>
             </SafeAreaView>
-
         );
-
     }
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#808B97' },
-    text: { margin: 6, fontSize: 8 },
+    head: { height: 35, backgroundColor: '#f1f8ff' },
+    text: { margin: 6, fontSize: 14 },
     row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
-    btn: { width: 58, height: 18, backgroundColor: '#78B7BB', borderRadius: 2 },
-    btnText: { textAlign: 'center', color: '#fff' }
 });

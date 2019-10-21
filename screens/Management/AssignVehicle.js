@@ -5,12 +5,14 @@
 
 import React from 'react';
 import {
+    ActivityIndicator,
     StyleSheet,
     ScrollView,
     View,
     Text,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from 'react-native';
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
@@ -51,11 +53,96 @@ export default class AssignVehicle extends React.Component {
     }
 
     state = {
+        isLoading: true,
+        hasVehicles: false,
+        vehicles:[],
         vehiculo: {},
         seleccionado: false,
         asignacionRealizada: false,
         entrada: false,
         salida: false,
+    }
+
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_correo: 'carloslarios.159@gmail.com',
+                    p_pass: '123456',
+                }),
+            })
+            
+            const data = await result.json();
+            console.log(data);
+            
+            if (data.datos.length != 0) {
+                let vehicles = data.datos.map((v)=>{
+                    return {
+                        id: v.id_unidad, 
+                        nombre: `${v.marca} ${v.modelo}`,
+                        placas: v.placas,
+                        color: v.color.includes('#')?v.color:'#a8a8a8',
+                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto
+                    }
+                })
+                this.setState({
+                    hasVehicles: true,
+                    vehicles: vehicles, 
+                    isLoading: false 
+                });
+            } else {
+                alert('Info','No hay vehiculos!');
+                this.props.navigation.goBack();
+            }
+
+        } catch (error) {
+            alert('Error');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
+    }
+
+    async assign() {
+        if (!this.state.entrada && !this.state.salida) {
+            Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
+        } else {
+            try {
+                const result = await fetch('http://192.168.1.67:3000/webservice/interfaz126/asignar_unidad_geocerca', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_id_unidad: unidad,
+                        p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0)
+                    }),
+                })
+    
+                const datos = await result.json();
+                if (datos) {
+                    if (datos.msg) {
+                        Alert.alert('Hubo un error', datos.msg);
+                        this.props.navigation.goBack();
+                    } else if (datos.datos){
+                        this.setState({
+                            seleccionado: false, 
+                            asignacionRealizada: true
+                        });
+                    }
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.')
+                console.error(error);
+                this.props.navigation.goBack();
+            }
+        }
     }
 
     render() {
@@ -106,7 +193,7 @@ export default class AssignVehicle extends React.Component {
                                 title='Realizar asignación'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
                                 titleStyle={{fontFamily: 'aller-lt'}}
-                                onPress={() => { this.setState({ seleccionado: false, asignacionRealizada: true }) }}
+                                onPress={this.assign.bind(this)}
                             />
                         </View>
                     </View>
@@ -167,10 +254,11 @@ export default class AssignVehicle extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            vehiculos.map((v) => {
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        { !this.state.isLoading && this.state.hasVehicles &&
+                            this.state.vehicles.map((v, i) => {
                                 return (
-                                    <Card key={v.placa}>
+                                    <Card key={i}>
                                         <TouchableOpacity
                                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                                             onPress={() => this.setState({ vehiculo: v, seleccionado: true })}
@@ -197,7 +285,7 @@ export default class AssignVehicle extends React.Component {
                                                     <Text style={styles.texto700}>{v.nombre}</Text>
                                                     <View style={{ width: 16, height: 16, marginTop: 14, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                 </View>
-                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 12, marginBottom: 10 }}>{v.placa}</Text>
+                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 12, marginBottom: 10 }}>{v.placas}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

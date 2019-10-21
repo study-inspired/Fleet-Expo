@@ -102,11 +102,10 @@ export default class LinkVehicle extends React.Component {
                 let vehicles = data.datos.map((v)=>{
                     return {
                         id: v.id_unidad, 
-                        nombre: `${v.marca?v.marca:'Vehículo'} ${v.modelo}`,
+                        nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
-                        color: v.color?v.color:'#a8a8a8',
-                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto,
-                        problema: v.problema?v.problema:''
+                        color: v.color.includes('#')?v.color:'#a8a8a8',
+                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto
                     }
                 })
                 this.setState({
@@ -145,7 +144,7 @@ export default class LinkVehicle extends React.Component {
                 if (datos.msg) {
                     Alert.alert('Hubo un error', datos.msg);
                 } else if (datos.datos){
-                    Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.')
+                    Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
                 }
                 this.props.navigation.goBack();
             }
@@ -186,6 +185,7 @@ export default class LinkVehicle extends React.Component {
                     />
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                     <View style={{ marginBottom: 15 }}>
                         {   !this.state.isLoading && this.state.hasVehicles &&
                             this.state.vehicles.map((v) => {

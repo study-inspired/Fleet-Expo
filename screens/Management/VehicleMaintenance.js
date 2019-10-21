@@ -1,22 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Button, Card, Icon, Overlay } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
  */
-
-const tabla_estados = [
-  ['Funcionamiento del motor', 'Correcto', 1],
-  ['Bateria', 'Bajo voltaje', 2],
-  ['Tiempo inactividad del motor', 'Excesivo', 3],
-  ['Temp */ presion del aceite', 'Alto', 3],
-  ['Temp * del refrigerante del motor', 'Correcto', 1],
-  ['Niveles de aceite', 'Nivel correcto', 1],
-  ['Presion de neumaticos', 'Baja', 2]
-]
-
 
 export default class VehicleMaintenance extends Component {
   static navigationOptions = {
@@ -32,24 +21,162 @@ export default class VehicleMaintenance extends Component {
   }
 
   state = {
+    isLoading: true,
+    hasInfo: false,
     registroServicio: false,
-    tableHead: ['Componente', 'Estado', ' '],
+    tableHead: ['Componente', 'Estado'],
     widthArr: [190, 90, 35],
-    tableData: tabla_estados.map((estado) => {
-      if (estado[2] == 1) {
-        estado[2] = <Icon name="check-circle" color='#20d447' size={12} />
-      } else if (estado[2] == 2) {
-        estado[2] = <Icon name="warning" color='#ebcc1c' size={12} />
+    tableData: [],
+    vehicle: this.props.navigation.getParam('vehicle', {})
+  }
+
+  async componentDidMount() {
+    try {
+      const result = await fetch('http://34.95.33.177:3006/webservice/interfaz124/obtener_status_motor', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          p_id_unidad: this.state.vehicle.id
+        }),
+      });
+
+      const data = await result.json();
+
+      const datos = await data.datos[0];
+
+      if (datos.lenght != 0) {
+        let newData = Object.keys(datos).map(key => {
+          let elemento = [];
+          if (key == 'funcionamiento_motor') {
+            elemento.push('Funcionamiento del motor');
+            if (datos[key] == 0) {
+              elemento.push('Correcto');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Atención');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Mal funcionamiento');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'bateria') {
+            elemento.push('Bateria');
+            if (datos[key] == 0) {
+              elemento.push('Correcto');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Bajo voltaje');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={12} />);
+            } else {
+              elemento.push('Descargada');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'tiempo_inactividad_motor') {
+            elemento.push('Tiempo inactividad de motor');
+            if (datos[key] == 0) {
+              elemento.push('Normal');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Alto');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Excesivo');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'temp_aceite') {
+            elemento.push('Temperatura aceite');
+            if (datos[key] == 0) {
+              elemento.push('Correcta');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Alta');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Muy alta');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'pres_aceite') {
+            elemento.push('Presión de aceite');
+            if (datos[key] == 0) {
+              elemento.push('Correcta');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Alta');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Muy alta');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'temp_refrigerante_motor') {
+            elemento.push('Teperatura refrigerante del motor');
+            if (datos[key] == 0) {
+              elemento.push('Correcta');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Alta');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Muy alta');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'niv_aceite') {
+            elemento.push('Niveles de aceite');
+            if (datos[key] == 0) {
+              elemento.push('Correcto');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Bajo');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Muy bajo');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          } else if (key == 'pres_neumaticos') {
+            elemento.push('Presión neumática');
+            if (datos[key] == 0) {
+              elemento.push('Correcto');
+              elemento.push(<Icon name="check-circle" color='#20d447' size={14} />);
+            } else if (datos[key] == 1) {
+              elemento.push('Baja');
+              elemento.push(<Icon name="warning" color='#ebcc1c' size={14} />);
+            } else {
+              elemento.push('Muy baja');
+              elemento.push(<Icon name="warning" color='#e81a1a' size={14} />);
+            }
+            return elemento;
+          }
+        })
+
+        this.setState({
+          hasInfo: true,
+          isLoading: false,
+          tableData: newData
+        })
       } else {
-        estado[2] = <Icon name="warning" color='#e81a1a' size={12} />
+        Alert.alert('Info', 'No hay datos!');
+        this.setState({
+          isLoading: false
+        })
       }
-      return estado
-    })
+    } catch (error) {
+      Alert.alert('Error', 'Ha ocurrido un error.');
+      console.error(error);
+      this.props.navigation.goBack();
+    }
   }
 
   render() {
     const state = this.state;
-    const vehicle = this.props.navigation.getParam('vehicle', {})
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Overlay
@@ -62,7 +189,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: vehicle, tipo: 'mecánico' }) }}>
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: state.vehicle, tipo: 'mecánico' }) }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="engine-outline" size={24} />
                 </View>
@@ -79,7 +206,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: vehicle, tipo: 'neumático' }) }} >
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: state.vehicle, tipo: 'neumático' }) }} >
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="circle-slice-8" size={24} />
                 </View>
@@ -90,7 +217,7 @@ export default class VehicleMaintenance extends Component {
             </Card>
           </View>
         </Overlay>
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+        <View style={{ flexDirection: 'column' }}>
           <View>
             <Button
               type='clear'
@@ -120,44 +247,50 @@ export default class VehicleMaintenance extends Component {
               <Image
                 style={{ width: 150, height: 150, alignSelf: 'center' }}
                 resizeMode="cover"
-                source={{ uri: vehicle.imagen }}
+                source={{ uri: state.vehicle.imagen }}
               />
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-              <Text style={styles.texto700}>{vehicle.nombre}</Text>
-              <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-              <Text style={styles.texto600}>- {vehicle.placa}</Text>
+              <Text style={[styles.textoBold, {marginTop: 4}]}>{state.vehicle.nombre}</Text>
+              <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+              <Text style={[styles.textoNormal, {marginTop: 4}]}>- {state.vehicle.placas}</Text>
             </View>
           </View>
 
-          <View style={{ alignSelf: 'center' }} >
+          <View style={{ alignSelf: 'center', height: 200, marginBottom: 15 }}>
 
             <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-              <Row data={state.tableHead} widthArr={state.widthArr} style={styles.head} textStyle={styles.text} />
-              <Rows data={state.tableData} widthArr={state.widthArr} textStyle={styles.text} />
+              <Row data={state.tableHead} widthArr={[190, 125]} style={styles.head} textStyle={[{ fontFamily: 'aller-bd' }, styles.text]} />
             </Table>
-
+            {state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} />}
+            {
+              !state.isLoading && state.hasInfo &&
+              <ScrollView >
+                <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                  <Rows data={state.tableData} widthArr={state.widthArr} textStyle={[{ fontFamily: 'aller-lt' }, styles.text]} />
+                </Table>
+              </ScrollView>
+            }
           </View>
 
-          <View style={{ marginBottom: 12 }}>
-
-            <Card>
-              <TouchableOpacity
-                style={styles.touchableOpacity}
-                onPress={() => this.setState({ registroServicio: true })}>
+          <View style={{ bottom: -25 }}>
+            <TouchableOpacity
+              onPress={() => this.setState({ registroServicio: true })} >
+              <Card
+                wrapperStyle={styles.touchableOpacity} >
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="progress-wrench" size={24} />
                 </View>
                 <View style={styles.textoTouchable}>
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Registrar servicio</Text>
                 </View>
-              </TouchableOpacity>
-            </Card>
+              </Card>
+            </TouchableOpacity>
 
-            <Card>
-              <TouchableOpacity
-                style={styles.touchableOpacity}
-                onPress={() => this.props.navigation.navigate('ServicesConsultation', { vehicle: vehicle })}>
+            <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('ServicesConsultation', { vehicle: state.vehicle })} >
+              <Card
+                wrapperStyle={styles.touchableOpacity} >
                 <View style={{
                   flex: 1,
                   flexDirection: 'row',
@@ -167,13 +300,13 @@ export default class VehicleMaintenance extends Component {
                 <View style={styles.textoTouchable}>
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Consultar servicios</Text>
                 </View>
-              </TouchableOpacity>
-            </Card>
+              </Card>
+            </TouchableOpacity>
 
-            <Card>
-              <TouchableOpacity
-                style={styles.touchableOpacity}
-                onPress={() => { this.props.navigation.navigate('Alerts') }}>
+            <TouchableOpacity
+              onPress={() => { this.props.navigation.navigate('Alerts', { vehicle: state.vehicle }) }} >
+              <Card
+                wrapperStyle={styles.touchableOpacity} >
                 <View style={{
                   flex: 1,
                   flexDirection: 'row',
@@ -183,13 +316,11 @@ export default class VehicleMaintenance extends Component {
                 <View style={styles.textoTouchable}>
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Alertas</Text>
                 </View>
-              </TouchableOpacity>
-            </Card>
-
+              </Card>
+            </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       </SafeAreaView>
-
     );
 
   }
@@ -203,9 +334,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: { flex: 1, padding: 20, paddingTop: 30, backgroundColor: '#fff' },
-  head: { height: 35, backgroundColor: '#f1f8ff' },
-  small: { height: 40, backgroundColor: '#f1f8ff', width: 20 },
-  text: { margin: 6, fontSize: 10 },
+  head: { height: 32, backgroundColor: '#f1f8ff' },
+  text: { margin: 6, fontSize: 12 },
   row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
   textoNormal: {
     fontFamily: 'aller-lt',
@@ -218,7 +348,7 @@ const styles = StyleSheet.create({
   touchableOpacity: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   textoTouchable: {
     flex: 2,

@@ -3,6 +3,7 @@ import {
     StyleSheet,
     View,
     Text,
+    Alert,
 } from 'react-native';
 import { Button, Input, Overlay, Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Polygon, Marker } from 'react-native-maps';
@@ -24,6 +25,7 @@ export default class TracePoligon extends React.Component {
     state = {
         setNombre: false,
         registrado: false,
+        nombre: '',
         markers: []
     }
 
@@ -38,6 +40,36 @@ export default class TracePoligon extends React.Component {
         let newMarkers = this.state.markers
         newMarkers[index] = { LatLng: coordinate }
         this.setState({ markers: newMarkers })
+    }
+
+    async registerPolygon(){
+        if (this.state.nombre =! '') {
+            try {
+                const result = await fetch('http://192.168.1.56:3000/webservice/interfaz119/registrar_geocerca', {
+                    method: 'POST',
+                    body:{
+                        nombre: this.state.nombre,
+                        coordenadas: JSON.stringify(this.state.markers)
+                    }
+                })
+
+                const data = await result.json();
+                if (data) {
+                    if (datos.msg) {
+                        Alert.alert('Hubo un error', datos.msg);
+                    } else if (datos.datos){
+                        this.setState({ 
+                            setNombre: false, 
+                            registrado: true 
+                        })
+                    }
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.');
+            }
+        } else {
+            Alert.alert('Campo requerido!', 'Escribe el nombre de la geocerca.');
+        }
     }
 
     render() {
@@ -59,11 +91,16 @@ export default class TracePoligon extends React.Component {
                             />
                         </View>
                         <View>
-                            <Input label='Nombre de la geocerca trazada:' />
+                            <Input 
+                                label='Nombre de la geocerca trazada:' 
+                                labelStyle={{fontFamily: 'aller-lt'}} 
+                                onChangeText={text => this.setState({ nombre: text })}
+                            />
                             <Button
                                 title='Siguiente'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                onPress={() => { this.setState({ setNombre: false, registrado: true }) }}
+                                titleStyle={{fontFamily: 'aller-lt'}}
+                                onPress={ this.registerPolygon.bind(this) }
                             />
                         </View>
                     </View>
@@ -91,6 +128,7 @@ export default class TracePoligon extends React.Component {
                             <Button
                                 title='Siguiente'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
+                                titleStyle={{fontFamily: 'aller-lt'}}
                                 onPress={() => { this.setState({ registrado: false }); this.props.navigation.pop(2) }}
                             />
                         </View>

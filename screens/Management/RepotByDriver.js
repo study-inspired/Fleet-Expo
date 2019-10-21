@@ -11,7 +11,8 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
-    StyleSheet
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
@@ -51,6 +52,55 @@ export default class ReportByDriver extends React.Component {
         headerRight: <View></View>,
     }
 
+    state = {
+        isLoading: true,
+        hasDrivers: false,
+        drivers: []
+    }
+
+    async componentDidMount(){
+        try {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz54/obtener_conductores_de_propietario',{
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_propietario: 1
+                }),
+            })
+
+            const data = await result.json();
+
+            if (data.datos.length != 0) {
+                let drivers = data.datos.map( d => {
+                    return {
+                        id: d.id_usuario, 
+                        nombre: d.nombre,
+                        avatar: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',// d.foto
+                    }
+                })
+                this.setState({
+                    hasDrivers: true,
+                    drivers: drivers, 
+                    isLoading: false 
+                });
+
+            } else {
+                Alert.alert('Info', 'No hay conductores!');
+                this.setState({
+                    isLoading: false
+                });
+            }
+
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
+            this.props.navigation.goBack();
+        }
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -83,13 +133,14 @@ export default class ReportByDriver extends React.Component {
                 </View>
                 <ScrollView style={styles.scrollView} contentInsetAdjustmentBehavior="automatic">
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            conductores.map((c) => {
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        { !this.state.isLoading && this.state.hasDrivers &&
+                            this.state.drivers.map((c, i) => {
                                 return (
-                                    <Card key={c.name}>
+                                    <Card key={i}>
                                         <TouchableOpacity 
                                             style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('ReportDriver',{ name: c.name }) }>
+                                            onPress={ () => this.props.navigation.navigate('ReportDriver', { name: c.name, id_usuario: c.id }) }>
                                             <Icon type='font-awesome' name="bar-chart" size={38} iconStyle={{ position:'absolute', left: 5 }} />
                                             <View
                                                 style={styles.imageContainer}>
@@ -98,7 +149,7 @@ export default class ReportByDriver extends React.Component {
                                                     resizeMode="cover"
                                                     source={{ uri: c.avatar }}
                                                 />
-                                                <Text style={styles.textoBold}>{c.name}</Text>
+                                                <Text style={styles.textoBold}>{c.nombre}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

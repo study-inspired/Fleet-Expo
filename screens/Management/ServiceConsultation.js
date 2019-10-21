@@ -8,18 +8,18 @@ const Data = {
     Descripcion: 'Afinación',
     Costo: '$2000.00 MXN',
     Kilometraje: '35000 km',
-    'Mecánico o taller': 'RojoMotors'
+    'Mecánico o taller': 'Rojo Motors'
 }
 
 export default class ServiceConsultation extends Component {
     static navigationOptions = {
-        title: 'Registro de mantenimiento ' + Data.Tipo,
+        title: 'Mantenimiento ' + Data.Tipo,
         headerTitleStyle: {
             flex: 1,
             textAlign: "center",
             fontFamily: 'aller-bd',
             fontWeight: '200',
-            fontSize: 14,
+            fontSize: 18,
         },
         headerRight: <View></View>,
     }
@@ -67,12 +67,12 @@ export default class ServiceConsultation extends Component {
                         />
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={styles.textoBold}>{vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={styles.textoNormal}>- {vehicle.placa}</Text>
+                        <Text style={[styles.textoBold, {marginTop: 4}]}>{vehicle.nombre}</Text>
+                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        <Text style={[styles.textoNormal, {marginTop: 4}]}>- {vehicle.placas}</Text>
                     </View>
                 </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                <ScrollView contentInsetAdjustmentBehavior="automatic">
 
                     <View style={{ margin: 4, alignSelf: 'center' }} >
                         <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
@@ -89,12 +89,8 @@ export default class ServiceConsultation extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#808B97' },
-    text: { margin: 6, fontSize: 12 },
+    text: { margin: 6, fontSize: 14,  },
     row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
-    btn: { width: 58, height: 18, backgroundColor: '#78B7BB', borderRadius: 2 },
-    btnText: { textAlign: 'center', color: '#fff' },
     textoBold: {
         fontFamily: 'aller-bd',
         fontSize: 16,

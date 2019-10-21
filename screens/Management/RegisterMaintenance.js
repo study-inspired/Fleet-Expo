@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, TextInput } from 'react-native';
 import { Button, Icon, Overlay } from 'react-native-elements';
 
 export default class RegisterMaintenance extends Component {
     static navigationOptions = ({ navigation }) => {
         return {
-            title: 'Registro de mantenimiento ' + navigation.getParam('tipo', ''),
+            title: 'Registro mantenimiento ' + navigation.getParam('tipo', ''),
             headerTitleStyle: {
                 flex: 1,
                 textAlign: "center",
@@ -49,6 +49,7 @@ export default class RegisterMaintenance extends Component {
                             <Button
                                 title='Siguiente'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
+                                titleStyle={{fontFamily: 'aller-lt'}}
                                 onPress={() => { this.setState({ registro: false }); this.props.navigation.goBack() }}
                             />
                         </View>
@@ -87,13 +88,13 @@ export default class RegisterMaintenance extends Component {
                         />
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={styles.textoBold}>{vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={styles.textoNormal}>- {vehicle.placa}</Text>
+                        <Text style={[styles.textoBold, { marginTop: 4}]}>{vehicle.nombre}</Text>
+                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        <Text style={[styles.textoNormal, { marginTop: 4}]}>- {vehicle.placas}</Text>
                     </View>
                 </View>
 
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', marginTop: 10 }}>
 
                     <View style={{ marginBottom: 15 }}>
 
@@ -136,28 +137,26 @@ export default class RegisterMaintenance extends Component {
                             title='Registrar'
                             icon={{
                                 name: "check-circle",
-                                size: 15,
-                                //color: "white"
+                                size: 16,
+                                color: "white"
                             }}
+                            titleStyle={{fontFamily: 'aller-lt'}}
                             buttonStyle={{ backgroundColor: '#ff8834' }}
                             onPress={() => this.setState({ registro: true })}
                         />
                     </View>
                 </View>
-
             </SafeAreaView>
-
         );
-
     }
 }
 
 const styles = StyleSheet.create({
-    input: { height: 22, borderColor: 'gray', borderWidth: 1, padding: 1, width: 165, alignSelf: 'stretch', fontSize: 10 },
-    texto: { fontSize: 14, marginBottom: 5, paddingRight: 10, alignSelf: 'baseline' },
+    input: { height: 26, fontFamily: 'aller-lt', fontSize: 14, borderColor: 'gray', borderWidth: 1, padding: 1, width: 165, alignSelf: 'stretch', fontSize: 10 },
+    texto: { fontFamily: 'aller-bd', fontSize: 14, paddingRight: 10, alignSelf: 'baseline', marginTop:3 },
     container: { flex: 1, padding: 20, paddingTop: 30, backgroundColor: '#fff' },
     head: { height: 25, backgroundColor: '#9fd5d1' },
-    views: { height: 40, flexDirection: 'row', justifyContent: 'space-between' },
+    views: { height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     touchable: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
     textoboton: {
         flex: 4,

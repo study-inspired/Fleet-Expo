@@ -5,6 +5,7 @@
 
 import React from 'react';
 import {
+    ActivityIndicator,
     StyleSheet,
     ScrollView,
     View,
@@ -85,8 +86,60 @@ export default class VehiclesView extends React.Component {
     }
 
     state = {
-        selected: null
+        isLoading: true,
+        hasVehicles: false,
+        vehicles: {}
     }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz60/obtener_unidades_propietario', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_correo: 'carloslarios.159@gmail.com',
+                    p_pass: '123456',
+                }),
+            })
+            
+            const data = await result.json();
+            console.log(data);
+            
+            if (data.datos.length != 0) {
+                let vehicles = data.datos.map((v)=>{
+                    return {
+                        id: v.id_unidad, 
+                        nombre: `${v.marca} ${v.modelo}`,
+                        placas: v.placas,
+                        color: v.color.includes('#')?v.color:'#a8a8a8',
+                        imagen: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',//v.foto
+                        vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
+                        problema: v.estado == 0
+                    }
+                })
+                this.setState({
+                    hasVehicles: true,
+                    vehicles: vehicles, 
+                    isLoading: false 
+                });
+            } else {
+                alert('Info','No hay vehiculos!');
+                this.setState({ 
+                    isLoading: false 
+                });
+            }
+
+        } catch (error) {
+            alert('Error');
+            this.setState({ 
+                isLoading: false 
+            });
+            console.error(error);
+        }
+    }   
     
     render() {
         return (
@@ -146,10 +199,11 @@ export default class VehiclesView extends React.Component {
                     contentInsetAdjustmentBehavior="automatic"
                     style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            vehiculos.map((v) => {
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        {   !this.state.isLoading && this.state.hasVehicles &&
+                            this.state.vehicles.map((v, i) => {
                                 return (
-                                    <Card key={v.placa}>
+                                    <Card key={i}>
                                         <TouchableOpacity
                                             /*key={i}*/
                                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
@@ -178,7 +232,7 @@ export default class VehiclesView extends React.Component {
                                                     <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                 </View>
 
-                                                <Text style={styles.texto600}>{v.placa}</Text>
+                                                <Text style={styles.texto600}>{v.placas}</Text>
                                                 <Text style={styles.texto70012}>Vigencia de operación:</Text>
                                                 <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
                                             </View>

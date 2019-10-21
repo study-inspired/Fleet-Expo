@@ -115,7 +115,7 @@ export default class RegisteredGeofences extends React.Component {
                                                 
                                             </TouchableOpacity>
                                     </Card>
-                                );
+                                )
                             })
                         }
                     </View>

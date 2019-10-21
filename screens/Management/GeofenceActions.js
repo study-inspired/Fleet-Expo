@@ -5,10 +5,12 @@
 
 import React from 'react';
 import {
+    ActivityIndicator,
     StyleSheet,
     ScrollView,
     View,
     Text,
+    Alert,
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
@@ -52,13 +54,67 @@ export default class GeofenceActions extends React.Component {
     }
 
     state = {
+        isLoading: true,
+        hasAlerts: false,
+        alerts: [],
         nextScreen: this.props.navigation.getParam('nextScreen', '')
     }
 
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz130/obtener_alertas_accion_geocerca', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_propietario: 1
+                }),
+            })
+
+            const data = await result.json();
+
+            if (data.datos != 0) {
+                this.setState({
+                    hasRecords: true,
+                    alerts: data.datos.map((r) => {
+                        return {
+                            id: r.id_alerta,
+                            tipo: r.tipo_alerta,
+                            mensaje: r.desp_alerta,
+                            categoria: r.categoria,
+                            geocerca: {
+                                id: r.id_geocercas,
+                                nombre: r.nombre,
+                            },
+                            vehiculo: {
+                                id: r.id_unidad,
+                                nombre: `${r.marca} ${r.modelo}`,
+                                color: r.color.includes('#')?r.color:'#a8a8a8',
+                                placas: r.placas,
+                            }
+                        }
+                    }),
+                    isLoading: false
+                })
+            } else {
+                Alert.alert('Info', 'No hay registros de alertas.');
+                this.setState({
+                    isLoading: false
+                })
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.');
+            this.setState({
+                isLoading: false
+            })
+            console.error(error);
+        }
+    }
+
     render() {
-
         return (
-
             <View style={{ flex: 1 }}>
                 <View style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 16 }}>
                     <Button
@@ -88,8 +144,9 @@ export default class GeofenceActions extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            alertas.map((a, i) => {
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        {   !this.state.isLoading && this.state.hasAlerts && 
+                            this.state.alerts.map((a, i) => {
                                 return (
                                     <Card key={i} wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                         <View style={{ flex: 2, flexDirection: 'column', }}>
@@ -100,9 +157,9 @@ export default class GeofenceActions extends React.Component {
                                                     alignItems: 'center',
                                                 }}>
                                                 <Icon type='material-community' name="map" size={38} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
-                                                <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{a.nombre}</Text>
+                                                <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{a.geocerca.nombre}</Text>
                                             </View>
-                                            <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, marginLeft:5 }}>Salidas: {a.salidas}</Text>
+                                            <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, marginLeft:5 }}>Salidas: {a.mensaje}</Text>
                                         </View>
                                         <View
                                             style={{
@@ -114,7 +171,7 @@ export default class GeofenceActions extends React.Component {
                                             <Icon name='check-circle' size={14} color='#20d447' iconStyle={{ position: 'absolute', right: -24, top: 0 }} />
                                             <Icon type='font-awesome' name='car' size={18} iconStyle={{ marginHorizontal: 5 }} />
                                             <Text style={{ fontFamily: 'aller-bd', fontSize: 10, marginBottom: 1 }}>{a.vehiculo.nombre}</Text>
-                                            <Text style={{ fontFamily: 'aller-lt', fontSize: 9, }}>{a.vehiculo.placa}</Text>
+                                            <Text style={{ fontFamily: 'aller-lt', fontSize: 9, }}>{a.vehiculo.placas}</Text>
                                         </View>
                                     </Card>
                                 );

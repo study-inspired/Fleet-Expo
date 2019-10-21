@@ -212,6 +212,7 @@ export default class Drivers extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                         { !this.state.isLoading && this.state.hasDrivers &&
                             this.state.drivers.map((d, i) => {
                                 let vinculado = Object.entries(d.auto).length !== 0;
