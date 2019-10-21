@@ -66,14 +66,14 @@ export default class SelectVehicle extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carloslarios.159@gmail.com',
+                    p_correo: 'joe96.val@gmail.com',
                     p_pass: '123456',
                 }),
             })

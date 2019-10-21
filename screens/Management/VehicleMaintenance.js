@@ -32,7 +32,7 @@ export default class VehicleMaintenance extends Component {
 
   async componentDidMount() {
     try {
-      const result = await fetch('http://34.95.33.177:3006/webservice/interfaz124/obtener_status_motor', {
+      const result = await fetch('http://192.168.1.67:3000/webservice/interfaz124/obtener_status_motor', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -42,12 +42,12 @@ export default class VehicleMaintenance extends Component {
           p_id_unidad: this.state.vehicle.id
         }),
       });
-
+      
       const data = await result.json();
-
-      const datos = await data.datos[0];
-
-      if (datos.lenght != 0) {
+      
+      if (data.datos.lenght != 0) {
+        const datos = await data.datos[0];
+        
         let newData = Object.keys(datos).map(key => {
           let elemento = [];
           if (key == 'funcionamiento_motor') {
@@ -189,7 +189,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: state.vehicle, tipo: 'mecánico' }) }}>
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceM', { vehicle: state.vehicle, tipo: 'mecánico' }) }}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="engine-outline" size={24} />
                 </View>
@@ -206,7 +206,7 @@ export default class VehicleMaintenance extends Component {
             <Card>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenance', { vehicle: state.vehicle, tipo: 'neumático' }) }} >
+                onPress={() => { this.setState({ registroServicio: false }); this.props.navigation.navigate('RegisterMaintenanceN', { vehicle: state.vehicle, tipo: 'neumático' }) }} >
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Icon type='material-community' name="circle-slice-8" size={24} />
                 </View>
