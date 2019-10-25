@@ -12,7 +12,8 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    StatusBar
+    StatusBar,
+    Alert
 } from 'react-native';
 
 import { Button, colors, Card } from 'react-native-elements'
@@ -93,7 +94,7 @@ export default class VehiclesView extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -126,14 +127,14 @@ export default class VehiclesView extends React.Component {
                     isLoading: false 
                 });
             } else {
-                alert('Info','No hay vehiculos!');
+                Alert.alert('Info','No hay vehiculos!');
                 this.setState({ 
                     isLoading: false 
                 });
             }
 
         } catch (error) {
-            alert('Error');
+            Alert.alert('Error', 'Hubo un error.');
             this.setState({ 
                 isLoading: false 
             });

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { Button, Icon } from 'react-native-elements'
 
@@ -17,29 +17,57 @@ export default class ServicesConsultation extends Component {
         headerRight: <View></View>,
     }
 
-    render() {
-        const vehicle = this.props.navigation.getParam('vehicle', {})
-        const Data = [
-            ['24/08/2019', 'Mecanico', 0],
-            ['24/08/2019', 'Neumatico', 1],
-            ['21/06/2019', 'Mecanico', 2],
-            ['01/02/2019', 'Mecanico', 3]
-        ]
-        const tabla = {
-            tableHead: ['Fecha', 'Tipo', ''],
-            widthArr: [140, 140, 40],
-            tableData: Data.map(data => {
-                return [
-                    data[0],
-                    data[1],
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: vehicle })}>
-                        <Icon type='material' name='remove-red-eye' size={18} />
-                    </TouchableOpacity>
-                ]
-            })
-        }
+    state = {
+        isLoading: true,
+        hasInfo: false,
+        tableHead: ['Fecha', 'Tipo', ''],
+        widthArr: [140, 140, 40],
+        tableData: [],
+        vehicle: this.props.navigation.getParam('vehicle', {})
+    }
 
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz140/obtener_servicios', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_unidad: this.state.vehicle.id
+                })
+            });
+
+            const data = await result.json();
+            if (data.datos.length != 0) {
+                this.setState({
+                    hasInfo: true,
+                    tableData: data.datos.map( servicio => {
+                        return [
+                            new Date(servicio.fecha_serv).toLocaleDateString(), 
+                            servicio.tipo,
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: this.state.vehicle, id_servicio: servicio.id_servicios, tipo: servicio.tipo })}>
+                                <Icon type='material' name='remove-red-eye' size={18} />
+                            </TouchableOpacity>
+                        ]
+                    }),
+                    isLoading: false
+                });
+            } else {
+                Alert.alert('Info', 'No hay datos.');
+                this.props.navigation.goBack();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
+    }
+
+    render() {
+        const { vehicle } = this.state;
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <View>
@@ -81,19 +109,18 @@ export default class ServicesConsultation extends Component {
                     </View>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-
-                    <View style={{ margin: 4, alignSelf: 'center' }} >
-                        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Row data={tabla.tableHead} widthArr={tabla.widthArr} style={styles.head} textStyle={[{fontFamily: 'aller-bd'},styles.text]} />
-                            <Rows data={tabla.tableData} widthArr={tabla.widthArr} textStyle={[{fontFamily: 'aller-lt'}, styles.text]} />
-                        </Table>
-                    </View>
-
+                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                    { !this.state.isLoading && this.state.hasInfo &&
+                        <View style={{ margin: 4, alignSelf: 'center' }} >
+                            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                                <Row data={this.state.tableHead} widthArr={this.state.widthArr} style={styles.head} textStyle={[{fontFamily: 'aller-bd'},styles.text]} />
+                                <Rows data={this.state.tableData} widthArr={this.state.widthArr} textStyle={[{fontFamily: 'aller-lt'}, styles.text]} />
+                            </Table>
+                        </View>
+                    }
                 </ScrollView>
             </SafeAreaView>
-
         );
-
     }
 }
 

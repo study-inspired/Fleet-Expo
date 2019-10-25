@@ -113,7 +113,7 @@ export default class AssignVehicle extends React.Component {
             Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
         } else {
             try {
-                const result = await fetch('http://192.168.1.67:3000/webservice/interfaz126/asignar_unidad_geocerca', {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz126/asignar_unidad_geocerca', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

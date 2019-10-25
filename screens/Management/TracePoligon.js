@@ -45,7 +45,7 @@ export default class TracePoligon extends React.Component {
     async registerPolygon(){
         if (this.state.nombre =! '') {
             try {
-                const result = await fetch('http://192.168.1.56:3000/webservice/interfaz119/registrar_geocerca', {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
                     body:{
                         nombre: this.state.nombre,

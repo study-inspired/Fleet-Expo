@@ -49,20 +49,20 @@ export default class RegisterMaintenance extends Component {
             Alert.alert('Info', 'Llena todos los campos.');
         } else {
             try {
-                const result = await fetch('http://192.168.1.67:3000/webservice/interfaz126/registrar_servicio_mecanico', {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz126/registrar_servicio_mecanico', {
                     method: 'POST',
                     headers: {
-                        'Acept': 'aplication/json',
-                        'Content-Type': 'aplication/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        fecha_servicio: this.state.fecha_servicio,
-                        fecha_prog: this.state.fecha_prog,
+                        fecha_servicio: this.state.fecha_servicio.split('/').reverse().join('-'),
+                        fecha_prog: this.state.fecha_prog.split('/').reverse().join('-'),
                         descripcion: this.state.descripcion,
                         costo: this.state.costo,
                         kilometraje: this.state.kilometraje,
                         mecanico: this.state.mecanico,
-                        fecha_garantia: this.state.fecha_garantia,
+                        fecha_garantia: this.state.fecha_garantia.split('/').reverse().join('-'),
                         estatus: 0,
                         id_unidad: this.state.vehicle.id,
                     })

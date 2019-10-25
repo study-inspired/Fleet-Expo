@@ -1,37 +1,69 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, ActivityIndicator, Alert} from 'react-native';
 import { Table, Rows } from 'react-native-table-component';
 import { Button } from 'react-native-elements'
-const Data = {
-    Fecha: '24/08/2019',
-    Tipo: 'Mecánico',
-    Descripcion: 'Afinación',
-    Costo: '$2000.00 MXN',
-    Kilometraje: '35000 km',
-    'Mecánico o taller': 'Rojo Motors'
-}
 
 export default class ServiceConsultation extends Component {
-    static navigationOptions = {
-        title: 'Mantenimiento ' + Data.Tipo,
-        headerTitleStyle: {
-            flex: 1,
-            textAlign: "center",
-            fontFamily: 'aller-bd',
-            fontWeight: '200',
-            fontSize: 18,
-        },
-        headerRight: <View></View>,
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: 'Mantenimiento ' + navigation.getParam('tipo', 'Tipo').replace('a', 'á'),
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: "center",
+                fontFamily: 'aller-bd',
+                fontWeight: '200',
+                fontSize: 18,
+            },
+            headerRight: <View></View>,
+        }
+    }
+
+    state = {
+        isLoading: true,
+        hasInfo: false,
+        widthArr: [150, 150],
+        tableData: [],
+        vehicle: this.props.navigation.getParam('vehicle', {})
+    }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz136/obtener_servicios_detalle', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_servicios: this.props.navigation.getParam('id_servicios', 0),
+                    tipo: this.props.navigation.getParam('tipo', '')
+                })
+            });
+
+            const data = await result.json();
+            if (data.datos.length != 0) {
+                console.log(data.datos);
+                
+                this.setState({
+                    hasInfo: true,
+                    // tableData: data.datos.map( servicio => {
+                    //     return 
+                    // }),
+                    isLoading: false
+                });
+            } else {
+                Alert.alert('Info', 'No hay datos.');
+                this.props.navigation.goBack();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
     }
 
     render() {
-        const vehicle = this.props.navigation.getParam('vehicle', {})
-
-        const tabla = {
-            widthArr: [150, 150],
-            tableData: Object.entries(Data)
-        }
-
+        const { vehicle } = this.state
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <View>
@@ -73,13 +105,14 @@ export default class ServiceConsultation extends Component {
                     </View>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
-
-                    <View style={{ margin: 4, alignSelf: 'center' }} >
-                        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Rows data={tabla.tableData} widthArr={tabla.widthArr} textStyle={styles.text} />
-                        </Table>
-                    </View>
-
+                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                    { !this.state.isLoading && this.state.hasInfo &&
+                        <View style={{ margin: 4, alignSelf: 'center' }} >
+                            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                                <Rows data={this.state.tableData} widthArr={this.state.widthArr} textStyle={styles.text} />
+                            </Table>
+                        </View>
+                    }
                 </ScrollView>
             </SafeAreaView>
 

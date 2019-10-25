@@ -62,7 +62,7 @@ export default class GeofenceActions extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz130/obtener_alertas_accion_geocerca', {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz130/obtener_alertas_accion_geocerca', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

@@ -28,7 +28,7 @@ export default class RegisterMaintenance extends Component {
         vehicle: this.props.navigation.getParam('vehicle', {})
     }
 
-    async Registrarservicio() {
+    async registrarServicio() {
         if (
             this.state.fecha == 'Seleccionar' ||
             this.state.costo == '' ||
@@ -41,28 +41,29 @@ export default class RegisterMaintenance extends Component {
         }
         else {
             try {
-                const result = await fetch('http://localhost:300/webservice/interfaz129/registrar_servicio_neumatico', {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz129/registrar_servicio_neumatico', {
                     method: 'POST',
                     headers: {
-                        'Acept': 'aplication/json',
-                        'Content-Type': 'aplication/json'
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        fecha_servicio: this.state.fecha,
+                        fecha_servicio: this.state.fecha.split('/').reverse().join('-'),
                         costo: this.state.costo,
                         num_neumaticos: this.state.noneumatico,
                         motivo: this.state.motivo,
                         posicion: this.state.posicion,
                         id_unidad: this.state.vehicle.id,
-                        // llantera : this.state.llanterataller                                        
+                        llantera : this.state.llanterataller                                        
                     })
                 });
 
                 const data = await result.json();
-
+                
                 if (data.msg) {
-                    Alert.alert('Error', data.msg)
+                    Alert.alert('Error', data.msg);
                 } else {
+                    console.log(data);
                     this.setState({ registro: true });
                 }
 
@@ -94,7 +95,6 @@ export default class RegisterMaintenance extends Component {
     }
 
     render() {
-
         const { vehicle } = this.state;
 
         return (
@@ -235,7 +235,7 @@ export default class RegisterMaintenance extends Component {
                             }}
                             titleStyle={{ fontFamily: 'aller-lt' }}
                             buttonStyle={{ backgroundColor: '#ff8834' }}
-                            onPress={() => this.setState({ registro: true })}
+                            onPress={() => this.registrarServicio()}
                         />
                     </View>
                     <DateTimePicker

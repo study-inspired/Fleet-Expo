@@ -12,7 +12,8 @@ import {
     Text,
     Image,
     StatusBar,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { Button, colors, Card } from 'react-native-elements'
 
@@ -75,14 +76,14 @@ export default class Drivers extends React.Component {
 
     async componentDidMount(){
         try {
-            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carloslarios.159@gmail.com',
+                    p_correo: 'diana@gmail.com',
                     p_pass: '123456',
                 }),
             })
@@ -126,7 +127,7 @@ export default class Drivers extends React.Component {
 
     async desvincularVehiculo(unidad) {
         try {
-            const result = await fetch('http://192.168.1.67:3000/webservice/interfaz69/desvincular_vehiculo', {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz69/desvincular_vehiculo', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
