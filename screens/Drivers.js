@@ -13,7 +13,8 @@ import {
     Image,
     StatusBar,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    RefreshControl 
 } from 'react-native';
 import { Button, colors, Card } from 'react-native-elements'
 
@@ -34,6 +35,7 @@ export default class Drivers extends React.Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasDrivers: false,
         drivers: {},
@@ -121,9 +123,30 @@ export default class Drivers extends React.Component {
         }
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
+
     render() {
         return (!this.state.loading &&
             <SafeAreaView style={{ flex: 1 }}>
+                
+                <ScrollView
+                    refreshControl={this._refreshControl()}
+                >
+                
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
                     <Button
@@ -250,6 +273,7 @@ export default class Drivers extends React.Component {
                     </View>
 
                 </ScrollView>
+               </ScrollView>
             </SafeAreaView>
         )
     }
