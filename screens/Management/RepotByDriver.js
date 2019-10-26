@@ -140,7 +140,7 @@ export default class ReportByDriver extends React.Component {
                                     <Card key={i}>
                                         <TouchableOpacity 
                                             style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('ReportDriver', { name: c.name, id_usuario: c.id }) }>
+                                            onPress={ () => this.props.navigation.navigate('ReportDriver', { driver: c }) }>
                                             <Icon type='font-awesome' name="bar-chart" size={38} iconStyle={{ position:'absolute', left: 5 }} />
                                             <View
                                                 style={styles.imageContainer}>

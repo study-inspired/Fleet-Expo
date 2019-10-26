@@ -132,7 +132,7 @@ export default class RealTimeReports extends React.Component {
                                     <Card key={i}>
                                         <TouchableOpacity 
                                             style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { name: c.nombre, driver: c }) } >
+                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { driver: c }) } >
                                             <View
                                                 style={styles.imagecontainer}>
                                                 <Image

@@ -34,10 +34,8 @@ export default class RealTimeReport extends React.Component {
         isLoading: true,
         hasInfo: false,
         tableHead: ['TOTAL', 'Efectivo', 'Tarjeta', 'Comisión', 'Ganancia'],
-        tableData: [
-            ['$3,000.00 MXN', '$2,000.00 MXN','$1,000.00 MXN', '-$300.00 MXN', '$2,700.00 MXN'],
-        ],
-        driver: {},
+        tableData: [],
+        driver: this.props.navigation.getParam('driver', {}),
     }
 
     async componentDidMount() {
@@ -49,7 +47,7 @@ export default class RealTimeReport extends React.Component {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    p_id_propietario: this.state.driver.id_usuario // cual id es?
+                    p_id_propietario: this.state.driver.id_chofer1 // cual id es?
                 })
             });
 
@@ -58,7 +56,13 @@ export default class RealTimeReport extends React.Component {
             if (data.datos.length != 0) {
                 this.setState({
                     hasInfo: true,
-                    tableData: [],
+                    tableData: [
+                        data.datos[0].GananciaActual,
+                        data.datos[0].Efectivo,
+                        data.datos[0].Tarjeta,
+                        data.datos[0].comision,
+                        data.datos[0].gananciafin
+                    ],
                     isLoading: false,
                 });
             } else {
@@ -72,11 +76,6 @@ export default class RealTimeReport extends React.Component {
     }
 
     render() {
-        const conductor = {
-            name: this.props.navigation.getParam('name', '?'),
-            avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-            ganancia: '2,000.00 MXN'
-        }
 
         return (
             <View style={{ flex: 1 }}>
@@ -112,14 +111,14 @@ export default class RealTimeReport extends React.Component {
                         <Image
                             style={styles.image}
                             resizeMode="cover"
-                            source={{ uri: conductor.avatar }}
+                            source={{ uri: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png' }} // this.state.driver.avatar
                         />
-                        <Text style={styles.textoBold}>{conductor.name}</Text>
+                        <Text style={styles.textoBold}>{this.state.driver.nombre}</Text>
                     </View>
                     <View
                         style={styles.cardText}>
                         <Text style={[styles.textoNormal, { marginBottom: 10 }]}>Ganancia actual:  </Text>
-                        <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>${conductor.ganancia}</Text>
+                        <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this.state.tableData[0]} MXN</Text>
                     </View>
                     <View style={{ flex: 4, width: Dimensions.get('window').width-40 }}>
                         <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
