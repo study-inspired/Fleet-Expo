@@ -78,7 +78,7 @@ export default class ReportByDriver extends React.Component {
                     return {
                         id: d.id_usuario, 
                         nombre: d.nombre,
-                        avatar: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',// d.foto
+                        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',// d.foto
                     }
                 })
                 this.setState({

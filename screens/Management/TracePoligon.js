@@ -47,10 +47,10 @@ export default class TracePoligon extends React.Component {
             try {
                 const result = await fetch('http://34.95.33.177:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
-                    body:{
+                    body: JSON.stringify({
                         nombre: this.state.nombre,
-                        coordenadas: JSON.stringify(this.state.markers)
-                    }
+                        coordenadas: this.state.markers
+                    })
                 })
 
                 const data = await result.json();

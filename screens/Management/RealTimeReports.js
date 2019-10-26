@@ -11,30 +11,33 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
-    StyleSheet
+    StyleSheet,
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
+//import { json } from '../../../../../../AppData/Local/Microsoft/TypeScript/3.6/node_modules/@types/body-parser';
 
 const conductores = [
     {
         name: 'Laura Gutierrez',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
         ganancia: '2,000.00 MXN'
     },
     {
         name: 'Manuel Leyva',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
         ganancia: '1,750.00 MXN'
     },
     {
         name: 'Leonel Ortega',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
         ganancia: '2,080.00 MXN'
     },
     {
         name: 'Otro',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
         ganancia: '2,100.00 MXN'
     },
 ]
@@ -50,6 +53,47 @@ export default class RealTimeReports extends React.Component {
             fontSize: 18,
         },
         headerRight: <View></View>,
+    }
+
+    state = {
+        isLoading: true,
+        hasDrivers: false,
+        drivers: []
+    }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz134/reporte_tiempo_real', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_propietario: 1
+                })
+            });
+
+            const data = await result.json();
+            
+            if (data.datos.length != 0) {
+                this.setState({
+                    drivers: data.datos,
+                    hasDrivers: true,
+                    isLoading: false
+                });
+            } else {
+                Alert.alert('Info', 'No hay datos.');
+                this.setState({
+                    isLoading: false
+                });
+                this.props.navigation.goBack();
+            }
+            
+        } catch (error) {
+            Alert.alert('Error', 'Ha ocurrido un error.');
+            this.props.navigation.goBack();
+        }
     }
 
     render() {
@@ -83,26 +127,27 @@ export default class RealTimeReports extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
                     <View style={{ marginBottom: 15 }}>
-                        {
-                            conductores.map((c) => {
+                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        { !this.state.isLoading && this.state.hasDrivers &&
+                            this.state.drivers.map((c, i) => {
                                 return (
-                                    <Card key={c.name}>
+                                    <Card key={i}>
                                         <TouchableOpacity 
                                             style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { name: c.name }) } >
+                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { name: c.nombre }) } >
                                             <View
                                                 style={styles.imagecontainer}>
                                                 <Image
                                                     style={styles.image}
                                                     resizeMode="cover"
-                                                    source={{ uri: c.avatar }}
+                                                    source={{ uri: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png' }} // c.avatar
                                                 />
-                                                <Text style={styles.textoBold}>{c.name}</Text>
+                                                <Text style={styles.textoBold}>{c.nombre}</Text>
                                             </View>
                                             <View
                                                 style={styles.textoTouchable}>
                                                 <Text style={styles.textoBold}>Ganancia actual</Text>
-                                                <Text style={[styles.textoNormal, { marginBottom: 10, color:'#0e9bcf' }]}>${c.ganancia}</Text>
+                                                <Text style={[styles.textoNormal, { marginBottom: 10, color:'#0e9bcf' }]}>${c.gananciaactual}</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

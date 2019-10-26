@@ -65,7 +65,7 @@ export default class Drivers extends React.Component {
                             placas: d.placas,
                             color: d.color.includes('#')?d.color:'#a8a8a8',
                         } : {},
-                        avatar: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',
+                        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
                     }
                 })
                 this.setState({
