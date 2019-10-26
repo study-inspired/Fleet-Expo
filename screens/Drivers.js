@@ -17,41 +17,6 @@ import {
 } from 'react-native';
 import { Button, colors, Card } from 'react-native-elements'
 
-const users = [
-    {
-        nombre: 'Laura Gutierrez',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        auto: {}
-    },
-    {
-        nombre: 'Manuel Leyva',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        auto: {
-            nombre: 'Chevrolet Aveo',
-            placa: 'COL-6462J',
-            color: '#e0e0e0',
-        },
-    },
-    {
-        nombre: 'Leonel Ortega',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        auto: {
-            nombre: 'Chevrolet Beat',
-            placa: 'COL-4518V',
-            color: '#4287f5',
-        },
-    },
-    {
-        nombre: 'Otro',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-        auto: {
-            nombre: 'Chevrolet Aveo',
-            placa: 'COL-6472J',
-            color: '#948d8d',
-        },
-    },
-]
-
 export default class Drivers extends React.Component {
     static navigationOptions = {
         title: 'Conductores',
@@ -211,7 +176,9 @@ export default class Drivers extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                <ScrollView 
+                    contentInsetAdjustmentBehavior="automatic" 
+                    style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
                         {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                         { !this.state.isLoading && this.state.hasDrivers &&

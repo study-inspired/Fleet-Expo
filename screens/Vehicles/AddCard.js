@@ -42,7 +42,7 @@ export default class AddCard extends React.Component {
 
     async _openGalery() {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             // aspect: [4, 3],
         });
@@ -61,7 +61,7 @@ export default class AddCard extends React.Component {
 
     async _openCamera() {
         let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             // aspect: [4, 3],
         });

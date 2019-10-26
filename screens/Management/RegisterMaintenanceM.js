@@ -56,13 +56,13 @@ export default class RegisterMaintenance extends Component {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        fecha_servicio: this.state.fecha_servicio.split('/').reverse().join('-'),
-                        fecha_prog: this.state.fecha_prog.split('/').reverse().join('-'),
+                        fecha_servicio: this.state.fecha_servicio.replace(/[/]/g, '-'),
+                        fecha_prog: this.state.fecha_prog.replace(/[/]/g, '-'),
                         descripcion: this.state.descripcion,
                         costo: this.state.costo,
                         kilometraje: this.state.kilometraje,
                         mecanico: this.state.mecanico,
-                        fecha_garantia: this.state.fecha_garantia.split('/').reverse().join('-'),
+                        fecha_garantia: this.state.fecha_garantia.replace(/[/]/g, '-'),
                         estatus: 0,
                         id_unidad: this.state.vehicle.id,
                     })

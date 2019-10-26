@@ -42,7 +42,7 @@ export default class AddHologram extends React.Component {
     
     async _openGalery() {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             // aspect: [4, 3],
         });
@@ -61,7 +61,7 @@ export default class AddHologram extends React.Component {
 
     async _openCamera() {
         let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             // aspect: [4, 3],
         });
@@ -78,23 +78,6 @@ export default class AddHologram extends React.Component {
         }
     }
 
-    openCamera() {
-        ImagePicker.launchCamera({ noData: true }, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else {
-                console.log(response)
-
-                this.props.navigation.navigate('AttachedPicture', {
-                    // You can also display the image using data:
-                    //image: { uri: 'data:image/jpeg;base64,' + response.data }
-                    image: { uri: response.uri }
-                })
-            }
-        })
-    }
     render() {
         return (
             <View style={{ flex:1, marginHorizontal: 25, flexDirection: 'column' }}>

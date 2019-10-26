@@ -141,6 +141,15 @@ export default class VehiclesView extends React.Component {
             console.error(error);
         }
     }   
+
+    onBack() {
+        this.setState({
+            isLoading: true,
+            hasVehicles: false,
+            vehicles: {}
+        });
+        this.componentDidMount();
+    }
     
     render() {
         return (

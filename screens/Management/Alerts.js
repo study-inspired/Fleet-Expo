@@ -16,8 +16,9 @@ export default class Alerts extends Component {
             isLoading: true,
             hasAlerts: false,
             tableHead: ['Fecha', 'Hora', 'Concepto de alerta'],
-            widthArr: [80, 80, 160],
-            alerts: []
+            widthArr: [95, 70, 160],
+            alerts: [],
+            vehicle: this.props.navigation.getParam('vehicle', {})
         }
     }
 
@@ -38,31 +39,32 @@ export default class Alerts extends Component {
             const result = await fetch('http://34.95.33.177:3006/webservice/interfaz132/mostrar_alertas_unidad', {
                 method: 'POST',
                 headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  p_id_unidad: this.state.vehicle.id
+                    id_unidad: this.state.vehicle.id
                 }),
             });
 
             const data = await result.json();
+            console.log(data);
+
 
             if (data.datos.length != 0) {
-                let alerts = Object.values(data).map((v, i) => {
-                    if (i == 0) {
-                        return new Date(v).toLocaleDateString();
-                    } else if (i == 1) {
-                        let date = new Date();
-                        let hm = v.split(':');
-                        date.setHours(hm[0]);
-                        date.setMinutes(hm[1]);
-                        return date.toLocaleTimeString();
-                    } else {
-                        return v;
-                    }
+                let alerts = Object.values(data.datos).map((d) => {
+                    let date = new Date();
+                    let hm = d.hora.split(':');
+                    date.setHours(hm[0]);
+                    date.setMinutes(hm[1]);
+                    return [
+                        d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                        date.toLocaleTimeString(),
+                        d.concepto_alerta
+                    ]
                 });
-                alerts.pop();
+                console.log(alerts);
+
                 this.setState({
                     alerts: alerts,
                     hasAlerts: true,
@@ -118,15 +120,15 @@ export default class Alerts extends Component {
                     <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
                         <Row data={state.tableHead} widthArr={state.widthArr} style={styles.head} textStyle={[styles.text, { fontFamily: 'aller-bd' }]} />
                     </Table>
-                    { state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} /> }
-                    { !state.isLoading && state.hasAlerts &&
-                    <View style={{ flex: 1 }}>
-                        <ScrollView contentInsetAdjustmentBehavior="automatic">
-                            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                                <Rows data={state.alerts} widthArr={state.widthArr} textStyle={[styles.text, { fontFamily: 'aller-lt' }]} />
-                            </Table>
-                        </ScrollView>
-                    </View>
+                    {state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} />}
+                    {!state.isLoading && state.hasAlerts &&
+                        <View style={{ flex: 1 }}>
+                            <ScrollView contentInsetAdjustmentBehavior="automatic">
+                                <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                                    <Rows data={state.alerts} widthArr={state.widthArr} textStyle={[styles.text, { fontFamily: 'aller-lt' }]} />
+                                </Table>
+                            </ScrollView>
+                        </View>
                     }
                 </View>
             </SafeAreaView>

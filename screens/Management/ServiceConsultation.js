@@ -53,7 +53,6 @@ export default class ServiceConsultation extends Component {
                     delete obj.descripcion;
                     obj['Costo'] = obj.costo;
                     delete obj.costo;
-                    obj['Kilometraje'] = obj.kilometraje;
                     delete obj.kilometraje;
                     obj['Llantera o taller'] = obj.mecanico;
                     delete obj.mecanico;
@@ -144,9 +143,7 @@ export default class ServiceConsultation extends Component {
                     }
                 </ScrollView>
             </SafeAreaView>
-
         );
-
     }
 }
 

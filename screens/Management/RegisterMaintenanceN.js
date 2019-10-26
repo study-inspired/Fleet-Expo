@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, Picker } from 'react-native';
 import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
@@ -21,7 +21,7 @@ export default class RegisterMaintenance extends Component {
         showDatePicker: false,
         fecha: 'Seleccionar',
         costo: '',
-        motivo: '',
+        motivo: 1,
         llanterataller: '',
         noneumatico: '',
         posicion: '',
@@ -48,7 +48,7 @@ export default class RegisterMaintenance extends Component {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        fecha_servicio: this.state.fecha.split('/').reverse().join('-'),
+                        fecha_servicio: this.state.fecha.replace(/[/]/g, '-'),
                         costo: this.state.costo,
                         num_neumaticos: this.state.noneumatico,
                         motivo: this.state.motivo,
@@ -57,7 +57,7 @@ export default class RegisterMaintenance extends Component {
                         llantera : this.state.llanterataller                                        
                     })
                 });
-
+                
                 const data = await result.json();
                 
                 if (data.msg) {
@@ -195,10 +195,19 @@ export default class RegisterMaintenance extends Component {
 
                         <View style={styles.views}>
                             <Text style={styles.texto}>Motivo</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={text => this.setState({ motivo: text })}
-                            />
+                            <Picker 
+                                selectedValue={this.state.motivo}
+                                style={styles.input} 
+                                onValueChange={
+                                (itemValue) => {
+                                    this.setState({
+                                        motivo: itemValue
+                                    })
+                                }
+                            }>
+                                <Picker.Item label="Pochadura" value={1} />
+                                <Picker.Item label="Desgaste" value={2} />
+                            </Picker>
                         </View>
 
                         <View style={styles.views}>
