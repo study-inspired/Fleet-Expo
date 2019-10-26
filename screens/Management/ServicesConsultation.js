@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl  } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { Button, Icon } from 'react-native-elements'
 
@@ -18,6 +18,7 @@ export default class ServicesConsultation extends Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasInfo: false,
         tableHead: ['Fecha', 'Tipo', ''],
@@ -66,10 +67,29 @@ export default class ServicesConsultation extends Component {
         }
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
+
     render() {
         const { vehicle } = this.state;
         return (
             <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    refreshControl={this._refreshControl()}
+                >
                 <View>
                     <Button
                         type='clear'
@@ -119,6 +139,7 @@ export default class ServicesConsultation extends Component {
                         </View>
                     }
                 </ScrollView>
+               </ScrollView>
             </SafeAreaView>
         );
     }
