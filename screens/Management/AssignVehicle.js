@@ -120,7 +120,7 @@ export default class AssignVehicle extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_id_unidad: unidad,
+                        p_id_unidad: this.state.vehiculo.id,
                         p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0)
                     }),
                 })

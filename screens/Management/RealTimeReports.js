@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
-//import { json } from '../../../../../../AppData/Local/Microsoft/TypeScript/3.6/node_modules/@types/body-parser';
 
 const conductores = [
     {
@@ -89,7 +88,6 @@ export default class RealTimeReports extends React.Component {
                 });
                 this.props.navigation.goBack();
             }
-            
         } catch (error) {
             Alert.alert('Error', 'Ha ocurrido un error.');
             this.props.navigation.goBack();
@@ -134,7 +132,7 @@ export default class RealTimeReports extends React.Component {
                                     <Card key={i}>
                                         <TouchableOpacity 
                                             style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { name: c.nombre }) } >
+                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { name: c.nombre, driver: c }) } >
                                             <View
                                                 style={styles.imagecontainer}>
                                                 <Image
@@ -147,7 +145,7 @@ export default class RealTimeReports extends React.Component {
                                             <View
                                                 style={styles.textoTouchable}>
                                                 <Text style={styles.textoBold}>Ganancia actual</Text>
-                                                <Text style={[styles.textoNormal, { marginBottom: 10, color:'#0e9bcf' }]}>${c.gananciaactual}</Text>
+                                                <Text style={[styles.textoNormal, { marginBottom: 10, color:'#0e9bcf' }]}>$ {(+c.gananciaactual).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} MXN</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

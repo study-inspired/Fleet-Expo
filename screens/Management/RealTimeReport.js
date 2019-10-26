@@ -10,13 +10,12 @@ import {
     Text,
     Image,
     StyleSheet,
-    Dimensions
+    Dimensions,
+    Alert
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
 import { Table, Row, Rows } from 'react-native-table-component';
-
-
 
 export default class RealTimeReport extends React.Component {
     static navigationOptions = {
@@ -32,16 +31,50 @@ export default class RealTimeReport extends React.Component {
     }
 
     state = {
+        isLoading: true,
+        hasInfo: false,
         tableHead: ['TOTAL', 'Efectivo', 'Tarjeta', 'Comisión', 'Ganancia'],
         tableData: [
             ['$3,000.00 MXN', '$2,000.00 MXN','$1,000.00 MXN', '-$300.00 MXN', '$2,700.00 MXN'],
         ],
+        driver: {},
+    }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('', {
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_propietario: this.state.driver.id_usuario // cual id es?
+                })
+            });
+
+            const data = await result.json();
+
+            if (data.datos.length != 0) {
+                this.setState({
+                    hasInfo: true,
+                    tableData: [],
+                    isLoading: false,
+                });
+            } else {
+                Alert.alert('Info', 'No hay datos.');
+                this.props.navigation.goBack();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.');
+            this.props.navigation.goBack();
+        }
     }
 
     render() {
         const conductor = {
             name: this.props.navigation.getParam('name', '?'),
-            avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+            avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
             ganancia: '2,000.00 MXN'
         }
 
