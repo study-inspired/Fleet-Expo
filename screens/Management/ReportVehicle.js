@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, RefreshControl } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { Icon, Button } from 'react-native-elements';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
  */
+
+//Checar _refreshListView()  ya que como no hay fetch en esta parte no se actualizaran las tablas
 
 const viajes = [
     ['Plaza san fernando', 'Central foranea', '23/08/2019'],
@@ -36,13 +38,33 @@ export default class ReportVehicle extends Component {
     }
 
     state = {
+        refreshing: false,
         viajesHead: ['Origen', 'Destino', 'Fecha'],
         alertasHead: ['Alerta', 'Fecha', 'Hora']
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        //this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
+
     render() {
         const vehicle = this.props.navigation.getParam('vehicle', {})
         return (
+            <ScrollView
+                    refreshControl={this._refreshControl()}
+            >
             <View style={{ flex: 1 }}>
                 <View>
                     <Button
@@ -105,6 +127,7 @@ export default class ReportVehicle extends Component {
 
                 </View>
             </View>
+           </ScrollView>
         );
     }
 }

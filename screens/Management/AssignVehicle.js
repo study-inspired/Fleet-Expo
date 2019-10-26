@@ -12,7 +12,8 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    Alert
+    Alert,
+    RefreshControl
 } from 'react-native';
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
@@ -53,6 +54,7 @@ export default class AssignVehicle extends React.Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasVehicles: false,
         vehicles:[],
@@ -145,8 +147,27 @@ export default class AssignVehicle extends React.Component {
         }
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
+
     render() {
         return (
+            <ScrollView
+                    refreshControl={this._refreshControl()}
+            >
             <View style={{ flex: 1 }}>
                 <Overlay
                     overlayStyle={{ width: 350 }}
@@ -295,6 +316,7 @@ export default class AssignVehicle extends React.Component {
                     </View>
                 </ScrollView>
             </View>
+           </ScrollView>
         );
     }
 

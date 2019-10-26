@@ -13,7 +13,8 @@ import {
     Image,
     TouchableOpacity,
     StatusBar,
-    Alert
+    Alert,
+    RefreshControl
 } from 'react-native';
 
 import { Button, colors, Card } from 'react-native-elements'
@@ -87,6 +88,7 @@ export default class VehiclesView extends React.Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasVehicles: false,
         vehicles: {}
@@ -150,9 +152,29 @@ export default class VehiclesView extends React.Component {
         });
         this.componentDidMount();
     }
+
+
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
     
     render() {
         return (
+            <ScrollView
+                    refreshControl={this._refreshControl()}
+            >
             <View style={{ flex: 1 }}>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
@@ -278,6 +300,7 @@ export default class VehiclesView extends React.Component {
                     </View>
                 </ScrollView>
             </View>
+           </ScrollView>
         )
     }
 };
