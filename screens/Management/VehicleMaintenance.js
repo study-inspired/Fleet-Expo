@@ -179,6 +179,7 @@ export default class VehicleMaintenance extends Component {
     const state = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
+       <ScrollView>
         <Overlay
           overlayStyle={{ width: 350 }}
           isVisible={this.state.registroServicio}
@@ -320,6 +321,7 @@ export default class VehicleMaintenance extends Component {
             </TouchableOpacity>
           </View>
         </View>
+       </ScrollView>
       </SafeAreaView>
     );
 
