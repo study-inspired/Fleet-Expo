@@ -45,8 +45,8 @@ export default class ServicesConsultation extends Component {
                     hasInfo: true,
                     tableData: data.datos.map( servicio => {
                         return [
-                            new Date(servicio.fecha_serv).toLocaleDateString(), 
-                            servicio.tipo,
+                            servicio.fecha_serv.slice(0, 10).split('-').reverse().join('/'), 
+                            servicio.tipo.replace('a', 'á'),
                             <TouchableOpacity
                                 onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: this.state.vehicle, id_servicio: servicio.id_servicios, tipo: servicio.tipo })}>
                                 <Icon type='material' name='remove-red-eye' size={18} />

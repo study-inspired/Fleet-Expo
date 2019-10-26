@@ -23,7 +23,9 @@ export default class ServiceConsultation extends Component {
         hasInfo: false,
         widthArr: [150, 150],
         tableData: [],
-        vehicle: this.props.navigation.getParam('vehicle', {})
+        vehicle: this.props.navigation.getParam('vehicle', {}),
+        id_servicio: this.props.navigation.getParam('id_servicio', 0),
+        tipo: this.props.navigation.getParam('tipo', '')
     }
 
     async componentDidMount() {
@@ -35,20 +37,47 @@ export default class ServiceConsultation extends Component {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    p_id_servicios: this.props.navigation.getParam('id_servicios', 0),
-                    tipo: this.props.navigation.getParam('tipo', '')
+                    p_id_servicios: this.state.id_servicio,
+                    p_tipo: this.state.tipo
                 })
             });
 
             const data = await result.json();
             if (data.datos.length != 0) {
                 console.log(data.datos);
-                
+                let obj = data.datos[0];
+                if (this.state.tipo == 'Neumatico') {
+                    obj['Fecha servicio'] = obj.fecha_serv.slice(0, 10).split('-').reverse().join('/');
+                    delete obj.fecha_serv;
+                    obj['Descripción'] = obj.descripcion;
+                    delete obj.descripcion;
+                    obj['Costo'] = obj.costo;
+                    delete obj.costo;
+                    obj['Kilometraje'] = obj.kilometraje;
+                    delete obj.kilometraje;
+                    obj['Llantera o taller'] = obj.mecanico;
+                    delete obj.mecanico;
+                    obj['No. de neumáticos'] = obj.num_neumaticos;
+                    delete obj.num_neumaticos;
+                    obj['Posición'] = obj.posicion_llanta;
+                    delete obj.posicion_llanta;
+                } else {
+                    obj['Fecha servicio'] = obj.fecha_serv.slice(0, 10).split('-').reverse().join('/');
+                    delete obj.fecha_serv;
+                    obj['Descripción'] = obj.descripcion;
+                    delete obj.descripcion;
+                    obj['Costo'] = obj.costo;
+                    delete obj.costo;
+                    obj['Kilometraje'] = obj.kilometraje;
+                    delete obj.kilometraje;
+                    obj['Mecánico'] = obj.mecanico;
+                    delete obj.mecanico;
+                    delete obj.num_neumaticos;
+                    delete obj.posicion_llanta;
+                }
                 this.setState({
                     hasInfo: true,
-                    // tableData: data.datos.map( servicio => {
-                    //     return 
-                    // }),
+                    tableData: Object.entries(obj),
                     isLoading: false
                 });
             } else {
