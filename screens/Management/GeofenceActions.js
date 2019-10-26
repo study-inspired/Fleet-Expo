@@ -11,6 +11,7 @@ import {
     View,
     Text,
     Alert,
+    RefreshControl
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
@@ -54,6 +55,7 @@ export default class GeofenceActions extends React.Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasAlerts: false,
         alerts: [],
@@ -113,8 +115,27 @@ export default class GeofenceActions extends React.Component {
         }
     }
 
+ //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh  
+
     render() {
         return (
+            <ScrollView
+                    refreshControl={this._refreshControl()}
+            >
             <View style={{ flex: 1 }}>
                 <View style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 16 }}>
                     <Button
@@ -180,6 +201,7 @@ export default class GeofenceActions extends React.Component {
                     </View>
                 </ScrollView>
             </View>
+           </ScrollView>
         );
     }
 
