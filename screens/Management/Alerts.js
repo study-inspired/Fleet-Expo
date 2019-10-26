@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator,RefreshControl } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
@@ -13,6 +13,7 @@ export default class Alerts extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            refreshing: false,
             isLoading: true,
             hasAlerts: false,
             tableHead: ['Fecha', 'Hora', 'Concepto de alerta'],
@@ -83,12 +84,30 @@ export default class Alerts extends Component {
         }
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh 
 
     render() {
         const state = this.state;
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
+               <ScrollView
+                    refreshControl={this._refreshControl()}
+               >
                 <View style={{ height: 70, flexDirection: 'row', alignContent: 'center' }}>
                     <Icon type='font-awesome' name="warning" size={52} containerStyle={{ flex: 1, marginTop: 8, alignSelf: 'center' }} />
                     <Button
@@ -131,6 +150,7 @@ export default class Alerts extends Component {
                         </View>
                     }
                 </View>
+              </ScrollView>
             </SafeAreaView>
         );
     }
