@@ -12,7 +12,8 @@ import {
     ScrollView,
     Image,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator.
+    RefreshControl
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
@@ -53,6 +54,7 @@ export default class ReportByDriver extends React.Component {
     }
 
     state = {
+        refreshing: false,
         isLoading: true,
         hasDrivers: false,
         drivers: []
@@ -101,8 +103,27 @@ export default class ReportByDriver extends React.Component {
         }
     }
 
+    //Refresh control  
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
+    }
+    //Termina el refresh
+
     render() {
         return (
+            <ScrollView
+                    refreshControl={this._refreshControl()}
+            >
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
                     <Text style={[styles.textoBold, { marginVertical: 25, marginLeft:16 }]}>Seleccione un conductor a consultar</Text>
@@ -159,6 +180,7 @@ export default class ReportByDriver extends React.Component {
                     </View>
                 </ScrollView>
             </View>
+            </ScrollView>
         )
     }
 }
