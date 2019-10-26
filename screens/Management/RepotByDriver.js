@@ -18,24 +18,6 @@ import {
 
 import { Button, Card, Icon } from 'react-native-elements'
 
-const conductores = [
-    {
-        name: 'Laura Gutierrez',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-    },
-    {
-        name: 'Manuel Leyva',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-    },
-    {
-        name: 'Leonel Ortega',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-    },
-    {
-        name: 'Otro',
-        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg'
-    },
-]
 
 export default class ReportByDriver extends React.Component {
     static navigationOptions = {
