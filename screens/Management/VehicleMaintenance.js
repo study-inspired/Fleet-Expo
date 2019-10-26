@@ -179,7 +179,7 @@ export default class VehicleMaintenance extends Component {
     const state = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
-       <ScrollView>
+       
         <Overlay
           overlayStyle={{ width: 350 }}
           isVisible={this.state.registroServicio}
@@ -218,6 +218,7 @@ export default class VehicleMaintenance extends Component {
             </Card>
           </View>
         </Overlay>
+        <ScrollView>
         <View style={{ flexDirection: 'column' }}>
           <View>
             <Button
@@ -274,7 +275,7 @@ export default class VehicleMaintenance extends Component {
             }
           </View>
 
-          <View style={{ bottom: -25 }}>
+          <View>
             <TouchableOpacity
               onPress={() => this.setState({ registroServicio: true })} >
               <Card
