@@ -35,20 +35,24 @@ export default class ReportDriver extends React.Component {
         isLoading: true,
         hasInfo: false,
         selectedIndex: 0,
-        Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
+        Actual1Head: [],
         Actual1Data: [],
-        Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
+        Actual2Head: [],
         Actual2Data: [],
-        Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
+        Actual3Head: [],
         Actual3Data: [],
-        Actual4Head: ['Viajes', 'Horas operadas'],
+        Actual4Head: [],
         Actual4Data: [],
-        Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
+        Actual5Head: [],
         Actual5Data: [],
         driver: this.props.navigation.getParam('driver', {})
     }
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.reporteActual();
+    }
+
+    async reporteActual() {
         try {
             const result = await fetch('http://34.95.33.177:3006/webservice/interfaz134/reporte_conductor_actual', {
                 method: 'POST',
@@ -67,24 +71,29 @@ export default class ReportDriver extends React.Component {
             if (data.datos.length != 0) {
                 this.setState({
                     hasDrivers: true,
+                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
                     Actual1Data: [
                         data.datos[0].total,
                         data.datos[0].pagosefectivo,
                         data.datos[0].pagostarjeta
                     ],
+                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
                     Actual2Data: [
                         data.datos[0].solatendidas,
                         data.datos[0].solrechazadas,
                         data.datos[0].trecompenzas
                     ],
+                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
                     Actual3Data: [
                         data.datos[0].pagadosconefectivo,
                         data.datos[0].pagadoscontarjeta,
                     ],
+                    Actual4Head: ['Viajes', 'Horas operadas'],
                     Actual4Data: [
                         data.datos[0].viajes,
                         data.datos[0].horasoperadas,
                     ],
+                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
                     Actual5Data: [
                         data.datos[0].comisionplataforma,
                         data.datos[0].gananciafinal,
@@ -102,13 +111,155 @@ export default class ReportDriver extends React.Component {
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.')
             console.error(error);
-            this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 
+    async reporteSemanal() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz134/reporte_conductor_semanal', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_propietario: this.state.driver.id_chofer1
+                }),
+            })
+
+            const data = await result.json();
+            console.log(data);
+
+            if (data.datos.length != 0) {
+                this.setState({
+                    hasDrivers: true,
+                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
+                    Actual1Data: [
+                        data.datos[0].total,
+                        data.datos[0].pagosefectivo,
+                        data.datos[0].pagostarjeta
+                    ],
+                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
+                    Actual2Data: [
+                        data.datos[0].solatendidas,
+                        data.datos[0].solrechazadas,
+                        data.datos[0].trecompenzas
+                    ],
+                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
+                    Actual3Data: [
+                        data.datos[0].pagadosconefectivo,
+                        data.datos[0].pagadoscontarjeta,
+                    ],
+                    Actual4Head: ['Viajes', 'Horas operadas'],
+                    Actual4Data: [
+                        data.datos[0].viajes,
+                        data.datos[0].horasoperadas,
+                    ],
+                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
+                    Actual5Data: [
+                        data.datos[0].comisionplataforma,
+                        data.datos[0].gananciafinal,
+                    ],
+                    isLoading: false
+                });
+
+            } else {
+                Alert.alert('Info', 'No hay datos!');
+                this.setState({
+                    isLoading: false
+                });
+            }
+
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
+            this.setState({
+                isLoading: false
+            });
+        }
+    }
+
+    async reporteMensual() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz134/reporte_conductor_mensual', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_propietario: this.state.driver.id_chofer1
+                }),
+            })
+
+            const data = await result.json();
+            console.log(data);
+
+            if (data.datos.length != 0) {
+                this.setState({
+                    hasDrivers: true,
+                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
+                    Actual1Data: [
+                        data.datos[0].total,
+                        data.datos[0].pagosefectivo,
+                        data.datos[0].pagostarjeta
+                    ],
+                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
+                    Actual2Data: [
+                        data.datos[0].solatendidas,
+                        data.datos[0].solrechazadas,
+                        data.datos[0].trecompenzas
+                    ],
+                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
+                    Actual3Data: [
+                        data.datos[0].pagadosconefectivo,
+                        data.datos[0].pagadoscontarjeta,
+                    ],
+                    Actual4Head: ['Viajes', 'Horas operadas'],
+                    Actual4Data: [
+                        data.datos[0].viajes,
+                        data.datos[0].horasoperadas,
+                    ],
+                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
+                    Actual5Data: [
+                        data.datos[0].comisionplataforma,
+                        data.datos[0].gananciafinal,
+                    ],
+                    isLoading: false
+                });
+
+            } else {
+                Alert.alert('Info', 'No hay datos!');
+                this.setState({
+                    isLoading: false
+                });
+            }
+
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error.')
+            console.error(error);
+            this.setState({
+                isLoading: false
+            });
+        }
+    }
 
     updateIndex(selectedIndex) {
-        this.setState({ selectedIndex })
+        switch (selectedIndex) {
+            case 0:
+                this.reporteActual();
+                break;
+            case 1:
+                this.reporteSemanal();
+                break;
+            default:
+                this.reporteMensual();
+                break;
+        }
+        this.setState({ selectedIndex });
     }
 
     render() {
@@ -169,7 +320,7 @@ export default class ReportDriver extends React.Component {
                         />
                     </View>
                     {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    {!this.state.isLoading && this.state.hasInfo && this.state.selectedIndex==0 &&
+                    {!this.state.isLoading && this.state.hasInfo && 
                         <View>
                             <View style={styles.width40}>
                                 <Table borderStyle={styles.border}>

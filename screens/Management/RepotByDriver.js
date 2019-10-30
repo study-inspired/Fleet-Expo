@@ -12,8 +12,9 @@ import {
     ScrollView,
     Image,
     StyleSheet,
-    ActivityIndicator.
-    RefreshControl
+    ActivityIndicator,
+    RefreshControl,
+    Alert
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
@@ -104,7 +105,7 @@ export default class ReportByDriver extends React.Component {
     render() {
         return (
             <ScrollView
-                    refreshControl={this._refreshControl()}
+                refreshControl={this._refreshControl()}
             >
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>

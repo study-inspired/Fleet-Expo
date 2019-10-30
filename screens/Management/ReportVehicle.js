@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, Image, RefreshControl, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { Icon, Button } from 'react-native-elements';
 
@@ -9,21 +9,21 @@ import { Icon, Button } from 'react-native-elements';
 
 //Checar _refreshListView()  ya que como no hay fetch en esta parte no se actualizaran las tablas
 
-const viajes = [
-    ['Plaza san fernando', 'Central foranea', '23/08/2019'],
-    ['Zentralia', 'Piedra lisa', '28/08/2019'],
-    ['Central forana', 'Plaza country', '02/09/2019'],
-    ['Hotel Maria Isabel', 'Comala', '10/09/2019'],
-    ['Colima centro', 'Placetas', '22/09/2019'],
-]
+// const viajes = [
+//     ['Plaza san fernando', 'Central foranea', '23/08/2019'],
+//     ['Zentralia', 'Piedra lisa', '28/08/2019'],
+//     ['Central forana', 'Plaza country', '02/09/2019'],
+//     ['Hotel Maria Isabel', 'Comala', '10/09/2019'],
+//     ['Colima centro', 'Placetas', '22/09/2019'],
+// ]
 
-const alertas = [
-    ['Salida geocerca', '22/09/2019', '10:00 pm'],
-    ['Conectado', '24/09/2019', '08:00 am'],
-    ['Conectado', '27/09/2019', '11:00 am'],
-    ['Salida geocerca', '30/09/2019', '10:00 am'],
-    ['Entrada geocerca', '04/10/2019', '04:00 pm'],
-]
+// const alertas = [
+//     ['Salida geocerca', '22/09/2019', '10:00 pm'],
+//     ['Conectado', '24/09/2019', '08:00 am'],
+//     ['Conectado', '27/09/2019', '11:00 am'],
+//     ['Salida geocerca', '30/09/2019', '10:00 am'],
+//     ['Entrada geocerca', '04/10/2019', '04:00 pm'],
+// ]
 
 export default class ReportVehicle extends Component {
     static navigationOptions = {
@@ -39,10 +39,92 @@ export default class ReportVehicle extends Component {
 
     state = {
         refreshing: false,
+        isLoading: true,
+        hasAlerts: false,
+        hasTravels: false,
         viajesHead: ['Origen', 'Destino', 'Fecha'],
-        alertasHead: ['Alerta', 'Fecha', 'Hora']
+        viajes: [],
+        alertasHead: ['Alerta', 'Fecha', 'Hora'],
+        alertas: [],
+        vehicle: this.props.navigation.getParam('vehicle', {})
     }
 
+    async componentDidMount() {
+        await this.obtenerViajes();
+        await this.obtenerAlertas();
+        this.setState({
+            isLoading: false
+        });
+    }
+
+    async obtenerViajes() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz151/obtener_viajes', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    key: 'val'
+                })
+            });
+
+            const data = await result.json();
+            console.log(data);
+            if (data.datos.length != 0) {
+                this.setState({
+                    hasTravels: true,
+                    viajes: []
+                });
+            } else {
+                Alert.alert('Info', 'No hay viajes registrados.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error al obtener los viajes.');
+        }
+    }
+
+    async obtenerAlertas() {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_unidad: this.state.vehicle.id
+                }),
+            });
+
+            const data = await result.json();
+
+            if (data.datos.length != 0) {
+                let alerts = Object.values(data.datos).map((d) => {
+                    let date = new Date();
+                    let hm = d.hora.split(':');
+                    date.setHours(hm[0]);
+                    date.setMinutes(hm[1]);
+                    return [
+                        d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                        date.toLocaleTimeString(),
+                        d.concepto_alerta
+                    ]
+                });
+
+                this.setState({
+                    alertas: alerts,
+                    hasAlerts: true,
+                });
+            } else {
+                Alert.alert('Info', 'No hay alertas registradas.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un error al obtener alertas.');
+            console.error(error);
+        }
+    }
     //Refresh control  
     _refreshControl() {
         return (
@@ -60,10 +142,10 @@ export default class ReportVehicle extends Component {
     //Termina el refresh  
 
     render() {
-        const vehicle = this.props.navigation.getParam('vehicle', {})
+        const { vehicle, viajes, viajesHead, alertas, alertasHead } = this.state
         return (
             <ScrollView
-                    refreshControl={this._refreshControl()}
+                refreshControl={this._refreshControl()}
             >
             <View style={{ flex: 1 }}>
                 <View>
@@ -101,7 +183,7 @@ export default class ReportVehicle extends Component {
                     <View style={styles.view1}>
                         <Text style={styles.textoBold}>{vehicle.nombre}</Text>
                         <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={styles.textoNormal}>- {vehicle.placa}</Text>
+                        <Text style={styles.textoNormal}>- {vehicle.placas}</Text>
                     </View>
                 </View>
 
@@ -112,7 +194,7 @@ export default class ReportVehicle extends Component {
                     </View>
 
                     <Table borderStyle={styles.border}>
-                        <Row data={this.state.viajesHead} style={styles.head} textStyle={styles.text} />
+                        <Row data={viajesHead} style={styles.head} textStyle={styles.text} />
                         <Rows data={viajes} textStyle={styles.text} />
                     </Table>
 
@@ -121,7 +203,7 @@ export default class ReportVehicle extends Component {
                         <Text style={styles.titulo}>  Alertas</Text>
                     </View>
                     <Table borderStyle={styles.border}>
-                        <Row data={this.state.alertasHead} style={styles.head} textStyle={styles.text} />
+                        <Row data={alertasHead} style={styles.head} textStyle={styles.text} />
                         <Rows data={alertas} textStyle={styles.text} />
                     </Table>
 
