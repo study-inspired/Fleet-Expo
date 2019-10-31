@@ -99,12 +99,12 @@ export default class AssignVehicle extends React.Component {
                     isLoading: false 
                 });
             } else {
-                alert('Info','No hay vehiculos!');
+                Alert.alert('Info','No hay vehiculos!');
                 this.props.navigation.goBack();
             }
 
         } catch (error) {
-            alert('Error');
+            Alert.alert('Error', 'Hubo un error.');
             console.error(error);
             this.props.navigation.goBack();
         }

@@ -67,11 +67,17 @@ export default class RealTimeReport extends React.Component {
                 });
             } else {
                 Alert.alert('Info', 'No hay datos.');
-                this.props.navigation.goBack();
+                //this.props.navigation.goBack();
+                this.setState({
+                    isLoading: false
+                });
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.');
-            this.props.navigation.goBack();
+            //this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 

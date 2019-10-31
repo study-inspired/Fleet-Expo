@@ -81,12 +81,18 @@ export default class ServiceConsultation extends Component {
                 });
             } else {
                 Alert.alert('Info', 'No hay datos.');
-                this.props.navigation.goBack();
+                //this.props.navigation.goBack();
+                this.setState({
+                    isLoading: false
+                });
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.');
             console.error(error);
-            this.props.navigation.goBack();
+            //this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 

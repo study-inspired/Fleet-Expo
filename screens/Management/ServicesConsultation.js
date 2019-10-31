@@ -46,7 +46,7 @@ export default class ServicesConsultation extends Component {
                     hasInfo: true,
                     tableData: data.datos.map( servicio => {
                         return [
-                            servicio.fecha_serv.slice(0, 10).split('-').reverse().join('/'), 
+                            servicio.fecha_serv.slice(0, 10).split('-').reverse().join('/'),
                             servicio.tipo.replace('a', 'á'),
                             <TouchableOpacity
                                 onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: this.state.vehicle, id_servicio: servicio.id_servicios, tipo: servicio.tipo })}>
@@ -58,16 +58,22 @@ export default class ServicesConsultation extends Component {
                 });
             } else {
                 Alert.alert('Info', 'No hay datos.');
-                this.props.navigation.goBack();
+                // this.props.navigation.goBack();
+                this.setState({
+                    isLoading: false
+                });
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.');
             console.error(error);
-            this.props.navigation.goBack();
+            // this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 
-    //Refresh control  
+    //Refresh control
     _refreshControl() {
         return (
             <RefreshControl
@@ -81,7 +87,7 @@ export default class ServicesConsultation extends Component {
         this.componentDidMount()  //<-- Recargo el refresh control
         this.setState({ refreshing: false }) //Stop Rendering Spinner
     }
-    //Termina el refresh  
+    //Termina el refresh
 
     render() {
         const { vehicle } = this.state;

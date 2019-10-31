@@ -80,7 +80,10 @@ export default class Alerts extends Component {
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.');
             console.error(error);
-            this.props.navigation.goBack();
+            //this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 
@@ -105,9 +108,9 @@ export default class Alerts extends Component {
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
-               <ScrollView
+                <ScrollView
                     refreshControl={this._refreshControl()}
-               >
+                >
                 <View style={{ height: 70, flexDirection: 'row', alignContent: 'center' }}>
                     <Icon type='font-awesome' name="warning" size={52} containerStyle={{ flex: 1, marginTop: 8, alignSelf: 'center' }} />
                     <Button

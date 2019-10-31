@@ -77,7 +77,7 @@ export default class GeofenceActions extends React.Component {
 
             const data = await result.json();
 
-            if (data.datos != 0) {
+            if (data.datos.lengh != 0) {
                 this.setState({
                     hasRecords: true,
                     alerts: data.datos.map((r) => {

@@ -10,7 +10,8 @@ import {
     Text,
     Image,
     StyleSheet,
-    Dimensions
+    Dimensions,
+    ActivityIndicator
 } from 'react-native';
 
 import { Button, Card, ButtonGroup } from 'react-native-elements'

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, RefreshControl, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
-import { Icon, Button } from 'react-native-elements';
+import { Icon, Button, Card } from 'react-native-elements';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
@@ -9,13 +9,13 @@ import { Icon, Button } from 'react-native-elements';
 
 //Checar _refreshListView()  ya que como no hay fetch en esta parte no se actualizaran las tablas
 
-// const viajes = [
-//     ['Plaza san fernando', 'Central foranea', '23/08/2019'],
-//     ['Zentralia', 'Piedra lisa', '28/08/2019'],
-//     ['Central forana', 'Plaza country', '02/09/2019'],
-//     ['Hotel Maria Isabel', 'Comala', '10/09/2019'],
-//     ['Colima centro', 'Placetas', '22/09/2019'],
-// ]
+const viajes_prueba = [
+    {origen: 'Plaza san fernando', destino: 'Central foranea', fecha: '23/08/2019', hora: '16:16:00'},
+    {origen: 'Zentralia', destino: 'Piedra lisa', fecha: '28/08/2019', hora: '12:56:00'},
+    {origen: 'Central forana', destino: 'Plaza country', fecha: '02/09/2019', hora: '14:31:00'},
+    {origen: 'Hotel Maria Isabel', destino: 'Comala', fecha: '10/09/2019', hora: '02:31:00'},
+    {origen: 'Colima centro', destino: 'Placetas', fecha: '22/09/2019', hora: '21:41:00'}
+]
 
 // const alertas = [
 //     ['Salida geocerca', '22/09/2019', '10:00 pm'],
@@ -74,8 +74,8 @@ export default class ReportVehicle extends Component {
             console.log(data);
             if (data.datos.length != 0) {
                 this.setState({
-                    hasTravels: true,
-                    viajes: []
+                    viajes: [],
+                    hasTravels: true
                 });
             } else {
                 Alert.alert('Info', 'No hay viajes registrados.');
@@ -115,7 +115,7 @@ export default class ReportVehicle extends Component {
 
                 this.setState({
                     alertas: alerts,
-                    hasAlerts: true,
+                    hasAlerts: true
                 });
             } else {
                 Alert.alert('Info', 'No hay alertas registradas.');
@@ -186,27 +186,49 @@ export default class ReportVehicle extends Component {
                         <Text style={styles.textoNormal}>- {vehicle.placas}</Text>
                     </View>
                 </View>
-
+                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                 <View style={{ margin: 4 }} >
                     <View style={styles.view1}>
                         <Icon type='ionicon' name='ios-send' size={16} />
                         <Text style={styles.titulo}>  Viajes</Text>
                     </View>
 
-                    <Table borderStyle={styles.border}>
-                        <Row data={viajesHead} style={styles.head} textStyle={styles.text} />
-                        <Rows data={viajes} textStyle={styles.text} />
-                    </Table>
+                    {/* {
+                        viajes_prueba.map(viaje => {
+                            <Card
+                                wrapperStyle={{flexDirection: 'column'}}
+                            >
+                                <View style={{flexDirection: 'row'}}>
+                                    <Text>{viaje.fecha}</Text>
+                                    <Text>{viaje.hora}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Text>{viaje.origen}</Text>
+                                    <Text>{viaje.destino}</Text>
+                                </View>
+                            </Card>
+                        })
+                    } */}
+                    {
+                        !this.state.isLoading && this.state.hasTravels &&
+                        <Table borderStyle={styles.border}>
+                            <Row data={viajesHead} style={styles.head} textStyle={styles.text} />
+                            <Rows data={viajes} textStyle={styles.text} />
+                        </Table>
+                    }
 
                     <View style={styles.view1}>
                         <Icon type='material-community' name='alert' size={16} />
                         <Text style={styles.titulo}>  Alertas</Text>
                     </View>
-                    <Table borderStyle={styles.border}>
-                        <Row data={alertasHead} style={styles.head} textStyle={styles.text} />
-                        <Rows data={alertas} textStyle={styles.text} />
-                    </Table>
 
+                    {
+                        !this.state.isLoading && this.state.hasAlerts &&
+                        <Table borderStyle={styles.border}>
+                            <Row data={alertasHead} style={styles.head} textStyle={styles.text} />
+                            <Rows data={alertas} textStyle={styles.text} />
+                        </Table>
+                    }
                 </View>
             </View>
            </ScrollView>

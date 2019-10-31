@@ -82,7 +82,10 @@ export default class ReportByDriver extends React.Component {
         } catch (error) {
             Alert.alert('Error', 'Hubo un error.')
             console.error(error);
-            this.props.navigation.goBack();
+            // this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 

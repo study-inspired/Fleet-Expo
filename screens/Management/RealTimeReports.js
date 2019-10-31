@@ -86,11 +86,17 @@ export default class RealTimeReports extends React.Component {
                 this.setState({
                     isLoading: false
                 });
-                this.props.navigation.goBack();
+                //this.props.navigation.goBack();
+                this.setState({
+                    isLoading: false
+                });
             }
         } catch (error) {
             Alert.alert('Error', 'Ha ocurrido un error.');
-            this.props.navigation.goBack();
+            //this.props.navigation.goBack();
+            this.setState({
+                isLoading: false
+            });
         }
     }
 

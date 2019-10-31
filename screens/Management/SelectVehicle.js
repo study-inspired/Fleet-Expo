@@ -11,7 +11,8 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
@@ -97,12 +98,12 @@ export default class SelectVehicle extends React.Component {
                     isLoading: false 
                 });
             } else {
-                alert('Info','No hay vehiculos!');
+                Alert.alert('Info','No hay vehiculos!');
                 this.props.navigation.goBack();
             }
 
         } catch (error) {
-            alert('Error');
+            Alert.alert('Error', 'Ha ocurrido un error.');
             console.error(error);
             this.props.navigation.goBack();
         }

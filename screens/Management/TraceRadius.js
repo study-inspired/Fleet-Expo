@@ -3,6 +3,7 @@ import {
     StyleSheet,
     View,
     Text,
+    Alert
 } from 'react-native';
 import { Button, Slider, Overlay, Icon, Input } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';

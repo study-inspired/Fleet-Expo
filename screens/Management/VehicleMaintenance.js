@@ -171,7 +171,10 @@ export default class VehicleMaintenance extends Component {
     } catch (error) {
       Alert.alert('Error', 'Ha ocurrido un error.');
       console.error(error);
-      this.props.navigation.goBack();
+      // this.props.navigation.goBack();
+      this.setState({
+        isLoading: false
+    });
     }
   }
 
