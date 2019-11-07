@@ -68,6 +68,7 @@ export default class TraceRadius extends React.Component {
                     isVisible={this.state.setNombre}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({setNombre: false, nombre: ''})}
                 >
                     <View>
                         <View>
@@ -99,6 +100,7 @@ export default class TraceRadius extends React.Component {
                     isVisible={this.state.registrado}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({setNombre: false, registrado: false, nombre: ''})}
                 >
                     <View>
                         <View>

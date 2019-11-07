@@ -120,6 +120,7 @@ export default class AddDriver extends React.Component {
                     isVisible={this.state.verConductor}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({verConductor: false})}
                 >
                     <View style={{  flexDirection: 'row'}}>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
@@ -145,7 +146,6 @@ export default class AddDriver extends React.Component {
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
                                 titleStyle={{fontFamily: 'aller-lt'}}
                                 onPress={() => { this.invitarConductor() }}
-                                
                             />
                         </View>
                     </View>
@@ -155,6 +155,7 @@ export default class AddDriver extends React.Component {
                     isVisible={this.state.invitacionEnviada}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({verConductor: false, invitacionEnviada})}
                 >
                     <View>
                         <View style={{ justifyContent: 'center' }}>
