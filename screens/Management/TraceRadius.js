@@ -30,7 +30,7 @@ export default class TraceRadius extends React.Component {
     }
 
     async registerRadius() {
-        if (this.state.nombre = ! '') {
+        if (this.state.nombre.length =! 0) {
             try {
                 const result = await fetch('http://34.95.33.177:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
@@ -68,9 +68,23 @@ export default class TraceRadius extends React.Component {
                     isVisible={this.state.setNombre}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({setNombre: false, nombre: ''})}
                 >
                     <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ setNombre: false, nombre: '' })}
+                        />
                         <View>
                             <View style={{ alignItems: 'center', marginVertical: 25 }}>
                                 <Icon
@@ -100,9 +114,23 @@ export default class TraceRadius extends React.Component {
                     isVisible={this.state.registrado}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({setNombre: false, registrado: false, nombre: ''})}
                 >
                     <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ setNombre: false, registrado: false, nombre: '' })}
+                        />
                         <View>
                             <View style={{ justifyContent: 'center' }}>
                                 <Icon

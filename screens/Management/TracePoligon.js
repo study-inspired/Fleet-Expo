@@ -42,8 +42,8 @@ export default class TracePoligon extends React.Component {
         this.setState({ markers: newMarkers })
     }
 
-    async registerPolygon(){
-        if (this.state.nombre =! '') {
+    async registerPolygon() {
+        if (this.state.nombre.length != 0) {
             try {
                 const result = await fetch('http://34.95.33.177:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
@@ -57,10 +57,10 @@ export default class TracePoligon extends React.Component {
                 if (data) {
                     if (datos.msg) {
                         Alert.alert('Hubo un error', datos.msg);
-                    } else if (datos.datos){
-                        this.setState({ 
-                            setNombre: false, 
-                            registrado: true 
+                    } else if (datos.datos) {
+                        this.setState({
+                            setNombre: false,
+                            registrado: true
                         })
                     }
                 }
@@ -80,10 +80,23 @@ export default class TracePoligon extends React.Component {
                     isVisible={this.state.setNombre}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({setNombre: false, nombre: ''})}
                 >
                     <View>
-                    <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ setNombre: false, nombre: '' })}
+                        />
                         <View style={{ alignItems: 'center', marginVertical: 25 }}>
                             <Icon
                                 type='material-community'
@@ -92,19 +105,18 @@ export default class TracePoligon extends React.Component {
                             />
                         </View>
                         <View>
-                            <Input 
-                                label='Nombre de la geocerca trazada:' 
-                                labelStyle={{fontFamily: 'aller-lt'}} 
+                            <Input
+                                label='Nombre de la geocerca trazada:'
+                                labelStyle={{ fontFamily: 'aller-lt' }}
                                 onChangeText={text => this.setState({ nombre: text })}
                             />
                             <Button
                                 title='Siguiente'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                titleStyle={{fontFamily: 'aller-lt'}}
-                                onPress={ this.registerPolygon.bind(this) }
+                                titleStyle={{ fontFamily: 'aller-lt' }}
+                                onPress={this.registerPolygon.bind(this)}
                             />
                         </View>
-                    </View>
                     </View>
                 </Overlay>
                 <Overlay
@@ -112,10 +124,23 @@ export default class TracePoligon extends React.Component {
                     isVisible={this.state.registrado}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({setNombre: false, registrado: false, nombre: ''})}
                 >
                     <View>
-                    <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ setNombre: false, registrado: false, nombre: '' })}
+                        />
                         <View style={{ justifyContent: 'center' }}>
                             <Icon
                                 name='check-circle'
@@ -130,11 +155,10 @@ export default class TracePoligon extends React.Component {
                             <Button
                                 title='Siguiente'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                titleStyle={{fontFamily: 'aller-lt'}}
+                                titleStyle={{ fontFamily: 'aller-lt' }}
                                 onPress={() => { this.setState({ registrado: false }); this.props.navigation.pop(2) }}
                             />
                         </View>
-                    </View>
                     </View>
                 </Overlay>
                 <View style={{ height: 110, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -199,14 +223,14 @@ export default class TracePoligon extends React.Component {
                         title='Registrar geocerca'
                         icon={{ name: 'check-circle', color: 'white' }}
                         buttonStyle={{ marginHorizontal: 15, marginVertical: 5, backgroundColor: '#ff8834' }}
-                        titleStyle={{fontFamily: 'aller-lt'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => this.setState({ setNombre: true })}
                     />
                     <Button
                         title='Volver a trazar'
                         icon={{ name: 'replay', color: 'white' }}
                         buttonStyle={{ marginHorizontal: 15, marginVertical: 5, backgroundColor: '#ff8834' }}
-                        titleStyle={{fontFamily: 'aller-lt'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => this.setState({ markers: [] })}
                     />
                 </View>

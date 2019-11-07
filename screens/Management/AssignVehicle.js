@@ -166,7 +166,7 @@ export default class AssignVehicle extends React.Component {
     render() {
         return (
             <ScrollView
-                    refreshControl={this._refreshControl()}
+                refreshControl={this._refreshControl()}
             >
             <View style={{ flex: 1 }}>
                 <Overlay
@@ -176,6 +176,21 @@ export default class AssignVehicle extends React.Component {
                     height="auto"
                 >
                     <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ vehiculo: {}, seleccionado: false, entrada: false, salida: false })}
+                        />
                         <View style={{ alignItems: 'center' }}>
                             <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Has seleccionado el vehículo:</Text>
                             <View style={{ flexDirection: 'row' }}>
@@ -226,6 +241,21 @@ export default class AssignVehicle extends React.Component {
                     height="auto"
                 >
                     <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ vehiculo: {}, seleccionado: false, asignacionRealizada: false, entrada: false, salida: false })}
+                        />
                         <View style={{ justifyContent: 'center' }}>
                             <Icon
                                 name='check-circle'

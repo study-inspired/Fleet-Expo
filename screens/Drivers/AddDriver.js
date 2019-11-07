@@ -19,7 +19,7 @@ export default class AddDriver extends React.Component {
         headerTitleStyle: {
             fontFamily: 'aller-bd',
             textAlign: "center",
-            flex: 1 
+            flex: 1
         },
         headerRight: <Button
             type='clear'
@@ -33,9 +33,9 @@ export default class AddDriver extends React.Component {
     state = {
         value: 0,
         telefono: '',
-        conductor:{
-            nombre:'', 
-            num_telefono:''
+        conductor: {
+            nombre: '',
+            num_telefono: ''
         },
         verConductor: false,
         invitacionEnviada: false,
@@ -47,7 +47,7 @@ export default class AddDriver extends React.Component {
     }
 
     async obtenerConductor() {
-        if (this.state.telefono != ''){
+        if (this.state.telefono != '') {
             const result = await fetch('http://34.95.33.177:3006/webservice/interfaz54/obtener_conductor', {
                 method: 'POST',
                 headers: {
@@ -57,15 +57,15 @@ export default class AddDriver extends React.Component {
                     telefono: `"${this.state.telefono}"`
                 })
             });
-    
+
             const datos = await result.json();
-    
+
             if (datos.datos.length == 0) {
                 console.log('no hay datos');
-                this.setState({  
-                    mensaje: 'No hay conductor asociado al teléfono proporcionado', 
-                    verConductor: false, 
-                    invitacionEnviada: true 
+                this.setState({
+                    mensaje: 'No hay conductor asociado al teléfono proporcionado',
+                    verConductor: false,
+                    invitacionEnviada: true
                 });
             } else {
                 this.setState({
@@ -74,20 +74,20 @@ export default class AddDriver extends React.Component {
                         num_telefono: datos.datos[0].num_telefono
                     }
                 });
-        
+
                 console.log(this.state.conductor);
-        
+
                 this.setState({ verConductor: true })
             }
         } else {
-            this.setState({  
-                mensaje: 'Escribe el número de teléfono', 
-                invitacionEnviada: true 
+            this.setState({
+                mensaje: 'Escribe el número de teléfono',
+                invitacionEnviada: true
             });
         }
     }
 
-    async invitarConductor(){
+    async invitarConductor() {
         const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
             method: 'POST',
             headers: {
@@ -101,12 +101,12 @@ export default class AddDriver extends React.Component {
         const datos = await result.json();
 
         console.log(datos.datos[0]);
-        
+
 
         if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
-           this.setState({  mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
+            this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
         } else {
-            this.setState({  mensaje: 'Error al enviar la invitación al conductor' });
+            this.setState({ mensaje: 'Error al enviar la invitación al conductor' });
         }
 
         this.setState({ verConductor: false, invitacionEnviada: true });
@@ -120,9 +120,8 @@ export default class AddDriver extends React.Component {
                     isVisible={this.state.verConductor}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({verConductor: false})}
                 >
-                    <View style={{  flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
                             <Image
                                 style={{
@@ -144,7 +143,7 @@ export default class AddDriver extends React.Component {
                             <Button
                                 title='Invitar'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                titleStyle={{fontFamily: 'aller-lt'}}
+                                titleStyle={{ fontFamily: 'aller-lt' }}
                                 onPress={() => { this.invitarConductor() }}
                             />
                         </View>
@@ -155,9 +154,23 @@ export default class AddDriver extends React.Component {
                     isVisible={this.state.invitacionEnviada}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
-                    onBackdropPress={() => this.setState({verConductor: false, invitacionEnviada})}
                 >
                     <View>
+                        <Button
+                            type='clear'
+                            icon={{
+                                type: 'material-community',
+                                name: 'window-close',
+                                size: 24,
+                                color: '#000'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0
+                            }}
+                            onPress={() => this.setState({ verConductor: false, invitacionEnviada })}
+                        />
                         <View style={{ justifyContent: 'center' }}>
                             {
                                 this.state.mensaje == 'La invitación ha sido enviada, espera la respuesta del conductor' &&
@@ -183,7 +196,7 @@ export default class AddDriver extends React.Component {
                             <Button
                                 title='OK'
                                 buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                titleStyle={{fontFamily: 'aller-lt'}}
+                                titleStyle={{ fontFamily: 'aller-lt' }}
                                 onPress={() => { this.setState({ invitacionEnviada: false }) }}
                             />
                         </View>
@@ -197,17 +210,17 @@ export default class AddDriver extends React.Component {
                             inputContainerStyle={{ height: 32, flex: 1 }}
                             inputStyle={{ bottom: -2, fontSize: 15 }}
                             containerStyle={{ flexDirection: 'row', alignItems: 'center', width: 260, left: -10 }}
-                            onChangeText={(value) => this.setState({telefono: value})}
+                            onChangeText={(value) => this.setState({ telefono: value })}
                         />
                     </View>
                     <Button
                         title='Ver'
                         buttonStyle={{ height: 32, width: 75, backgroundColor: '#ff8834' }}
-                        titleStyle={{fontFamily: 'aller-lt'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => { this.obtenerConductor(); }}
                     />
                 </View>
-                <Text style={{fontFamily: 'aller-lt', fontSize: 16}}>Selecciona un conductor</Text>
+                <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }}>Selecciona un conductor</Text>
                 <MapView
                     provider={PROVIDER_GOOGLE}
                     initialRegion={{
@@ -218,7 +231,7 @@ export default class AddDriver extends React.Component {
                     }}
                     style={{ flex: 10, justifyContent: 'center', alignItems: 'center' }}
                 />
-                <Text style={{fontFamily: 'aller-lt', fontSize: 16}} >Radio de visualización</Text>
+                <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }} >Radio de visualización</Text>
                 <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
                     <Slider
                         value={this.state.value}
