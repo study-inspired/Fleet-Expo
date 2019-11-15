@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
+import NetInfo from '@react-native-community/netinfo'
 
 const vehiculos = [
     {
@@ -77,80 +78,90 @@ export default class LinkVehicle extends React.Component {
     }
     state = {
         isLoading: true,
-        hasVehicles: false, 
+        hasVehicles: false,
         vehicles: {},
     }
 
     async componentDidMount() {
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_correo: 'carloslarios.159@gmail.com',
-                    p_pass: '123456',
-                }),
-            })
-            
-            const data = await result.json();
-            console.log(data);
-            
-            if (data.datos.length != 0) {
-                let vehicles = data.datos.map((v)=>{
-                    return {
-                        id: v.id_unidad, 
-                        nombre: `${v.marca} ${v.modelo}`,
-                        placas: v.placas,
-                        color: v.color.includes('#')?v.color:'#a8a8a8',
-                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto
-                    }
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_correo: 'carloslarios.159@gmail.com',
+                        p_pass: '123456',
+                    }),
                 })
-                this.setState({
-                    hasVehicles: true,
-                    vehicles: vehicles, 
-                    isLoading: false 
-                });
-            } else {
-                alert('Info','No hay vehiculos!');
-                this.props.navigation.goBack();
-            }
 
-        } catch (error) {
-            alert('Error');
-            console.error(error);
+                const data = await result.json();
+                console.log(data);
+
+                if (data.datos.length != 0) {
+                    let vehicles = data.datos.map((v) => {
+                        return {
+                            id: v.id_unidad,
+                            nombre: `${v.marca} ${v.modelo}`,
+                            placas: v.placas,
+                            color: v.color.includes('#') ? v.color : '#a8a8a8',
+                            imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
+                        }
+                    })
+                    this.setState({
+                        hasVehicles: true,
+                        vehicles: vehicles,
+                        isLoading: false
+                    });
+                } else {
+                    alert('Info', 'No hay vehiculos!');
+                    this.props.navigation.goBack();
+                }
+
+            } catch (error) {
+                alert('Error');
+                console.error(error);
+            }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 
     async vincularVehiculo(unidad) {
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz57/vincular_vehiculo', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_id_unidad: unidad,
-                    p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
-                    p_id_chofer1: this.props.navigation.getParam('id_chofer', 0)
-                }),
-            })
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz57/vincular_vehiculo', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_id_unidad: unidad,
+                        p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
+                        p_id_chofer1: this.props.navigation.getParam('id_chofer', 0)
+                    }),
+                })
 
-            const datos = await result.json();
-            if (datos) {
-                if (datos.msg) {
-                    Alert.alert('Hubo un error', datos.msg);
-                } else if (datos.datos){
-                    Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
+                const datos = await result.json();
+                if (datos) {
+                    if (datos.msg) {
+                        Alert.alert('Hubo un error', datos.msg);
+                    } else if (datos.datos) {
+                        Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
+                    }
+                    this.props.navigation.goBack();
                 }
-                this.props.navigation.goBack();
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.')
+                console.error(error);
             }
-        } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
-            console.error(error);
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 
@@ -187,7 +198,7 @@ export default class LinkVehicle extends React.Component {
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                     <View style={{ marginBottom: 15 }}>
-                        {   !this.state.isLoading && this.state.hasVehicles &&
+                        {!this.state.isLoading && this.state.hasVehicles &&
                             this.state.vehicles.map((v) => {
                                 return (
                                     <Card key={v.id}>
@@ -214,7 +225,7 @@ export default class LinkVehicle extends React.Component {
                                                     alignItems: 'center'
                                                 }}>
                                                 <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={[styles.texto700, {marginTop: 6}]}>{v.nombre}</Text>
+                                                    <Text style={[styles.texto700, { marginTop: 6 }]}>{v.nombre}</Text>
                                                     <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                 </View>
                                                 <Text style={[styles.texto600, { fontSize: 12 }]}>{v.placas}</Text>

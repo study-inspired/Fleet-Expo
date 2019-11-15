@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Picker, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Picker, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Input, Button, Overlay } from 'react-native-elements';
 import { FontAwesome } from "@expo/vector-icons";
 import ColorPalette from 'react-native-color-palette'
+import NetInfo from '@react-native-community/netinfo'
 
 const colores = [
     '#000000', '#5F5F5F', '#8A8A8A', '#A8A8A8', '#FAFAFA', 
@@ -40,11 +41,39 @@ export default class AddVehicle extends React.Component {
         kilometraje: '',
         placa: '',
         serie: '',
-        tipo_vehiculo: '',
         color: '#000',
         tipo_vehiculo: '',
         selectColor: false,
     }
+
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+            this.props.navigation.goBack();
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    async enviarDatos() {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            if (
+                this.state.modelo != '' && 
+                this.state.marca != '' && 
+                this.state.kilometraje != '' && 
+                this.state.placa != '' &&
+                this.state.serie != '' && 
+                this.state.tipo_vehiculo != ''
+            ) {
+                this.props.navigation.navigate('DataSent');
+            } else {
+                Alert.alert('Atención', 'Debes llenar todos los campos antes de continuar.');
+            }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -107,14 +136,24 @@ export default class AddVehicle extends React.Component {
                     <View style={{ marginHorizontal: 15 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input id='modelo' title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}/>
-                                <Input id='marca' title="Marca" placeholder="Marca"  inputStyle={styles.textoRegular16}/>
-                                <Input id='kilometraje' title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}/>
-                                <Input id='placa' title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}/>
+                                <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16} 
+                                    onChangeText={text => this.setState({modelo: text})}
+                                />
+                                <Input title="Marca" placeholder="Marca"  inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({marca: text})}
+                                />
+                                <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({kilometraje: text})}
+                                />
+                                <Input title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({placa: text})}
+                                />
 
                             </View>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input id='niv_o_serie' title="Niv o Serie" placeholder="Niv o Serie" inputStyle={styles.textoRegular16} />
+                                <Input title="Niv o Serie" placeholder="Niv o Serie" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({serie: text})}
+                                />
                             </View>
                         </View>
                         <View style={{ marginHorizontal: 10 }}>
@@ -192,7 +231,7 @@ export default class AddVehicle extends React.Component {
                                 title='Siguiente'
                                 buttonStyle={{backgroundColor: '#ff8834', marginVertical: 20 }}
                                 titleStyle={{fontFamily: 'aller-lt'}}  
-                                onPress={() => { this.props.navigation.navigate('DataSent') }}
+                                onPress={() => { this.enviarDatos() }}
                             />
                         </View>
                     </View>

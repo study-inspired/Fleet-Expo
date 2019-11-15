@@ -3,18 +3,24 @@ import {
     StyleSheet,
     View,
     Text,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { Button, Slider, Overlay, Icon, Input } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
+import NetInfo from '@react-native-community/netinfo'
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 export default class TraceRadius extends React.Component {
     state = {
+        isLoading: true,
         setNombre: false,
         registrado: false,
         nombre: '',
+        location: null,
         LatLng: null,
-        radio: 1000,
+        radio: 5000,
     }
 
     static navigationOptions = {
@@ -29,8 +35,31 @@ export default class TraceRadius extends React.Component {
         headerRight: <View></View>
     }
 
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        } else {
+            let { status } = await Permissions.askAsync(Permissions.LOCATION);
+            if (status !== 'granted') {
+                Alert.alert('Atención', 'Es necesario acceder a la ubicación del dispositivo.')
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+
+            this.setState({
+                location: location.coords,
+                LatLng: {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                },
+                isLoading: false
+            });
+        }
+    }
+
     async registerRadius() {
-        if (this.state.nombre.length =! 0) {
+        if (this.state.nombre.length = !0) {
             try {
                 const result = await fetch('http://34.95.33.177:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
@@ -180,36 +209,40 @@ export default class TraceRadius extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={{
-                        latitude: 19.245455,
-                        longitude: -103.722538,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                    style={styles.mapView}
-                    onPress={e => this.setState({ LatLng: e.nativeEvent.coordinate })}
-                >
-                    {
-                        this.state.LatLng &&
-                        <MapView.Marker
-                            coordinate={this.state.LatLng}
-                            title='Centro'
-                        />
+                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                {
+                    !this.state.isLoading &&
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                            latitude: this.state.location.latitude,
+                            longitude: this.state.location.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                        style={styles.mapView}
+                        onPress={e => this.setState({ LatLng: e.nativeEvent.coordinate })}
+                    >
+                        {
+                            this.state.LatLng &&
+                            <MapView.Marker
+                                coordinate={this.state.LatLng}
+                                title='Centro'
+                            />
 
-                    }
+                        }
 
-                    {
-                        this.state.LatLng &&
-                        <Circle
-                            center={this.state.LatLng}
-                            radius={this.state.radio}
-                            strokeWidth={2}
-                        />
-                    }
+                        {
+                            this.state.LatLng &&
+                            <Circle
+                                center={this.state.LatLng}
+                                radius={this.state.radio}
+                                strokeWidth={2}
+                            />
+                        }
+                    </MapView>
+                }
 
-                </MapView>
                 <View style={{ felx: 1, bottom: 10 }}>
                     <Slider
                         value={this.state.radio}

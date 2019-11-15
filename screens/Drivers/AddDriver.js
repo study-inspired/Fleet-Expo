@@ -8,10 +8,15 @@ import {
     Image,
     View,
     Text,
+    Alert,
+    ActivityIndicator,
 } from 'react-native';
 
 import { Button, Input, Slider, Overlay, Icon } from 'react-native-elements'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
+import NetInfo from '@react-native-community/netinfo'
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 export default class AddDriver extends React.Component {
     static navigationOptions = {
@@ -31,7 +36,7 @@ export default class AddDriver extends React.Component {
         />,
     }
     state = {
-        value: 0,
+        isLoading: true,
         telefono: '',
         conductor: {
             nombre: '',
@@ -40,44 +45,77 @@ export default class AddDriver extends React.Component {
         verConductor: false,
         invitacionEnviada: false,
         mensaje: '',
+        location: null,
+        marker: {},
+        radio: 5000
     }
+
     onPress(nombre) {
         this.setState({ selected: nombre })
         alert(nombre)
     }
 
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        } else {
+            let { status } = await Permissions.askAsync(Permissions.LOCATION);
+            if (status !== 'granted') {
+                Alert.alert('Atención', 'Es necesario acceder a la ubicación del dispositivo.')
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            console.log(location);
+
+            this.setState({
+                location: location.coords,
+                marker: {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                },
+                isLoading: false
+            });
+        }
+    }
+
     async obtenerConductor() {
         if (this.state.telefono != '') {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz54/obtener_conductor', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    telefono: `"${this.state.telefono}"`
-                })
-            });
-
-            const datos = await result.json();
-
-            if (datos.datos.length == 0) {
-                console.log('no hay datos');
-                this.setState({
-                    mensaje: 'No hay conductor asociado al teléfono proporcionado',
-                    verConductor: false,
-                    invitacionEnviada: true
+            const state = await NetInfo.fetch();
+            if (state.isConnected) {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz54/obtener_conductor', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        telefono: `"${this.state.telefono}"`
+                    })
                 });
+
+                const datos = await result.json();
+
+                if (datos.datos.length == 0) {
+                    console.log('no hay datos');
+                    this.setState({
+                        mensaje: 'No hay conductor asociado al teléfono proporcionado',
+                        verConductor: false,
+                        invitacionEnviada: true
+                    });
+                } else {
+                    this.setState({
+                        conductor: {
+                            nombre: datos.datos[0].nombre,
+                            num_telefono: datos.datos[0].num_telefono
+                        }
+                    });
+
+                    console.log(this.state.conductor);
+
+                    this.setState({ verConductor: true })
+                }
             } else {
-                this.setState({
-                    conductor: {
-                        nombre: datos.datos[0].nombre,
-                        num_telefono: datos.datos[0].num_telefono
-                    }
-                });
-
-                console.log(this.state.conductor);
-
-                this.setState({ verConductor: true })
+                Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
             }
         } else {
             this.setState({
@@ -88,28 +126,33 @@ export default class AddDriver extends React.Component {
     }
 
     async invitarConductor() {
-        const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id_operador: 1
-            })
-        });
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_operador: 1
+                })
+            });
 
-        const datos = await result.json();
+            const datos = await result.json();
 
-        console.log(datos.datos[0]);
+            console.log(datos.datos[0]);
 
 
-        if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
-            this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
+            if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
+                this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
+            } else {
+                this.setState({ mensaje: 'Error al enviar la invitación al conductor' });
+            }
+
+            this.setState({ verConductor: false, invitacionEnviada: true });
         } else {
-            this.setState({ mensaje: 'Error al enviar la invitación al conductor' });
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
-
-        this.setState({ verConductor: false, invitacionEnviada: true });
     }
 
     render() {
@@ -221,21 +264,42 @@ export default class AddDriver extends React.Component {
                     />
                 </View>
                 <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }}>Selecciona un conductor</Text>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={{
-                        latitude: 19.245455,
-                        longitude: -103.722538,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                    style={{ flex: 10, justifyContent: 'center', alignItems: 'center' }}
-                />
-                <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }} >Radio de visualización</Text>
+                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                {!this.state.isLoading &&
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                            latitude: this.state.location.latitude,
+                            longitude: this.state.location.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                        style={{ flex: 10, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={e => this.setState({ marker: e.nativeEvent.coordinate })}
+                    >
+                        <MapView.Marker
+                            coordinate={this.state.marker}
+                        />
+
+                        <Circle
+                            center={this.state.marker}
+                            radius={this.state.radio}
+                            strokeWidth={2}
+                        />
+                    </MapView>
+                }
+                <Text style={{ fontFamily: 'aller-lt', fontSize: 16, marginBottom: 5 }} >Radio de visualización</Text>
                 <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
+                    <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                        <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >5 Km</Text>
+                        <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >10 Km</Text>
+                        <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >20 Km</Text>
+                    </View>
                     <Slider
-                        value={this.state.value}
-                        onValueChange={value => this.setState({ value })}
+                        value={this.state.radio}
+                        onValueChange={radio => this.setState({ radio })}
+                        minimumValue={5000}
+                        maximumValue={20000}
                     />
                 </View>
             </View>

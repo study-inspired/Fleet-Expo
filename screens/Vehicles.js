@@ -19,57 +19,7 @@ import {
 
 import { Button, colors, Card } from 'react-native-elements'
 import { FontAwesome } from "@expo/vector-icons";
-
-const vehiculos = [
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6462J',
-        vigencia: '25/01/2021',
-        color: '#e0e0e0',
-        problema: false
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684D',
-        vigencia: '25/01/2021',
-        color: '#ffffff',
-        problema: false
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4518V',
-        vigencia: '25/01/2021',
-        color: '#4287f5',
-        problema: true
-    },
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6472J',
-        vigencia: '25/01/2021',
-        color: '#948d8d',
-        problema: true
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684E',
-        vigencia: '25/01/2021',
-        color: '#ffffff',
-        problema: false
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4562R',
-        vigencia: '25/01/2021',
-        color: '#c72020',
-        problema: false
-    },
-]
+import NetInfo from '@react-native-community/netinfo'
 
 export default class VehiclesView extends React.Component {
     static navigationOptions = {
@@ -95,64 +45,68 @@ export default class VehiclesView extends React.Component {
     }
 
     async componentDidMount() {
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_correo: 'carloslarios.159@gmail.com',
-                    p_pass: '123456',
-                }),
-            })
-            
-            const data = await result.json();
-            console.log(data);
-            
-            if (data.datos.length != 0) {
-                let vehicles = data.datos.map((v)=>{
-                    return {
-                        id: v.id_unidad, 
-                        nombre: `${v.marca} ${v.modelo}`,
-                        placas: v.placas,
-                        color: v.color.includes('#')?v.color:'#a8a8a8',
-                        imagen: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',//v.foto
-                        vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
-                        problema: v.estado == 0
-                    }
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_correo: 'carloslarios.159@gmail.com',
+                        p_pass: '123456',
+                    }),
                 })
+
+                const data = await result.json();
+                console.log(data);
+
+                if (data.datos.length != 0) {
+                    let vehicles = data.datos.map((v) => {
+                        return {
+                            id: v.id_unidad,
+                            nombre: `${v.marca} ${v.modelo}`,
+                            placas: v.placas,
+                            color: v.color.includes('#') ? v.color : '#a8a8a8',
+                            imagen: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',//v.foto
+                            vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
+                            problema: v.estado == 0
+                        }
+                    })
+                    this.setState({
+                        hasVehicles: true,
+                        vehicles: vehicles,
+                        isLoading: false
+                    });
+                } else {
+                    Alert.alert('Info', 'No hay vehiculos!');
+                    this.setState({
+                        isLoading: false
+                    });
+                }
+
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.');
                 this.setState({
-                    hasVehicles: true,
-                    vehicles: vehicles, 
-                    isLoading: false 
+                    isLoading: false
                 });
-            } else {
-                Alert.alert('Info','No hay vehiculos!');
-                this.setState({ 
-                    isLoading: false 
-                });
+                console.error(error);
             }
-
-        } catch (error) {
-            Alert.alert('Error', 'Hubo un error.');
-            this.setState({ 
-                isLoading: false 
-            });
-            console.error(error);
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
-    }   
-
-    onBack() {
-        this.setState({
-            isLoading: true,
-            hasVehicles: false,
-            vehicles: {}
-        });
-        this.componentDidMount();
     }
 
+    async addVehicle() {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            this.props.navigation.navigate('AddVehicle');
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
 
     //Refresh control  
     _refreshControl() {
@@ -169,138 +123,138 @@ export default class VehiclesView extends React.Component {
         this.setState({ refreshing: false }) //Stop Rendering Spinner
     }
     //Termina el refresh  
-    
+
     render() {
         return (
             <ScrollView
-                    refreshControl={this._refreshControl()}
+                refreshControl={this._refreshControl()}
             >
-            <View style={{ flex: 1 }}>
-                <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
-                <View elevation={2} style={styles.sectionContainer}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "add-circle",
-                            size: 32,
-                            color: colors.primary
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'center',
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1
-                        }}
-                        title="Agregar vehículo"
-                        onPress={() => { this.props.navigation.navigate('AddVehicle') }}
-                    />
+                <View style={{ flex: 1 }}>
+                    <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
+                    <View elevation={2} style={styles.sectionContainer}>
+                        <Button
+                            type='clear'
+                            icon={{
+                                name: "add-circle",
+                                size: 32,
+                                color: colors.primary
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                flexDirection: 'column',
+                                alignSelf: 'center',
+                                top: -10
+                            }}
+                            iconContainerStyle={{
+                                flex: 1,
+                            }}
+                            titleStyle={{
+                                fontFamily: 'aller-lt',
+                                flex: 1
+                            }}
+                            title="Agregar vehículo"
+                            onPress={ () => this.addVehicle() }
+                        />
 
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            right: 0,
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1,
-                            fontSize: 12
-                        }}
-                        title="Ayuda"
-                    />
-                </View>
-                <ScrollView
-                    contentInsetAdjustmentBehavior="automatic"
-                    style={styles.scrollView}>
-                    <View style={{ marginBottom: 15 }}>
-                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        {   !this.state.isLoading && this.state.hasVehicles &&
-                            this.state.vehicles.map((v, i) => {
-                                return (
-                                    <Card key={i}>
-                                        <TouchableOpacity
-                                            /*key={i}*/
-                                            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                            onPress={() => { v.problema?this.props.navigation.navigate('AddVehicle'): null }}
-                                        >
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    flexDirection: 'row',
-                                                }}>
-                                                <Image
-                                                    style={styles.imagen}
-                                                    resizeMode="cover"
-                                                    source={{ uri: v.imagen }}
-                                                />
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flex: 5,
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={styles.texto700}>{v.nombre}</Text>
-                                                    <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                                                </View>
-
-                                                <Text style={styles.texto600}>{v.placas}</Text>
-                                                <Text style={styles.texto70012}>Vigencia de operación:</Text>
-                                                <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
-                                            </View>
-                                            <FontAwesome name={v.problema?'warning':'check-circle'} size={18} color={v.problema?'#ebcc1c':'#20d447'} style={styles.listo} />
-                                            <Button
-                                                type='clear'
-                                                icon={{
-                                                    name: "delete",
-                                                    size: 24,
-                                                    color: '#ff8834'
-                                                }}
-                                                buttonStyle={{
-                                                    position: 'absolute',
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    right: -15,
-                                                }}
-                                                iconContainerStyle={{
-                                                    flex: 1,
-                                                }}
-                                                titleStyle={{
-                                                    fontFamily: 'aller-lt',
-                                                    flex: 1,
-                                                    fontSize: 12
-                                                }}
-                                                title="Eliminar"
-                                            />
-                                        </TouchableOpacity>
-                                    </Card>
-                                );
-                            })
-                        }
+                        <Button
+                            type='clear'
+                            icon={{
+                                name: "help",
+                                size: 32,
+                                color: '#ff8834'
+                            }}
+                            buttonStyle={{
+                                position: 'absolute',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                right: 0,
+                                top: -10
+                            }}
+                            iconContainerStyle={{
+                                flex: 1,
+                            }}
+                            titleStyle={{
+                                fontFamily: 'aller-lt',
+                                flex: 1,
+                                fontSize: 12
+                            }}
+                            title="Ayuda"
+                        />
                     </View>
-                </ScrollView>
-            </View>
-           </ScrollView>
+                    <ScrollView
+                        contentInsetAdjustmentBehavior="automatic"
+                        style={styles.scrollView}>
+                        <View style={{ marginBottom: 15 }}>
+                            {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                            {!this.state.isLoading && this.state.hasVehicles &&
+                                this.state.vehicles.map((v, i) => {
+                                    return (
+                                        <Card key={i}>
+                                            <TouchableOpacity
+                                                /*key={i}*/
+                                                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+                                                onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle') : null }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        flex: 1,
+                                                        flexDirection: 'row',
+                                                    }}>
+                                                    <Image
+                                                        style={styles.imagen}
+                                                        resizeMode="cover"
+                                                        source={{ uri: v.imagen }}
+                                                    />
+                                                </View>
+                                                <View
+                                                    style={{
+                                                        flex: 5,
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }}>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.texto700}>{v.nombre}</Text>
+                                                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                    </View>
+
+                                                    <Text style={styles.texto600}>{v.placas}</Text>
+                                                    <Text style={styles.texto70012}>Vigencia de operación:</Text>
+                                                    <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
+                                                </View>
+                                                <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
+                                                <Button
+                                                    type='clear'
+                                                    icon={{
+                                                        name: "delete",
+                                                        size: 24,
+                                                        color: '#ff8834'
+                                                    }}
+                                                    buttonStyle={{
+                                                        position: 'absolute',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        right: -15,
+                                                    }}
+                                                    iconContainerStyle={{
+                                                        flex: 1,
+                                                    }}
+                                                    titleStyle={{
+                                                        fontFamily: 'aller-lt',
+                                                        flex: 1,
+                                                        fontSize: 12
+                                                    }}
+                                                    title="Eliminar"
+                                                />
+                                            </TouchableOpacity>
+                                        </Card>
+                                    );
+                                })
+                            }
+                        </View>
+                    </ScrollView>
+                </View>
+            </ScrollView>
         )
     }
 };

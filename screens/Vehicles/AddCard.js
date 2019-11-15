@@ -14,6 +14,7 @@ import { Button, Icon } from 'react-native-elements'
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import NetInfo from '@react-native-community/netinfo'
 
 export default class AddCard extends React.Component {
     static navigationOptions = {
@@ -27,7 +28,12 @@ export default class AddCard extends React.Component {
         headerRight: <View></View>
     }
     
-    componentDidMount() {
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+            this.props.navigation.goBack();
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
         this.getPermissionAsync();
     }
 

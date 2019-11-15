@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Button } from 'react-native-elements'
+import NetInfo from '@react-native-community/netinfo'
 
 export default class AttachedPicture extends React.Component {
     static navigationOptions = {
@@ -22,6 +23,15 @@ export default class AttachedPicture extends React.Component {
             fontWeight: '200'
         },
         headerRight: <View></View>
+    }
+
+    async entregar() {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            this.props.navigation.navigate('AddVehicle');
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
     }
 
     render() {
@@ -46,7 +56,7 @@ export default class AttachedPicture extends React.Component {
                     title='Entregar'
                     buttonStyle={{ bottom: 30, backgroundColor: '#ff8834' }}
                     titleStyle={{fontFamily: 'aller-lt'}}
-                    onPress={() => { this.props.navigation.navigate('AddVehicle') }}
+                    onPress={() => this.entregar() }
                 />
             </View>
         )

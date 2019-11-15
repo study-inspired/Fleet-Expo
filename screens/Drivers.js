@@ -17,6 +17,7 @@ import {
     RefreshControl 
 } from 'react-native';
 import { Button, colors, Card } from 'react-native-elements'
+import NetInfo from '@react-native-community/netinfo'
 
 export default class Drivers extends React.Component {
     static navigationOptions = {
@@ -42,84 +43,94 @@ export default class Drivers extends React.Component {
     }
 
     async componentDidMount(){
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_correo: 'diana@gmail.com',
-                    p_pass: '123456',
-                }),
-            })
-
-            const data = await result.json();
-
-            if (data.datos.length != 0) {
-                let drivers = data.datos.map((d)=>{
-                    return {
-                        id: d.id_usuario, 
-                        nombre: `${d.nombre} ${d.apellido.split(' ')[0]}`,
-                        auto: d.marca ? {
-                            nombre: `${d.marca} ${d.modelo}`,
-                            placas: d.placas,
-                            color: d.color.includes('#')?d.color:'#a8a8a8',
-                        } : {},
-                        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-                    }
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_correo: 'diana@gmail.com',
+                        p_pass: '123456',
+                    }),
                 })
-                this.setState({
-                    hasDrivers: true,
-                    drivers: drivers, 
-                    isLoading: false 
-                });
-
-            } else {
-                Alert.alert('Info', 'No hay conductores!');
+    
+                const data = await result.json();
+    
+                if (data.datos.length != 0) {
+                    let drivers = data.datos.map((d)=>{
+                        return {
+                            id: d.id_usuario, 
+                            nombre: `${d.nombre} ${d.apellido.split(' ')[0]}`,
+                            auto: d.marca ? {
+                                nombre: `${d.marca} ${d.modelo}`,
+                                placas: d.placas,
+                                color: d.color.includes('#')?d.color:'#a8a8a8',
+                            } : {},
+                            avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
+                        }
+                    })
+                    this.setState({
+                        hasDrivers: true,
+                        drivers: drivers, 
+                        isLoading: false 
+                    });
+    
+                } else {
+                    Alert.alert('Info', 'No hay conductores!');
+                    this.setState({
+                        isLoading: false
+                    });
+                }
+    
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.')
+                console.error(error);
                 this.setState({
                     isLoading: false
                 });
             }
-
-        } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
-            console.error(error);
-            this.setState({
-                isLoading: false
-            });
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 
     async desvincularVehiculo(unidad) {
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz69/desvincular_vehiculo', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_id_unidad: unidad,
-                    p_id_propietario: 1,
-                    p_id_chofer1: 1
-                }),
-            })
-
-            const datos = await result.json();
-            if (datos) {
-                if (datos.msg) {
-                    Alert.alert('Hubo un error', datos.msg);
-                } else if (datos.datos){
-                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz69/desvincular_vehiculo', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_id_unidad: unidad,
+                        p_id_propietario: 1,
+                        p_id_chofer1: 1
+                    }),
+                })
+    
+                const datos = await result.json();
+                if (datos) {
+                    if (datos.msg) {
+                        Alert.alert('Hubo un error', datos.msg);
+                    } else if (datos.datos){
+                        Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+                    }
+                    this.props.navigation.goBack();
                 }
-                this.props.navigation.goBack();
+    
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.')
+                console.error(error);
             }
-
-        } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
-            console.error(error);
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 

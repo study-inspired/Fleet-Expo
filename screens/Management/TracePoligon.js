@@ -4,10 +4,13 @@ import {
     View,
     Text,
     Alert,
+    ActivityIndicator,
 } from 'react-native';
 import { Button, Input, Overlay, Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Polygon, Marker } from 'react-native-maps';
-
+import NetInfo from '@react-native-community/netinfo'
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 export default class TracePoligon extends React.Component {
 
@@ -23,10 +26,31 @@ export default class TracePoligon extends React.Component {
     }
 
     state = {
+        isLoading: true,
+        location: null,
         setNombre: false,
         registrado: false,
         nombre: '',
         markers: []
+    }
+
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (!state.isConnected) {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        } else {
+            let { status } = await Permissions.askAsync(Permissions.LOCATION);
+            if (status !== 'granted') {
+                Alert.alert('Atención', 'Es necesario acceder a la ubicación del dispositivo.')
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+
+            this.setState({
+                location: location.coords,
+                isLoading: false
+            });
+        }
     }
 
     addMarker(coordinate) {
@@ -188,36 +212,41 @@ export default class TracePoligon extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={{
-                        latitude: 19.245455,
-                        longitude: -103.722538,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                    style={styles.mapView}
-                    onPress={(e) => this.addMarker(e.nativeEvent.coordinate)}>
-                    {
-                        this.state.markers.map((m, i) => (
-                            <Marker key={i}
-                                draggable
-                                coordinate={m.LatLng}
-                                title={`Punto: ${i + 1}`}
-                                onDragEnd={e => this.updateMarker(i, e.nativeEvent.coordinate)}
+                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                {
+                    !this.state.isLoading &&
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                            latitude: this.state.location.latitude,
+                            longitude: this.state.location.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                        style={styles.mapView}
+                        onPress={(e) => this.addMarker(e.nativeEvent.coordinate)}>
+                        {
+                            this.state.markers.map((m, i) => (
+                                <Marker key={i}
+                                    draggable
+                                    coordinate={m.LatLng}
+                                    title={`Punto: ${i + 1}`}
+                                    onDragEnd={e => this.updateMarker(i, e.nativeEvent.coordinate)}
+                                />
+                            ))
+                        }
+                        {
+                            this.state.markers.length > 2 &&
+                            <Polygon
+                                coordinates={this.state.markers.map(m => {
+                                    return m.LatLng
+                                })}
+                                strokeWidth={2}
                             />
-                        ))
-                    }
-                    {
-                        this.state.markers.length > 2 &&
-                        <Polygon
-                            coordinates={this.state.markers.map(m => {
-                                return m.LatLng
-                            })}
-                            strokeWidth={2}
-                        />
-                    }
-                </MapView>
+                        }
+                    </MapView>
+                }
+
                 <View style={{ felx: 1, bottom: 10 }}>
                     <Button
                         title='Registrar geocerca'

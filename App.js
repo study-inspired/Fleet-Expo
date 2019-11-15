@@ -2,14 +2,20 @@ import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Alert } from 'react-native';
+import NetInfo from '@react-native-community/netinfo'
 import { FontAwesome } from '@expo/vector-icons';
 
 import AppNavigator from './navigation/AppNavigator';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
-
+  NetInfo.addEventListener(state => {
+    if (!state.isConnected) {
+      Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.')
+    }
+  });
+  
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
       <AppLoading
