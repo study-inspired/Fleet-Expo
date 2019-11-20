@@ -53,7 +53,7 @@ export default class AttachedPicture extends React.Component {
                 </View>
 
                 <Button
-                    title='Entregar'
+                    title='Cargar'
                     buttonStyle={{ bottom: 30, backgroundColor: '#ff8834' }}
                     titleStyle={{fontFamily: 'aller-lt'}}
                     onPress={() => this.entregar() }

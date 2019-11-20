@@ -153,11 +153,6 @@ export default class Drivers extends React.Component {
     render() {
         return (!this.state.loading &&
             <SafeAreaView style={{ flex: 1 }}>
-                
-                <ScrollView
-                    refreshControl={this._refreshControl()}
-                >
-                
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
                     <Button
@@ -212,7 +207,9 @@ export default class Drivers extends React.Component {
                 </View>
                 <ScrollView 
                     contentInsetAdjustmentBehavior="automatic" 
-                    style={styles.scrollView}>
+                    style={styles.scrollView}
+                    refreshControl={this._refreshControl()}
+                >
                     <View style={{ marginBottom: 15 }}>
                         {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                         { !this.state.isLoading && this.state.hasDrivers &&
@@ -280,11 +277,8 @@ export default class Drivers extends React.Component {
                                 );
                             })
                         }
-
                     </View>
-
                 </ScrollView>
-               </ScrollView>
             </SafeAreaView>
         )
     }
