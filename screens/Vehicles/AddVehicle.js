@@ -34,7 +34,7 @@ export default class AddVehicle extends React.Component {
             { nombre: 'Holograma ambiental', imagen: '', estado: 3, screen: 'AddHologram' },
             { nombre: 'Tarjeta de circulación', imagen: '', estado: 2, screen: 'AddCard' }, // 2 documento con problemas
             { nombre: 'TAG', imagen: '', estado: 2, screen: 'AddTAG' },
-            { nombre: 'Fotografía del vehículo', imagen: '', estado: 3, screen: 'AddPhoto' } // 3 documento aceptado
+            { nombre: 'Fotografías del vehículo', imagen: '', estado: 3, screen: 'AddPhoto' } // 3 documento aceptado
         ],
         modelo: '',
         marca: '',
