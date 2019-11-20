@@ -118,7 +118,8 @@ export default class Drivers extends React.Component {
                 const datos = await result.json();
                 if (datos) {
                     if (datos.msg) {
-                        Alert.alert('Hubo un error', datos.msg);
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                        console.error(datos.msg);
                     } else if (datos.datos){
                         Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
                     }
@@ -126,7 +127,7 @@ export default class Drivers extends React.Component {
                 }
     
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.')
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
             }
         } else {

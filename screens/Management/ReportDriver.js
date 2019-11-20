@@ -110,7 +110,7 @@ export default class ReportDriver extends React.Component {
             }
 
         } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.setState({
                 isLoading: false
@@ -175,7 +175,7 @@ export default class ReportDriver extends React.Component {
             }
 
         } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.setState({
                 isLoading: false
@@ -240,7 +240,7 @@ export default class ReportDriver extends React.Component {
             }
 
         } catch (error) {
-            Alert.alert('Error', 'Hubo un error.')
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.setState({
                 isLoading: false

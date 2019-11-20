@@ -80,7 +80,8 @@ export default class TracePoligon extends React.Component {
                 const data = await result.json();
                 if (data) {
                     if (datos.msg) {
-                        Alert.alert('Hubo un error', datos.msg);
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                        console.error(datos.msg);
                     } else if (datos.datos) {
                         this.setState({
                             setNombre: false,
@@ -89,7 +90,8 @@ export default class TracePoligon extends React.Component {
                     }
                 }
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.');
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
             }
         } else {
             Alert.alert('Campo requerido!', 'Escribe el nombre de la geocerca.');

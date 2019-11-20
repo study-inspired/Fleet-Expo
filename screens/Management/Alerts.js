@@ -78,7 +78,7 @@ export default class Alerts extends Component {
                 });
             }
         } catch (error) {
-            Alert.alert('Error', 'Hubo un error.');
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             //this.props.navigation.goBack();
             this.setState({

@@ -103,7 +103,7 @@ export default class SelectVehicle extends React.Component {
             }
 
         } catch (error) {
-            Alert.alert('Error', 'Ha ocurrido un error.');
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.props.navigation.goBack();
         }

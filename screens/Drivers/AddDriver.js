@@ -146,7 +146,7 @@ export default class AddDriver extends React.Component {
             if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
                 this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
             } else {
-                this.setState({ mensaje: 'Error al enviar la invitación al conductor' });
+                this.setState({ mensaje: 'Error al enviar la invitación al conductor, intente de nuevo más tarde.' });
             }
 
             this.setState({ verConductor: false, invitacionEnviada: true });

@@ -88,7 +88,7 @@ export default class VehiclesView extends React.Component {
                 }
 
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.');
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 this.setState({
                     isLoading: false
                 });

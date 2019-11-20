@@ -104,7 +104,7 @@ export default class AssignVehicle extends React.Component {
             }
 
         } catch (error) {
-            Alert.alert('Error', 'Hubo un error.');
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.props.navigation.goBack();
         }
@@ -130,7 +130,8 @@ export default class AssignVehicle extends React.Component {
                 const datos = await result.json();
                 if (datos) {
                     if (datos.msg) {
-                        Alert.alert('Hubo un error', datos.msg);
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                        console.error(datos.msg);
                         this.props.navigation.goBack();
                     } else if (datos.datos){
                         this.setState({
@@ -140,7 +141,7 @@ export default class AssignVehicle extends React.Component {
                     }
                 }
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.')
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
                 this.props.navigation.goBack();
             }

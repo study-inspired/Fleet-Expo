@@ -61,14 +61,17 @@ export default class RegisterMaintenance extends Component {
                 const data = await result.json();
                 
                 if (data.msg) {
-                    Alert.alert('Error', data.msg);
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(data.msg);
                 } else {
                     console.log(data);
                     this.setState({ registro: true });
                 }
 
             } catch (error) {
-                Alert.alert('Error', 'Ha ocurrido un error.')
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+                
                 this.props.navigation.goBack();
             }
         }

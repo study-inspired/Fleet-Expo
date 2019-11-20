@@ -122,7 +122,7 @@ export default class LinkVehicle extends React.Component {
                 }
 
             } catch (error) {
-                alert('Error');
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
             }
         } else {
