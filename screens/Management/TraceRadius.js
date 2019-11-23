@@ -185,7 +185,7 @@ export default class TraceRadius extends React.Component {
                     </View>
                 </Overlay>
                 <View style={{ height: 110, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.texto1}>Indica un punto central e incrementa el radio de acuerdoal área a abarcar</Text>
+                    <Text style={styles.texto1}>Indica un punto central e incrementa el radio de acuerdo al área a abarcar</Text>
                     <Button
                         type='clear'
                         icon={{

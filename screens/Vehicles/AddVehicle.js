@@ -95,8 +95,13 @@ export default class AddVehicle extends React.Component {
                 this.state.kilometraje != '' &&
                 this.state.placa != '' &&
                 this.state.serie != '' &&
-                this.state.tipo_vehiculo != ''
-                // this.state.fotos == false
+                this.state.tipo_vehiculo != '' &&
+                this.state.poliza &&
+                this.state.factura &&
+                this.state.holograma && 
+                this.state.tarjeta &&
+                this.state.tag &&
+                this.state.fotos
             ) {
                 this.props.navigation.navigate('DataSent');
             } else {

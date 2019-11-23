@@ -251,7 +251,8 @@ export default class AddDriver extends React.Component {
                             label='Ingresa teléfono'
                             keyboardType='phone-pad'
                             inputContainerStyle={{ height: 32, flex: 1 }}
-                            inputStyle={{ bottom: -2, fontSize: 15 }}
+                            inputStyle={{ bottom: -2, fontFamily: 'aller-lt', fontSize: 15 }}
+                            labelStyle={{fontFamily: 'aller-bd', color: 'black', fontWeight: '200', marginRight: 10 }}
                             containerStyle={{ flexDirection: 'row', alignItems: 'center', width: 260, left: -10 }}
                             onChangeText={(value) => this.setState({ telefono: value })}
                         />
