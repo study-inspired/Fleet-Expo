@@ -7,7 +7,8 @@ import React from 'react';
 import {
     StyleSheet,
     View,
-    Image
+    Image,
+    Alert
 } from 'react-native';
 
 import { Button } from 'react-native-elements'
@@ -25,25 +26,63 @@ export default class AttachedPicture extends React.Component {
         headerRight: <View></View>
     }
 
+    state = {
+        image: this.props.navigation.getParam('image', { uri: '' }),
+        ruta: this.props.navigation.getParam('ruta_post_documento', '')
+    }
+
     async entregar() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
-            this.props.navigation.navigate('AddVehicle');
+            try {
+                const data = new FormData();
+                data.append('id_usuario', '5');
+                data.append('file', {
+                    uri: this.state.image.uri,
+                    name: this.state.image.uri.match(/(\w-*)+((\.jp\w{1,2})|(\.png))/)[0],
+                    type: `image/${this.state.image.uri.match(/((\.jp\w{1,2})|(\.png))/)[0].replace('jpg', 'jpeg').replace('.', '')}`,
+                });
+                
+                console.log(data);
+                
+
+                const response = await fetch(`http://34.95.33.177:3001/${this.state.ruta}`, {
+                    method: 'POST',
+                    body: data
+                });
+                console.log(response);
+                
+                const result = await response.json();
+                console.log(result);
+
+                if (result.message.includes('exito')) {
+                    if (this.state.ruta.includes('fotografia')) {
+                        this.props.navigation.state.params.doOnBack(this.state.ruta, this.state.image.uri);
+                        this.props.navigation.pop();
+                    } else {
+                        this.props.navigation.state.params.doOnBack(this.state.ruta);
+                        this.props.navigation.pop(2);
+                    }
+                }
+                
+            } catch (error) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            }
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 
     render() {
-        const image = this.props.navigation.getParam('image', { uri: '' });
-        console.log(image)
+        
+        // console.log(image)
         return (
-
             <View style={{ marginHorizontal: 25, marginVertical: 25 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 10 }}>
                     <Image
-                        resizeMode='stretch'
-                        source={image}
+                        resizeMode='cover'
+                        source={this.state.image}
                         style={{
                             flex: 1,
                             width: 400,
@@ -55,8 +94,8 @@ export default class AttachedPicture extends React.Component {
                 <Button
                     title='Cargar'
                     buttonStyle={{ bottom: 30, backgroundColor: '#ff8834' }}
-                    titleStyle={{fontFamily: 'aller-lt'}}
-                    onPress={() => this.entregar() }
+                    titleStyle={{ fontFamily: 'aller-lt' }}
+                    onPress={() => this.entregar()}
                 />
             </View>
         )

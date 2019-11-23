@@ -6,11 +6,14 @@ import ColorPalette from 'react-native-color-palette'
 import NetInfo from '@react-native-community/netinfo'
 
 const colores = [
-    '#000000', '#5F5F5F', '#8A8A8A', '#A8A8A8', '#FAFAFA', 
-    '#C0391B', '#E74C1C', '#9B5916', '#8E441D', '#218019', 
-    '#A0391B', '#EF4C1C', '#3AEE16', '#EE441D', '#ABEF19',
-    '#8F8F8F', '#EFEFEF', '#CA67AC', '#8722FA', '#5E8219', 
-    '#D98A6C', '#123456', '#9A5916', '#A5EE19', '#F18319'
+    '#000000', '#5F5F5F', '#8A8A8A', '#A8A8A8', '#DBDBDB', '#FAFAFA',
+    '#751717', '#8f0b0b', '#a31f1f', '#c91616', '#cf3434', '#ed2f2f',
+    '#9C640C', '#D68910', '#F39C12', '#F5B041', '#F8C471', '#FAE5D3',
+    '#c7a614', '#e3be1b', '#f7d540', '#ebe93d', '#fffc40', '#fffd85',
+    '#2f7829', '#328f13', '#45a823', '#5dc23a', '#5cd952', '#7df573',
+    '#0a065e', '#241e9e', '#322bcc', '#1d49cf', '#3c67e8', '#5ca7ed',
+    '#54048a', '#721dab', '#8f17d4', '#972fd4', '#a350d4', '#bb6aeb',
+    '#e607de', '#e32bdc', '#ff17f6', '#ff40f8', '#ff66f9', '#ff96fb',
 ]
 
 export default class AddVehicle extends React.Component {
@@ -30,12 +33,18 @@ export default class AddVehicle extends React.Component {
     state = {
         documentos: [
             { nombre: 'Póliza de seguro', imagen: '', estado: 0, screen: 'AddPolicy' }, // 0 documento no cargado
-            { nombre: 'Factura del vehículo', imagen: '', estado: 1, screen: 'AddBill' }, // 1 documento invalido
-            { nombre: 'Holograma ambiental', imagen: '', estado: 3, screen: 'AddHologram' },
-            { nombre: 'Tarjeta de circulación', imagen: '', estado: 2, screen: 'AddCard' }, // 2 documento con problemas
-            { nombre: 'TAG', imagen: '', estado: 2, screen: 'AddTAG' },
-            { nombre: 'Fotografías del vehículo', imagen: '', estado: 3, screen: 'AddPhoto' } // 3 documento aceptado
+            { nombre: 'Factura del vehículo', imagen: '', estado: 0, screen: 'AddBill' }, // 1 documento invalido
+            { nombre: 'Holograma ambiental', imagen: '', estado: 0, screen: 'AddHologram' },
+            { nombre: 'Tarjeta de circulación', imagen: '', estado: 0, screen: 'AddCard' }, // 2 documento con problemas
+            { nombre: 'TAG', imagen: '', estado: 0, screen: 'AddTAG' },
+            { nombre: 'Fotografías del vehículo', imagen: '', estado: 0, screen: 'AddPhoto' } // 3 documento aceptado
         ],
+        poliza: false,
+        factura: false,
+        holograma: false,
+        tarjeta: false,
+        tag: false,
+        fotos: false,
         modelo: '',
         marca: '',
         kilometraje: '',
@@ -44,6 +53,29 @@ export default class AddVehicle extends React.Component {
         color: '#000',
         tipo_vehiculo: '',
         selectColor: false,
+    }
+
+    onBack(documento) {
+        switch (documento) {
+            case 'upload_poliza_seguro':
+                this.setState({ poliza: true });
+                break;
+            case 'upload_factura_vehiculo':
+                this.setState({ factura: true });
+                break;
+            case 'upload_Holograma':
+                this.setState({ holograma: true });
+                break;
+            case 'upload_Tarjeta_circulacion':
+                this.setState({ tarjeta: true });
+                break;
+            case 'upload_Tag':
+                this.setState({ tag: true });
+                break;
+            default:
+                this.setState({ fotos: true })
+                break;
+        }
     }
 
     async componentDidMount() {
@@ -58,16 +90,17 @@ export default class AddVehicle extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             if (
-                this.state.modelo != '' && 
-                this.state.marca != '' && 
-                this.state.kilometraje != '' && 
+                this.state.modelo != '' &&
+                this.state.marca != '' &&
+                this.state.kilometraje != '' &&
                 this.state.placa != '' &&
-                this.state.serie != '' && 
+                this.state.serie != '' &&
                 this.state.tipo_vehiculo != ''
+                // this.state.fotos == false
             ) {
                 this.props.navigation.navigate('DataSent');
             } else {
-                Alert.alert('Atención', 'Debes llenar todos los campos antes de continuar.');
+                Alert.alert('Atención', 'Debes llenar todos los campos y subir los todos documentos antes de continuar.');
             }
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -78,29 +111,30 @@ export default class AddVehicle extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <Overlay
-                    overlayStyle={{ width: 300 }}
+                    overlayStyle={{ width: 350 }}
                     isVisible={this.state.selectColor}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
-                    height='auto'
+                    height={500}
+                    onBackdropPress={() => this.setState({ selectColor: false })}
                 >
                     <View style={{ flexDirection: "column" }}>
-                        <Text style={{ fontFamily: 'aller-lt', textAlign: 'center', fontSize: 16 }}>Selecciona un color</Text>
+                        <Text style={{ fontFamily: 'aller-lt', textAlign: 'center', fontSize: 16, marginTop: 5 }}>Selecciona un color</Text>
 
-                        <View style={{ flex: 1 }}>
+                        <View style={{ flex: 1, marginTop: -15 }}>
                             <ColorPalette
                                 onChange={color => this.setState({ color: color })}
                                 value={this.state.color}
                                 colors={colores}
                                 icon={
-                                    <FontAwesome name={'check-circle-o'} size={25} color={'black'} />
+                                    <FontAwesome name={'check'} size={25} color={'white'} />
                                 }
                                 title=''
                             />
                         </View>
                         <Button
                             title='OK'
-                            titleStyle={{fontFamily: 'aller-lt',}}
-                            buttonStyle={styles.button, { marginTop: 280, marginHorizontal: 13, marginBottom: 10 }}
+                            titleStyle={{ fontFamily: 'aller-lt' }}
+                            buttonStyle={{ marginTop: 420, marginHorizontal: 15, marginBottom: 10 }}
                             onPress={() => { this.setState({ selectColor: false }) }}
                         />
                     </View>
@@ -136,23 +170,23 @@ export default class AddVehicle extends React.Component {
                     <View style={{ marginHorizontal: 15 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16} 
-                                    onChangeText={text => this.setState({modelo: text})}
+                                <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({ modelo: text })}
                                 />
-                                <Input title="Marca" placeholder="Marca"  inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({marca: text})}
+                                <Input title="Marca" placeholder="Marca" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({ marca: text })}
                                 />
                                 <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({kilometraje: text})}
+                                    onChangeText={text => this.setState({ kilometraje: text })}
                                 />
                                 <Input title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({placa: text})}
+                                    onChangeText={text => this.setState({ placa: text })}
                                 />
 
                             </View>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
                                 <Input title="Niv o Serie" placeholder="Niv o Serie" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({serie: text})}
+                                    onChangeText={text => this.setState({ serie: text })}
                                 />
                             </View>
                         </View>
@@ -168,12 +202,13 @@ export default class AddVehicle extends React.Component {
                                 }}
                             >
                                 <Text style={[styles.textoRegular16, { flex: 3 }]}>Selecciona tu color</Text>
-                                <FontAwesome name='circle' size={18} color={this.state.color} iconStyle={{ flex: 1 }} />
+                                <View style={[styles.colorVehiculo, { backgroundColor: this.state.color}]}></View>
+                                
                             </TouchableOpacity>
 
                             <Picker
                                 style={[
-                                    styles.textoRegular16, 
+                                    styles.textoRegular16,
                                     {
                                         height: 40,
                                         marginVertical: 5,
@@ -182,55 +217,158 @@ export default class AddVehicle extends React.Component {
                                 itemStyle={styles.textoRegular16}
                                 selectedValue={this.state.tipo_vehiculo}
                                 onValueChange={(tipo) => this.setState({ tipo_vehiculo: tipo })}>
-                                <Picker.Item label="Tipo"/>
+                                <Picker.Item label="Tipo" />
                                 <Picker.Item label="Auto normal" value="Auto normal" />
                                 <Picker.Item label="Auto de lujo" value="Auto de lujo" />
                                 <Picker.Item label="Camioneta" value="Camioneta" />
                             </Picker>
 
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddPolicy', { doOnBack: this.onBack.bind(this) })}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>Póliza de seguro</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.poliza ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.poliza ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddBill', { doOnBack: this.onBack.bind(this) })}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>Factura del vehículo</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.factura ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.factura ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddHologram', { doOnBack: this.onBack.bind(this) })}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>Holograma ambiental</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.holograma ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.holograma ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddCard', { doOnBack: this.onBack.bind(this) })}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>Tarjeta de circulación</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.tarjeta ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.tarjeta ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddTAG', { doOnBack: this.onBack.bind(this) })}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>TAG</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.tag ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.tag ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('AddPhoto', {doOnBack: this.onBack.bind(this)})}
+                                style={{
+                                    height: 30,
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginVertical: 3,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <View style={{ flex: 3 }}>
+                                    <Text style={styles.textoRegular16}>Fotografías del vehículo</Text>
+                                </View>
+                                <View style={styles.viewTouchable}>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.fotos ? '#000' : '#fff' }]}>Cargar</Text>
+                                    {
+                                        !this.state.fotos ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' /> :
+                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+
                             {
-                                this.state.documentos.map((documento) => {
-                                    return (
-                                        <TouchableOpacity
-                                            key={documento.screen}
-                                            onPress={() => { this.props.navigation.navigate(documento.screen) }}
-                                            style={{
-                                                height: 30,
-                                                flexDirection: 'row',
-                                                justifyContent: 'space-between',
-                                                marginVertical: 3,
-                                                alignItems: 'center'
-                                            }}
-                                        >
-                                            <View style={{ flex: 3 }}>
-                                                <Text style={styles.textoRegular16}>{documento.nombre}</Text>
-                                            </View>
-                                            <View style={styles.viewTouchable}>
-                                                <Text style={styles.textoRegular16}>Cargar</Text>
-                                                {
-                                                    documento.estado == 0 &&
-                                                    <FontAwesome name="chevron-right" size={18} color='black' /> ||
-
-                                                    documento.estado == 1 &&
-                                                    <FontAwesome name="times-circle" size={18} color='#e81a1a' /> ||
-
-                                                    documento.estado == 2 &&
-                                                    <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' /> ||
-
-                                                    documento.estado == 3 &&
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                }
-                                            </View>
-                                        </TouchableOpacity>
-                                    )
-                                })
+                                false &&
+                                <Text style={styles.textoInfo}>Por favor vuelva a cargar los documentos marcados con <FontAwesome name="times-circle" size={16} color='#e81a1a' /> o <FontAwesome name="exclamation-circle" size={16} color='#ebcc1c' />, asegurese que el documento que se solicita sea válido y que contenga la información visible y clara. </Text>
                             }
-
-                            <Text style={styles.textoInfo}>Por favor vuelva a cargar los documentos marcados con <FontAwesome name="times-circle" size={16} color='#e81a1a' /> o <FontAwesome name="exclamation-circle" size={16} color='#ebcc1c' />, asegurese que el documento que se solicita sea válido y que contenga la información visible y clara. </Text>
                             <Button
                                 title='Siguiente'
-                                buttonStyle={{backgroundColor: '#ff8834', marginVertical: 20 }}
-                                titleStyle={{fontFamily: 'aller-lt'}}  
+                                buttonStyle={{ backgroundColor: '#ff8834', marginVertical: 20 }}
+                                titleStyle={{ fontFamily: 'aller-lt' }}
                                 onPress={() => { this.enviarDatos() }}
                             />
                         </View>
@@ -241,7 +379,7 @@ export default class AddVehicle extends React.Component {
         );
     }
 }
-        
+
 const styles = StyleSheet.create({
     texto: {
         marginVertical: 20,
@@ -249,11 +387,11 @@ const styles = StyleSheet.create({
         fontFamily: 'aller-lt',
         textAlign: 'center',
     },
-    textoBold16:{
+    textoBold16: {
         fontFamily: 'aller-bd',
         fontSize: 16
     },
-    textoRegular16:{
+    textoRegular16: {
         fontFamily: 'aller-lt',
         fontSize: 16
     },
@@ -273,18 +411,25 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5
     },
-    textoInfo: { 
+    textoInfo: {
         fontFamily: 'aller-lt',
-        marginHorizontal: 30, 
-        marginTop: 15, 
-        marginBottom: 10, 
-        fontSize: 14, 
-        textAlign: 'justify' 
+        marginHorizontal: 30,
+        marginTop: 15,
+        marginBottom: 10,
+        fontSize: 14,
+        textAlign: 'justify'
     },
-    viewTouchable: { 
-        flex: 1, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center' 
-    }
+    viewTouchable: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    colorVehiculo: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderColor: '#000',
+        borderWidth: 1
+    },
 });

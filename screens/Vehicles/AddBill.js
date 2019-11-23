@@ -56,10 +56,9 @@ export default class AddBill extends React.Component {
         //console.log(result);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_factura_vehiculo',
                 image: { uri: result.uri }
             })
         }
@@ -75,10 +74,9 @@ export default class AddBill extends React.Component {
         //console.log(result);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_factura_vehiculo',
                 image: { uri: result.uri }
             })
         }

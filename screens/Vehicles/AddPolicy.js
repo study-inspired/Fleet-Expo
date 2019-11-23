@@ -7,7 +7,8 @@ import React from 'react';
 import {
     StyleSheet,
     View,
-    Text
+    Text,
+    Platform
 } from 'react-native';
 
 import { Button, Icon } from 'react-native-elements'
@@ -41,7 +42,7 @@ export default class AddPolicy extends React.Component {
         if (Constants.platform.ios) {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
             if (status !== 'granted') {
-                alert('Lo sentimos, necesitamos el permiso de camara para hacer ésto.');
+                Alert.alert('Permiso no concedido','Se necesita del permiso de camara para continuar.');
             }
         }
     }
@@ -50,16 +51,16 @@ export default class AddPolicy extends React.Component {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5 // baja calidad de la foto
             // aspect: [4, 3],
         });
 
-        //console.log(result);
+        // console.log(result.base64);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_poliza_seguro',
                 image: { uri: result.uri }
             })
         }
@@ -75,10 +76,9 @@ export default class AddPolicy extends React.Component {
         //console.log(result);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_poliza_seguro',
                 image: { uri: result.uri }
             })
         }
@@ -89,7 +89,7 @@ export default class AddPolicy extends React.Component {
             <View style={{ flex:1, marginHorizontal: 25, flexDirection: 'column' }}>
                 <View style={{ flex:1, justifyContent: 'center', alignItems: "center" }}>
                     <Icon type='material-community' name="file-document-outline" size={160} color='#000' />
-                    <Text style={{ textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Póliza de seguro</Text>
+                    <Text style={{ textAlign: 'center', fontFamily: 'aller-bd', fontSize: 16 }}>Póliza de seguro</Text>
                 </View>
                 <View style={{ flex:1, marginHorizontal: 25, alignItems: "center", marginTop:18 }}>
                     <Text style={styles.textoNormal}>Asegúrese que la informacón y la imágen sean legibles.</Text>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     },
     textoNormal: {
         textAlign: 'justify',
-        fontWeight: '600',
+        fontFamily: 'aller-lt',
         fontSize: 16,
         marginVertical: 2
     }

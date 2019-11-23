@@ -57,6 +57,46 @@ export default class AddPhoto extends React.Component {
         }
     }
 
+    onBack(lado, uri) {
+        switch (lado) {
+            case 'upload_fotografia1':
+                this.setState({
+                    trasera: uri
+                })
+                break;
+            case 'upload_fotografia2':
+                this.setState({
+                    delantera: uri
+                })
+                break;
+            case 'upload_fotografia3':
+                this.setState({
+                    derecha: uri
+                })
+                break;
+            case 'upload_fotografia4':
+                this.setState({
+                    izquierda: uri
+                })
+                break;
+            default:
+                this.setState({
+                    perfil: uri
+                })
+                break;
+        }
+
+        if (
+            this.state.delantera != '' &&
+            this.state.trasera != '' &&
+            this.state.izquierda != '' &&
+            this.state.derecha != '' &&
+            this.state.perfil != ''
+        ) {
+            this.props.navigation.state.params.doOnBack('fotos');
+        }
+    }
+
     async _openGalery(lado) {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -64,42 +104,31 @@ export default class AddPhoto extends React.Component {
             // aspect: [4, 3],
         });
 
-        //console.log(result);
-
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
+            let foto = '';
             switch (lado) {
                 case 'trasera':
-                    this.setState({
-                        trasera: result.uri
-                    })
+                    foto = 'upload_fotografia1';
                     break;
                 case 'delantera':
-                    this.setState({
-                        delantera: result.uri
-                    })
+                    foto = 'upload_fotografia2';
                     break;
                 case 'lado derecho':
-                    this.setState({
-                        derecha: result.uri
-                    })
+                    foto = 'upload_fotografia3';
                     break;
                 case 'lado izquierdo':
-                    this.setState({
-                        izquierda: result.uri
-                    })
+                    foto = 'upload_fotografia4';
                     break;
                 default:
-                    this.setState({
-                        perfil: result.uri
-                    })
+                    foto = 'upload_fotografia5';
                     break;
             }
-            // this.props.navigation.navigate('AttachedPicture', {
-            //     // You can also display the image using data:
-            //     //image: { uri: 'data:image/jpeg;base64,' + response.data }
-            //     image: { uri: result.uri }
-            // })
+
+            this.props.navigation.navigate('AttachedPicture', {
+                doOnBack: this.onBack.bind(this),
+                ruta_post_documento: foto,
+                image: { uri: result.uri }
+            });
         }
     }
 
@@ -110,44 +139,31 @@ export default class AddPhoto extends React.Component {
             // aspect: [4, 3],
         });
 
-        //console.log(result);
-
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            //console.log(result);
-
+            let foto = '';
             switch (lado) {
                 case 'trasera':
-                    this.setState({
-                        trasera: result.uri
-                    })
+                    foto = 'upload_fotografia1';
                     break;
                 case 'delantera':
-                    this.setState({
-                        delantera: result.uri
-                    })
+                    foto = 'upload_fotografia2';
                     break;
                 case 'lado derecho':
-                    this.setState({
-                        derecha: result.uri
-                    })
+                    foto = 'upload_fotografia3';
                     break;
                 case 'lado izquierdo':
-                    this.setState({
-                        izquierda: result.uri
-                    })
+                    foto = 'upload_fotografia4';
                     break;
                 default:
-                    this.setState({
-                        perfil: result.uri
-                    })
+                    foto = 'upload_fotografia5';
                     break;
             }
-            // this.props.navigation.navigate('AttachedPicture', {
-            //     // You can also display the image using data:
-            //     //image: { uri: 'data:image/jpeg;base64,' + response.data }
-            //     image: { uri: result.uri }
-            // })
+
+            this.props.navigation.navigate('AttachedPicture', {
+                doOnBack: this.onBack.bind(this),
+                ruta_post_documento: foto,
+                image: { uri: result.uri }
+            });
         }
     }
 

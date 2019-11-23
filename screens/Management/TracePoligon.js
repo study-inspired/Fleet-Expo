@@ -5,6 +5,7 @@ import {
     Text,
     Alert,
     ActivityIndicator,
+    Dimensions,
 } from 'react-native';
 import { Button, Input, Overlay, Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Polygon, Marker } from 'react-native-maps';
@@ -35,6 +36,8 @@ export default class TracePoligon extends React.Component {
     }
 
     async componentDidMount() {
+        console.log(Dimensions.get('window').width);
+        
         const state = await NetInfo.fetch();
         if (!state.isConnected) {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -292,7 +295,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'aller-lt',
         textAlign: 'center',
-        marginHorizontal: 16,
+        marginHorizontal: Dimensions.get('window').width > 360 ? 16 : 8,
         marginTop: 65
     }
 });

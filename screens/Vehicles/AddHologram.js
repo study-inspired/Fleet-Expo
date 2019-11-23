@@ -56,10 +56,9 @@ export default class AddHologram extends React.Component {
         //console.log(result);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_Holograma',
                 image: { uri: result.uri }
             })
         }
@@ -75,10 +74,9 @@ export default class AddHologram extends React.Component {
         //console.log(result);
 
         if (!result.cancelled) {
-            //this.setState({ image: result.uri });
-            this.props.navigation.navigate('AttachedPicture', {
-                // You can also display the image using data:
-                //image: { uri: 'data:image/jpeg;base64,' + response.data }
+            this.props.navigation.navigate('AttachedPicture', { 
+                doOnBack: this.props.navigation.state.params.doOnBack,
+                ruta_post_documento: 'upload_Holograma',
                 image: { uri: result.uri }
             })
         }
@@ -143,7 +141,7 @@ const styles = StyleSheet.create({
     },
     textoNormal: {
         textAlign: 'justify',
-        fontWeight: '600',
+        fontFamily: 'aller-lt',
         fontSize: 16,
         marginVertical: 2
     }
