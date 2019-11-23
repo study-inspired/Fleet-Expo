@@ -57,6 +57,7 @@ import ServicesConsultation from '../screens/Management/ServicesConsultation';
 import TraceRadius from '../screens/Management/TraceRadius';
 import TracePoligon from '../screens/Management/TracePoligon';
 import RegisterGeofence from '../screens/Management/RegisterGeofence';
+import InfoDriver from '../screens/Drivers/InfoDriver';
 
 
 const config = Platform.select({
@@ -99,6 +100,7 @@ const DriversStack = createStackNavigator(
     Drivers: Drivers,
     LinkVehicle: LinkVehicle,
     AddDriver: AddDriver,
+    InfoDriver: InfoDriver
   },
   config
 );

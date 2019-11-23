@@ -47,7 +47,7 @@ export default class AttachedPicture extends React.Component {
                 if (this.state.numero_foto != 0) {
                     data.append('foto', this.state.numero_foto);
                 }
-                
+
                 console.log(data);
 
                 const response = await fetch(`http://34.95.33.177:3001/${this.state.ruta}`, {
@@ -55,7 +55,7 @@ export default class AttachedPicture extends React.Component {
                     body: data
                 });
                 console.log(response);
-                
+
                 const result = await response.json();
                 console.log(result);
 
@@ -68,7 +68,7 @@ export default class AttachedPicture extends React.Component {
                         this.props.navigation.pop(2);
                     }
                 }
-                
+
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -79,25 +79,20 @@ export default class AttachedPicture extends React.Component {
     }
 
     render() {
-        
-        console.log(this.state.numero_foto);
         return (
-            <View style={{ marginHorizontal: 25, marginVertical: 25 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 10 }}>
-                    <Image
-                        resizeMode='cover'
-                        source={this.state.image}
-                        style={{
-                            flex: 1,
-                            width: 400,
-                            height: 400
-                        }}
-                    />
-                </View>
+            <View style={{ flex: 1, flexDirection: 'column', margin: 25 }}>
+                <Image
+                    resizeMode='contain'
+                    source={this.state.image}
+                    style={{
+                        flex: 3
+                    }}
+                />
 
                 <Button
                     title='Cargar'
-                    buttonStyle={{ bottom: 30, backgroundColor: '#ff8834' }}
+                    containerStyle={{ height: 40 }}
+                    buttonStyle={{ flex: 1, backgroundColor: '#ff8834' }}
                     titleStyle={{ fontFamily: 'aller-lt' }}
                     onPress={() => this.entregar()}
                 />

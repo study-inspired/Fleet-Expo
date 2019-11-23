@@ -12,7 +12,6 @@ import {
     Alert
 } from 'react-native';
 
-import { Button, Icon, Card } from 'react-native-elements'
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
@@ -93,13 +92,8 @@ export default class AddPhoto extends React.Component {
             this.state.derecha != '' &&
             this.state.perfil != ''
         ) {
-            console.log('Ahora si');
-            
             this.props.navigation.state.params.doOnBack('fotos');
             this.props.navigation.pop();
-        } else {
-            console.log('Todavia no');
-            
         }
     }
 

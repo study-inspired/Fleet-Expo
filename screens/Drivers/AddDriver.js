@@ -261,7 +261,7 @@ export default class AddDriver extends React.Component {
                         title='Ver'
                         buttonStyle={{ height: 32, width: 75, backgroundColor: '#ff8834' }}
                         titleStyle={{ fontFamily: 'aller-lt' }}
-                        onPress={() => { this.obtenerConductor(); }}
+                        onPress={() => { this.props.navigation.navigate('InfoDriver')/*this.obtenerConductor();*/ }}
                     />
                 </View>
                 <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }}>Selecciona un conductor</Text>
