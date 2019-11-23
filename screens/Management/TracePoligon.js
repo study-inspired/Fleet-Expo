@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'aller-lt',
         textAlign: 'center',
-        marginHorizontal: Dimensions.get('window').width > 360 ? 16 : 8,
+        marginHorizontal: Dimensions.get('window').width > 360 ? 16 : 2,
         marginTop: 65
     }
 });
