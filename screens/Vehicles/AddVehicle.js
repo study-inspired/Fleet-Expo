@@ -145,7 +145,7 @@ export default class AddVehicle extends React.Component {
                     </View>
                 </Overlay>
                 <View elevation={2} style={styles.sectionContainer}>
-                    <Text style={styles.texto}>Agregar vehiculo</Text>
+                    <Text style={styles.texto}>Agregar vehículo</Text>
                     <Button
                         type='clear'
                         icon={{

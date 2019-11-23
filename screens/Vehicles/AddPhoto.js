@@ -59,22 +59,22 @@ export default class AddPhoto extends React.Component {
 
     onBack(lado, uri) {
         switch (lado) {
-            case 'upload_fotografia1':
+            case 1:
                 this.setState({
                     trasera: uri
                 })
                 break;
-            case 'upload_fotografia2':
+            case 2:
                 this.setState({
                     delantera: uri
                 })
                 break;
-            case 'upload_fotografia3':
+            case 3:
                 this.setState({
                     derecha: uri
                 })
                 break;
-            case 'upload_fotografia4':
+            case 4:
                 this.setState({
                     izquierda: uri
                 })
@@ -101,32 +101,34 @@ export default class AddPhoto extends React.Component {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5
             // aspect: [4, 3],
         });
 
         if (!result.cancelled) {
-            let foto = '';
+            let foto = 0;
             switch (lado) {
                 case 'trasera':
-                    foto = 'upload_fotografia1';
+                    foto = 1;
                     break;
                 case 'delantera':
-                    foto = 'upload_fotografia2';
+                    foto = 2;
                     break;
                 case 'lado derecho':
-                    foto = 'upload_fotografia3';
+                    foto = 3;
                     break;
                 case 'lado izquierdo':
-                    foto = 'upload_fotografia4';
+                    foto = 4;
                     break;
                 default:
-                    foto = 'upload_fotografia5';
+                    foto = 5;
                     break;
             }
 
             this.props.navigation.navigate('AttachedPicture', {
                 doOnBack: this.onBack.bind(this),
-                ruta_post_documento: foto,
+                ruta_post_documento: 'upload_fotografia1',
+                numero_foto: foto,
                 image: { uri: result.uri }
             });
         }
@@ -136,32 +138,34 @@ export default class AddPhoto extends React.Component {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5
             // aspect: [4, 3],
         });
 
         if (!result.cancelled) {
-            let foto = '';
+            let foto = 0;
             switch (lado) {
                 case 'trasera':
-                    foto = 'upload_fotografia1';
+                    foto = 1;
                     break;
                 case 'delantera':
-                    foto = 'upload_fotografia2';
+                    foto = 2;
                     break;
                 case 'lado derecho':
-                    foto = 'upload_fotografia3';
+                    foto = 3;
                     break;
                 case 'lado izquierdo':
-                    foto = 'upload_fotografia4';
+                    foto = 4;
                     break;
                 default:
-                    foto = 'upload_fotografia5';
+                    foto = 5;
                     break;
             }
 
             this.props.navigation.navigate('AttachedPicture', {
                 doOnBack: this.onBack.bind(this),
-                ruta_post_documento: foto,
+                ruta_post_documento: 'upload_fotografia1',
+                numero_foto: foto,
                 image: { uri: result.uri }
             });
         }

@@ -28,7 +28,8 @@ export default class AttachedPicture extends React.Component {
 
     state = {
         image: this.props.navigation.getParam('image', { uri: '' }),
-        ruta: this.props.navigation.getParam('ruta_post_documento', '')
+        ruta: this.props.navigation.getParam('ruta_post_documento', ''),
+        numero_foto: this.props.navigation.getParam('numero_foto', 0)
     }
 
     async entregar() {
@@ -42,9 +43,12 @@ export default class AttachedPicture extends React.Component {
                     name: this.state.image.uri.match(/(\w-*)+((\.jp\w{1,2})|(\.png))/)[0],
                     type: `image/${this.state.image.uri.match(/((\.jp\w{1,2})|(\.png))/)[0].replace('jpg', 'jpeg').replace('.', '')}`,
                 });
+
+                if (this.state.numero_foto != 0) {
+                    data.append('foto', this.state.numero_foto);
+                }
                 
                 console.log(data);
-                
 
                 const response = await fetch(`http://34.95.33.177:3001/${this.state.ruta}`, {
                     method: 'POST',
@@ -56,8 +60,8 @@ export default class AttachedPicture extends React.Component {
                 console.log(result);
 
                 if (result.message.includes('exito')) {
-                    if (this.state.ruta.includes('fotografia')) {
-                        this.props.navigation.state.params.doOnBack(this.state.ruta, this.state.image.uri);
+                    if (this.state.numero_foto != 0) {
+                        this.props.navigation.state.params.doOnBack(this.state.numero_foto, this.state.image.uri);
                         this.props.navigation.pop();
                     } else {
                         this.props.navigation.state.params.doOnBack(this.state.ruta);
@@ -76,7 +80,7 @@ export default class AttachedPicture extends React.Component {
 
     render() {
         
-        // console.log(image)
+        console.log(this.state.numero_foto);
         return (
             <View style={{ marginHorizontal: 25, marginVertical: 25 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 10 }}>
