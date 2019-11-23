@@ -93,7 +93,13 @@ export default class AddPhoto extends React.Component {
             this.state.derecha != '' &&
             this.state.perfil != ''
         ) {
+            console.log('Ahora si');
+            
             this.props.navigation.state.params.doOnBack('fotos');
+            this.props.navigation.pop();
+        } else {
+            console.log('Todavia no');
+            
         }
     }
 
