@@ -252,7 +252,7 @@ export default class AddDriver extends React.Component {
                             keyboardType='phone-pad'
                             inputContainerStyle={{ height: 32, flex: 1 }}
                             inputStyle={{ bottom: -2, fontFamily: 'aller-lt', fontSize: 15 }}
-                            labelStyle={{fontFamily: 'aller-bd', color: 'black', fontWeight: '200', marginRight: 10 }}
+                            labelStyle={{ fontFamily: 'aller-bd', color: 'black', fontWeight: '200', marginRight: 10 }}
                             containerStyle={{ flexDirection: 'row', alignItems: 'center', width: 260, left: -10 }}
                             onChangeText={(value) => this.setState({ telefono: value })}
                         />
@@ -265,33 +265,50 @@ export default class AddDriver extends React.Component {
                     />
                 </View>
                 <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }}>Selecciona un conductor</Text>
-                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                {!this.state.isLoading &&
-                    <MapView
-                        provider={PROVIDER_GOOGLE}
-                        initialRegion={{
-                            latitude: this.state.location.latitude,
-                            longitude: this.state.location.longitude,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                        style={{ flex: 10, justifyContent: 'center', alignItems: 'center' }}
-                        onPress={e => this.setState({ marker: e.nativeEvent.coordinate })}
-                    >
-                        <MapView.Marker
-                            coordinate={this.state.marker}
-                        />
+                <View style={{ flex: 10 }}>
+                    {
+                        this.state.isLoading ? <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} /> :
+                            <MapView
+                                provider={PROVIDER_GOOGLE}
+                                initialRegion={{
+                                    latitude: this.state.location.latitude,
+                                    longitude: this.state.location.longitude,
+                                    latitudeDelta: 0.0922,
+                                    longitudeDelta: 0.0421,
+                                }}
+                                style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                                onPress={e => this.setState({ marker: e.nativeEvent.coordinate })}
+                            >
+                                <MapView.Marker
+                                    coordinate={this.state.marker}
+                                />
 
-                        <Circle
-                            center={this.state.marker}
-                            radius={this.state.radio}
-                            strokeWidth={2}
-                        />
-                    </MapView>
-                }
+                                <MapView.Marker
+                                    coordinate={{
+                                        latitude: this.state.marker.latitude + 0.01,
+                                        longitude: this.state.marker.longitude + 0.01
+                                    }}
+                                    onPress={ () => this.props.navigation.navigate('InfoDriver') }
+                                >
+                                    <Icon
+                                        type='font-awesome'
+                                        name='user'
+                                        size={24}
+                                        color='black'
+                                    />
+                                </MapView.Marker>
+
+                                <Circle
+                                    center={this.state.marker}
+                                    radius={this.state.radio}
+                                    strokeWidth={2}
+                                />
+                            </MapView>
+                    }
+                </View>
                 <Text style={{ fontFamily: 'aller-lt', fontSize: 16, marginBottom: 5 }} >Radio de visualización</Text>
                 <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
-                    <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                         <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >5 Km</Text>
                         <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >10 Km</Text>
                         <Text style={{ fontFamily: 'aller-lt', fontSize: 14 }} >20 Km</Text>

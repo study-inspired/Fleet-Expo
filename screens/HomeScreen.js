@@ -9,54 +9,85 @@ import {
   View,
 } from 'react-native';
 
+import {
+  Button,
+  Overlay
+} from 'react-native-elements'
+
+import DateRangePicker from '../components/DateRangePicker'
+
 import { MonoText } from '../components/StyledText';
 
-export default function StartScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
+export default class StartScreen extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
+
+  state = {
+    visible: false
+  }
+
+  render() {
+    return ( 
+      <View style={styles.container}>
+        <Overlay
+          isVisible={this.state.visible}
+          width={300}
+          height={350}
+          onBackdropPress={ () => this.setState({ visible: false }) }
+        >
+          <View style={{ flex: 1 }}>
+            <DateRangePicker
+              initialRange={['2018-04-01', '2018-04-10']}
+              onSuccess={(s, e) => alert(s + '  -  ' + e)}
+              theme={{ markColor: '#ff8834', markTextColor: 'white' }}
+            />
+            {/*<Button
+              title='cerrar'
+              onPress={ () => this.setState({ visible: false }) }
+            />*/}
+          </View>
+        </Overlay>
+
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}>
+          <View style={styles.welcomeContainer}>
+            <Image
+              source={
+                __DEV__
+                  ? require('../assets/images/robot-dev.png')
+                  : require('../assets/images/robot-prod.png')
+              }
+              style={styles.welcomeImage}
+            />
+          </View>
+  
+          <View style={styles.getStartedContainer}>
+            <DevelopmentModeNotice />
+            <Text style={[styles.getStartedText, styles.fontNormal]}>
+              Change this text and your app will automatically reload.
+            </Text>
+          </View>
+        </ScrollView>
+  
+        <View style={styles.tabBarInfoContainer}>
+          <Button
+            title='Seleccionar semana'
+            onPress={ () => this.setState( { visible: true } ) }
           />
-        </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-          <Text style={[styles.getStartedText, styles.fontNormal]}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-       
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
+  
+          <View
+            style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+            <MonoText style={styles.codeHighlightText}>
+              navigation/MainTabNavigator.js
+            </MonoText>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  }
 }
-
-StartScreen.navigationOptions = {
-  header: null,
-};
 
 function DevelopmentModeNotice() {
   if (__DEV__) {

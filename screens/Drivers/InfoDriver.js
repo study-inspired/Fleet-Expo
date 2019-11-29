@@ -12,7 +12,8 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
-  Alert
+  Alert,
+  StatusBar
 } from 'react-native';
 import { Button, Icon, Divider, Badge } from 'react-native-elements'
 
@@ -108,7 +109,7 @@ export default class InfoDriver extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
         <View elevation={4} style={{ flexDirection: 'column' }}>
           <View style={{ paddingTop: 10, flexDirection: "row" }}>
             <Button
@@ -228,7 +229,7 @@ export default class InfoDriver extends React.Component {
                   style={{ marginTop: 2 }}
                 />
                 <Badge
-                  value="9"
+                  value={this.state.reconocimientos.excelenteservicio}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -246,7 +247,7 @@ export default class InfoDriver extends React.Component {
                   style={{ marginTop: 2 }}
                 />
                 <Badge
-                  value="6"
+                  value={this.state.reconocimientos.buenaruta}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -264,7 +265,7 @@ export default class InfoDriver extends React.Component {
                   style={{ marginTop: 2 }}
                 />
                 <Badge
-                  value="3"
+                  value={this.state.reconocimientos.amable}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -282,7 +283,7 @@ export default class InfoDriver extends React.Component {
                   style={{ marginTop: 2 }}
                 />
                 <Badge
-                  value="9"
+                  value={this.state.reconocimientos.buenaconversacion}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -300,7 +301,7 @@ export default class InfoDriver extends React.Component {
                   style={{ marginTop: 6 }}
                 />
                 <Badge
-                  value="99"
+                  value={this.state.reconocimientos.heroe}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -325,14 +326,8 @@ export default class InfoDriver extends React.Component {
                   size={32}
                   style={{ marginTop: 6 }}
                 />
-                <Badge
-                  value="99"
-                  status="success"
-                  containerStyle={styles.badge}
-                  textStyle={styles.textoBadge}
-                />
               </View>
-              <Text style={[styles.textoNormal, { fontSize: 12, marginVertical: 7 }]}>{'100 viajes de 5 estrellas'}</Text>
+              <Text style={[styles.textoNormal, { fontSize: 12, marginVertical: 7 }]}>{`${this.state.logros.viajesconFestrellas} viajes de 5 estrellas`}</Text>
             </View>
             <Button
               title='Invitar'
