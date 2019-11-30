@@ -4,11 +4,11 @@ import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
 const datos = [
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5, icon: <Icon type='material' name='remove-red-eye' size={18} /> },
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5, icon: <Icon type='material' name='remove-red-eye' size={18} /> },
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 10, salidas: 10, icon: <Icon type='material' name='remove-red-eye' size={18} /> },
-    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 8, salidas: 8, icon: <Icon type='material' name='remove-red-eye' size={18} /> },
-    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 6, salidas: 7, icon: <Icon type='material' name='remove-red-eye' size={18} /> }
+    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5 },
+    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5 },
+    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 10, salidas: 10},
+    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 8, salidas: 8},
+    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 6, salidas: 7}
 ];
 
 export default class GeofenceAlerts extends Component {
@@ -34,7 +34,7 @@ export default class GeofenceAlerts extends Component {
                         <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                     </View>,
                     val.placa,
-                    val.icon
+                    <Icon type='material' name='remove-red-eye' size={18} />
                 ];
             })
         }
