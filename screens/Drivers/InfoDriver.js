@@ -24,10 +24,101 @@ export default class InfoDriver extends React.Component {
     header: null
   };
 
+  async datos_conductor() {
+    const state = await NetInfo.fetch();
+    if (state.isConnected) {
+        try {
+            const result = await fetch('http://34.95.33.177:3006/webservice/datos_conductor', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  id_usuario: 1
+                }),
+            })
+
+            const datos = await result.json();
+            if (datos1_comentarios) {
+                if (datos1_comentarios.msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(datos1_comentarios.msg);
+                } else if (datos1_comentarios.datos1_comentarios){
+                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+                }
+                this.props.navigation.goBack();
+            }
+
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+        }
+        
+        try {
+          const result = await fetch('http://34.95.33.177:3006/webservice/comentarios_socio_a_conductor', {
+              method: 'POST',
+              headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id_usuario: 1
+              }),
+          })
+
+          const datos = await result.json();
+          if (datos) {
+              if (datos.msg) {
+                  Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                  console.error(datos.msg);
+              } else if (datos.datos){
+                  Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+              }
+              this.props.navigation.goBack();
+          }
+
+      } catch (error) {
+          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+          console.error(error);
+      }
+
+      try {
+        const result = await fetch('http://34.95.33.177:3006/webservice/logros_conductor', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id_usuario: 1
+            }),
+        })
+        
+        const comentarios = await result.json();
+        if (comentarios) {
+            if (comentarios.msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(comentarios.msg);
+            } else if (comentarios.comentarios){
+                Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+            }
+            this.props.navigation.goBack();
+        }
+
+    } catch (error) {
+        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+        console.error(error);
+    }
+
+    } else {
+        Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+    }
+}
+
   state = {
     isLoading: false,
     hascommentary: true,
-    fecha: "10/10/2019",
     conductor: {
       fotoconductor: false,
       nombreconductor: "Pedro Campos",
@@ -141,7 +232,6 @@ export default class InfoDriver extends React.Component {
               titleStyle={styles.helpButtonTitle}
               title="Ayuda"
             />
-            <Text style={styles.fecha}>{this.state.fecha}</Text>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
             <Text style={[styles.textoBold, { flex: 1, textAlign: 'left', fontSize: 18 }]}>{this.state.conductor.nombreconductor}</Text>
@@ -399,13 +489,6 @@ const styles = StyleSheet.create({
     fontFamily: 'aller-lt',
     fontSize: 12,
     bottom: 0
-  },
-  fecha: {
-    fontFamily: 'aller-lt',
-    fontSize: 16,
-    position: 'absolute',
-    right: 10,
-    bottom: -5
   },
   textoNormal: {
     fontFamily: 'aller-lt',

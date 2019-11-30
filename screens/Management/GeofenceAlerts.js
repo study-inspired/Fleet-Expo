@@ -24,7 +24,7 @@ export default class GeofenceAlerts extends Component {
             isLoading: true,
             hasAlerts: false,
             tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa'],
-            widthArr: [37, 37, 145, 95],
+            widthArr: [40, 40, 145, 95],
             data: datos.map(val => {
                 return [
                     val.entradas,
