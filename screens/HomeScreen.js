@@ -16,6 +16,8 @@ import {
 
 import DateRangePicker from '../components/DateRangePicker'
 
+import { Calendar } from 'react-native-calendars';
+
 import { MonoText } from '../components/StyledText';
 
 export default class StartScreen extends React.Component {
@@ -24,7 +26,36 @@ export default class StartScreen extends React.Component {
   };
 
   state = {
-    visible: false
+    visible: false,
+    markedDates: null
+  }
+
+  componentDidMount() {
+    this.getWeek(new Date());
+  }
+
+  formatDate(yyyy, mm, dd) {
+    let m = (mm > 9) ? `${mm}` : `0${mm}`;
+    let d = (dd > 9) ? `${dd}` : `0${dd}`;
+    return `${yyyy}-${m}-${d}`;
+  }
+
+  getWeek(date) {
+    // console.log(date);
+    
+    let dates = {};
+    let startDay = date;
+    startDay.setDate(date.getDate() - (date.getDay() - 0)); // domingo
+    // console.log(startDay);
+
+    dates[this.formatDate(startDay.getFullYear(), startDay.getMonth()+1, startDay.getDate())] = {color: '#ff8834', textColor: 'white'};
+
+    for (let day = 1; day < 7; day++) {
+      startDay.setDate(startDay.getDate() + 1);
+      dates[this.formatDate(startDay.getFullYear(), startDay.getMonth()+1, startDay.getDate())] = {color: '#ff8834', textColor: 'white'};
+    }
+
+    this.setState({ markedDates: dates });
   }
 
   render() {
@@ -33,14 +64,19 @@ export default class StartScreen extends React.Component {
         <Overlay
           isVisible={this.state.visible}
           width={300}
-          height={350}
+          height={400}
           onBackdropPress={ () => this.setState({ visible: false }) }
         >
           <View style={{ flex: 1 }}>
-            <DateRangePicker
-              initialRange={['2018-04-01', '2018-04-10']}
-              onSuccess={(s, e) => alert(s + '  -  ' + e)}
-              theme={{ markColor: '#ff8834', markTextColor: 'white' }}
+            <Calendar
+              theme={{
+                textDayFontFamily: 'aller-lt',
+                textMonthFontFamily: 'aller-lt',
+                textDayHeaderFontFamily: 'aller-bd',
+              }}
+              onDayPress={ (day) => this.getWeek(new Date(day.dateString)) }
+              markedDates={ this.state.markedDates }
+              markingType={'period'}
             />
             {/*<Button
               title='cerrar'
