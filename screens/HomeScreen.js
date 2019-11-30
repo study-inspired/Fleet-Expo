@@ -14,8 +14,6 @@ import {
   Overlay
 } from 'react-native-elements'
 
-import DateRangePicker from '../components/DateRangePicker'
-
 import { Calendar } from 'react-native-calendars';
 
 import { MonoText } from '../components/StyledText';
