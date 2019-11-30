@@ -59,7 +59,7 @@ export default class ReportVehicle extends Component {
 
     async obtenerViajes() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz151/obtener_viajes', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz151/obtener_viajes', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -87,7 +87,7 @@ export default class ReportVehicle extends Component {
 
     async obtenerAlertas() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

@@ -37,7 +37,7 @@ export default class Alerts extends Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

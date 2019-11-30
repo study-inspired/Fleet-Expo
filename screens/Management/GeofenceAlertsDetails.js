@@ -4,14 +4,12 @@ import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
 const datos = [
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5 },
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5 },
-    { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 10, salidas: 10},
-    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 8, salidas: 8},
-    { vehiculo: 'Nissan Versa', placa: 'COL-1684D', color: '#fafafa', entradas: 6, salidas: 7}
+    { tipo: "Entrada", hora: "12:24:05", fecha : "20/09/2019" },
+    { tipo: "Salida", hora: "10:24:05", fecha : "25/09/2019" },
+    { tipo: "Salida", hora: "12:24:05", fecha : "30/09/2019" }
 ];
 
-export default class GeofenceAlerts extends Component {
+export default class GeofenceAlertsDetails extends Component {
 
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
@@ -20,14 +18,14 @@ export default class GeofenceAlerts extends Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_genera',{
+                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial',{
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_propietario: '1'
+                        id_vehiculo: '1'
                     }),
                 })
     
@@ -36,11 +34,10 @@ export default class GeofenceAlerts extends Component {
                 if (data.datos.length != 0) {
                     let drivers = data.datos.map((d)=>{
                         return {
-                            id_unidad: d.id_unidad,
-                            modelo: d.modelo,
-                            marca: d.marca,
-                            entradas: d.entradas,
-                            salidas: d.salidas
+                            tipo_unidad: d.tipo_unidad,
+                            fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                            hora: d.hora,
+                            coordenadas: d.coordenadas
                         }
                     })
                     this.setState({
@@ -68,25 +65,20 @@ export default class GeofenceAlerts extends Component {
         }
     }
 
-
     constructor(props) {
         super(props);
         this.state = {
             refreshing: false,
             isLoading: true,
             hasAlerts: false,
-            tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa', ''],
-            widthArr: [40, 40, 145, 95, 40],
+            tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
+            widthArr: [70, 90, 105, 100],
             data: datos.map(val => {
                 return [
-                    val.entradas,
-                    val.salidas,
-                    <View style={styles.view1}>
-                        <Text style={{ fontFamily: 'aller-lt' }}>{val.vehiculo}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                    </View>,
-                    val.placa,
-                    <Icon type='material' name='remove-red-eye' size={18} />
+                    val.tipo,
+                    val.hora,
+                    val.fecha,
+                    <Icon onPress={() => this.props.navigation.navigate('Interfaz', { vehicle: this.state.vehicle })} type='material' name='remove-red-eye' size={18} />
                 ];
             })
         }

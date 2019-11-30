@@ -47,6 +47,8 @@ import VehicleMaintenance  from '../screens/Management/VehicleMaintenance';
 import LocateVehicle from '../screens/Management/LocateVehicle';
 import GeofenceActions from '../screens/Management/GeofenceActions';
 import GeofenceAlerts from '../screens/Management/GeofenceAlerts';
+import GeofenceAlertsDetails from '../screens/Management/GeofenceAlertsDetails';
+import GeofenceAlertsDetailsMap from '../screens/Management/GeofenceAlertsDetailsMap';
 import RegisteredGeofences from '../screens/Management/RegisteredGeofences';
 import AssignVehicle from '../screens/Management/AssignVehicle';
 import Alerts from '../screens/Management/Alerts';
@@ -205,7 +207,9 @@ const ManagementStack = createStackNavigator(
     RegisterGeofence: RegisterGeofence,
     TraceRadius: TraceRadius,
     TracePoligon: TracePoligon,
-    GeofenceAlerts: GeofenceAlerts
+    GeofenceAlerts: GeofenceAlerts,
+    GeofenceAlertsDetails:GeofenceAlertsDetails,
+    GeofenceAlertsDetailsMap:GeofenceAlertsDetailsMap
   },
   config
 );

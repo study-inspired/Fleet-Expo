@@ -68,7 +68,7 @@ export default class AssignVehicle extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -115,7 +115,7 @@ export default class AssignVehicle extends React.Component {
             Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
         } else {
             try {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz126/asignar_unidad_geocerca', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/asignar_unidad_geocerca', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
