@@ -49,6 +49,7 @@ export default class AddVehicle extends React.Component {
         marca: '',
         kilometraje: '',
         placa: '',
+        niv: '',
         serie: '',
         color: '#000',
         tipo_vehiculo: '',
@@ -98,11 +99,45 @@ export default class AddVehicle extends React.Component {
                 this.state.tipo_vehiculo != '' &&
                 this.state.poliza &&
                 this.state.factura &&
-                this.state.holograma && 
+                this.state.holograma &&
                 this.state.tarjeta &&
                 this.state.tag &&
                 this.state.fotos
             ) {
+                try {
+                    const result = await fetch('http://35.203.42.33:3006/webservice/interfaz61/agregar_unidad', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            p_modelo: this.state.modelo,
+                            p_marca: this.state.marca,
+                            p_kilometraje: this.state.kilometraje,
+                            p_placas: this.state.placa,
+                            p_descripcion: '',
+                            p_niv: this.state.serie,
+                            p_id_tipo_vehiculo: this.state.tipo_vehiculo,
+                            p_serie: this.state.serie,
+                            p_color: this.state.color,
+                            p_id_usuario_propietario: 7
+                        }),
+                    })
+
+                    const datos = await result.json();
+                    console.log(datos);
+                    if (datos.datos.length > 0) {
+                        this.setState({ conductor: datos.datos[0] });
+                    } else {
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                        this.props.navigation.goBack();
+                    }
+
+                } catch (error) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(error);
+                }
                 this.props.navigation.navigate('DataSent');
             } else {
                 Alert.alert('Atención', 'Debes llenar todos los campos y subir los todos documentos antes de continuar.');
@@ -173,7 +208,7 @@ export default class AddVehicle extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
                     <View style={{ marginHorizontal: 15 }}>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
                                 <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ modelo: text })}
@@ -184,14 +219,16 @@ export default class AddVehicle extends React.Component {
                                 <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ kilometraje: text })}
                                 />
-                                <Input title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({ placa: text })}
-                                />
-
                             </View>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input title="Niv o Serie" placeholder="Niv o Serie" inputStyle={styles.textoRegular16}
+                                <Input title="NIV" placeholder="NIV" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({ niv: text })}
+                                />
+                                <Input title="Serie" placeholder="Serie" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ serie: text })}
+                                />
+                                <Input title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({ placa: text })}
                                 />
                             </View>
                         </View>
@@ -207,8 +244,8 @@ export default class AddVehicle extends React.Component {
                                 }}
                             >
                                 <Text style={[styles.textoRegular16, { flex: 3 }]}>Selecciona tu color</Text>
-                                <View style={[styles.colorVehiculo, { backgroundColor: this.state.color}]}></View>
-                                
+                                <View style={[styles.colorVehiculo, { backgroundColor: this.state.color }]}></View>
+
                             </TouchableOpacity>
 
                             <Picker
@@ -216,16 +253,16 @@ export default class AddVehicle extends React.Component {
                                     styles.textoRegular16,
                                     {
                                         height: 40,
-                                        marginVertical: 5,
+                                        marginVertical: 3,
                                     }
                                 ]}
                                 itemStyle={styles.textoRegular16}
                                 selectedValue={this.state.tipo_vehiculo}
                                 onValueChange={(tipo) => this.setState({ tipo_vehiculo: tipo })}>
-                                <Picker.Item label="Tipo" />
-                                <Picker.Item label="Auto normal" value="Auto normal" />
-                                <Picker.Item label="Auto de lujo" value="Auto de lujo" />
-                                <Picker.Item label="Camioneta" value="Camioneta" />
+                                <Picker.Item label="Tipo" value="" />
+                                <Picker.Item label="Auto normal" value="0" />
+                                <Picker.Item label="Auto de lujo" value="1" />
+                                <Picker.Item label="Camioneta" value="2" />
                             </Picker>
 
                             <TouchableOpacity
@@ -344,7 +381,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddPhoto', {doOnBack: this.onBack.bind(this)})}
+                                onPress={() => this.props.navigation.navigate('AddPhoto', { doOnBack: this.onBack.bind(this) })}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',

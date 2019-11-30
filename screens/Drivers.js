@@ -53,7 +53,7 @@ export default class Drivers extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'diana@gmail.com',
+                        p_correo: 'propietario1@gmail.com',
                         p_pass: '123456',
                     }),
                 })

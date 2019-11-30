@@ -37,7 +37,7 @@ export default class AttachedPicture extends React.Component {
         if (state.isConnected) {
             try {
                 const data = new FormData();
-                data.append('id_usuario', '5');
+                data.append('id_usuario', '7');
                 data.append('file', {
                     uri: this.state.image.uri,
                     name: this.state.image.uri.match(/(\w-*)+((\.jp\w{1,2})|(\.png))/)[0],
@@ -50,11 +50,11 @@ export default class AttachedPicture extends React.Component {
 
                 console.log(data);
 
-                const response = await fetch(`http://34.95.33.177:3001/${this.state.ruta}`, {
+                const response = await fetch(`http://35.203.42.33:3001/${this.state.ruta}`, {
                     method: 'POST',
                     body: data
                 });
-                console.log(response);
+                //console.log(response);
 
                 const result = await response.json();
                 console.log(result);

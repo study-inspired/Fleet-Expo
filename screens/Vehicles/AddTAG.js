@@ -50,6 +50,7 @@ export default class AddTAG extends React.Component {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5
             // aspect: [4, 3],
         });
 
@@ -68,6 +69,7 @@ export default class AddTAG extends React.Component {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5
             // aspect: [4, 3],
         });
 

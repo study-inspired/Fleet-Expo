@@ -70,6 +70,7 @@ export default class AddPolicy extends React.Component {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
+            quality: 0.5
             // aspect: [4, 3],
         });
 

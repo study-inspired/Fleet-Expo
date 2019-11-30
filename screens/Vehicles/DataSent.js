@@ -33,7 +33,7 @@ export default class DataSent extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://34.95.33.177:3003/webservice/tiempos/tiempos_solicitud', {
+                const result = await fetch('http://35.203.42.33:3003/webservice/tiempos/tiempos_solicitud', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

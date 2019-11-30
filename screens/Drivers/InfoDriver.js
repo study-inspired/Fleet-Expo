@@ -15,8 +15,9 @@ import {
   Alert,
   StatusBar
 } from 'react-native';
+import { Asset } from 'expo-asset';
 import { Button, Icon, Divider, Badge } from 'react-native-elements'
-
+import NetInfo from '@react-native-community/netinfo'
 
 export default class InfoDriver extends React.Component {
 
@@ -24,110 +25,104 @@ export default class InfoDriver extends React.Component {
     header: null
   };
 
+  async componentDidMount() {
+    await this.datos_conductor();
+  }
+
   async datos_conductor() {
     const state = await NetInfo.fetch();
     if (state.isConnected) {
-        try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/datos_conductor', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  id_usuario: 1
-                }),
-            })
+      try {
+        const result = await fetch('http://35.203.42.33:3006/webservice/datos_conductor', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id_usuario: 1
+          }),
+        })
 
-            const datos = await result.json();
-            if (datos1_comentarios) {
-                if (datos1_comentarios.msg) {
-                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(datos1_comentarios.msg);
-                } else if (datos1_comentarios.datos1_comentarios){
-                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-                }
-                this.props.navigation.goBack();
-            }
-
-        } catch (error) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(error);
+        const datos = await result.json();
+        console.log(datos);
+        if (datos.datos.length > 0) {
+          this.setState({ conductor: datos.datos[0] });
+        } else {
+          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+          this.props.navigation.goBack();
         }
         
-        try {
-          const result = await fetch('http://34.95.33.177:3006/webservice/comentarios_socio_a_conductor', {
-              method: 'POST',
-              headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                id_usuario: 1
-              }),
-          })
+      } catch (error) {
+        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+        console.error(error);
+      }
+/*
+      try {
+        const result = await fetch('http://34.95.33.177:3006/webservice/comentarios_socio_a_conductor', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id_usuario: 1
+          }),
+        })
 
-          const datos = await result.json();
-          if (datos) {
-              if (datos.msg) {
-                  Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                  console.error(datos.msg);
-              } else if (datos.datos){
-                  Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-              }
-              this.props.navigation.goBack();
+        const datos = await result.json();
+        if (datos) {
+          if (datos.msg) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(datos.msg);
+          } else if (datos.datos) {
+            Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
           }
+          this.props.navigation.goBack();
+        }
 
       } catch (error) {
-          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-          console.error(error);
+        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+        console.error(error);
       }
 
       try {
         const result = await fetch('http://34.95.33.177:3006/webservice/logros_conductor', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id_usuario: 1
-            }),
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id_usuario: 1
+          }),
         })
-        
+
         const comentarios = await result.json();
         if (comentarios) {
-            if (comentarios.msg) {
-                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                console.error(comentarios.msg);
-            } else if (comentarios.comentarios){
-                Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-            }
-            this.props.navigation.goBack();
+          if (comentarios.msg) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(comentarios.msg);
+          } else if (comentarios.comentarios) {
+            Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+          }
+          this.props.navigation.goBack();
         }
 
-    } catch (error) {
+      } catch (error) {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
         console.error(error);
-    }
-
+      }
+    */
     } else {
-        Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+      Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
     }
-}
+  }
 
   state = {
     isLoading: false,
     hascommentary: true,
-    conductor: {
-      fotoconductor: false,
-      nombreconductor: "Pedro Campos",
-      edadconductor: 23,
-      telefonoconductor: "1234567890",
-      comentarioconductor: "Padre de familia, responsable y atento",
-      idiomaconductor: "Ingles y Español",
-      Vive: "Colima"
-    },
+    conductor: {},
     viajes: {
       tasaaceptacion: "87%",
       tasacancelacion: "13%",
@@ -217,7 +212,7 @@ export default class InfoDriver extends React.Component {
             <Image
               style={styles.imagen}
               resizeMode="cover"
-              source={{ uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg' }}
+              source={{ uri: this.state.conductor.fotografia }}
             />
             <Button
               type='clear'
@@ -234,10 +229,10 @@ export default class InfoDriver extends React.Component {
             />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
-            <Text style={[styles.textoBold, { flex: 1, textAlign: 'left', fontSize: 18 }]}>{this.state.conductor.nombreconductor}</Text>
-            <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`Edad:\n${this.state.conductor.edadconductor} Años`}</Text>
+            <Text style={[styles.textoBold, { flex: 1, textAlign: 'left', fontSize: 18 }]}>{`${this.state.conductor.nombre} ${this.state.conductor.apellido}`}</Text>
+            <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`Edad:\n${this.state.conductor.edad} Años`}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.textoNormal, { textAlign: 'center', position: 'absolute', right: 0 }]}>{`Tel:\n${this.state.conductor.telefonoconductor}`}</Text>
+              <Text style={[styles.textoNormal, { textAlign: 'center', position: 'absolute', right: 0 }]}>{`Tel:\n${this.state.conductor.telefono}`}</Text>
             </View>
           </View>
 
@@ -248,7 +243,7 @@ export default class InfoDriver extends React.Component {
               size={24}
               color='#000'
             />
-            <Text style={styles.textoNormal}>{`"${this.state.conductor.comentarioconductor}"`}</Text>
+            <Text style={styles.textoNormal}>{`"${this.state.conductor.pequena_descripcion}"`}</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 10, marginBottom: 10 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -258,7 +253,7 @@ export default class InfoDriver extends React.Component {
                 size={24}
                 color='#000'
               />
-              <Text style={[styles.textoNormal, { marginLeft: 5 }]}>{`Habla ${this.state.conductor.idiomaconductor}`}</Text>
+              <Text style={[styles.textoNormal, { marginLeft: 5 }]}>{`Habla ${this.state.conductor.idiomas}`}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icon
@@ -267,23 +262,23 @@ export default class InfoDriver extends React.Component {
                 size={24}
                 color='#000'
               />
-              <Text style={[styles.textoNormal, { marginLeft: 5 }]}>{`De ${this.state.conductor.Vive}`}</Text>
+              <Text style={[styles.textoNormal, { marginLeft: 5 }]}>{`De ${this.state.conductor.ciudad}`}</Text>
             </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 10, marginBottom: 10 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={[styles.textoNormal, { marginRight: 8 }]}>{`Tasa de\naceptación`}</Text>
-              <Text style={[styles.textoBold, { fontSize: 36 }]}>{this.state.viajes.tasaaceptacion}</Text>
+              <Text style={[styles.textoBold, { fontSize: 36 }]}>{`${this.state.conductor.tasa_aceptacion}%`}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={[styles.textoNormal, { marginRight: 8 }]}>{`Tasa de\ncancelación`}</Text>
-              <Text style={[styles.textoBold, { fontSize: 36 }]}>{this.state.viajes.tasacancelacion}</Text>
+              <Text style={[styles.textoBold, { fontSize: 36 }]}>{`${this.state.conductor.tasa_cancelacion}%`}</Text>
             </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 10, marginBottom: 5 }}>
             <View style={{ flexDirection: 'column' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={[styles.textoBold, { fontSize: 18, marginRight: 2 }]}>{this.state.viajes.calificacion}</Text>
+                <Text style={[styles.textoBold, { fontSize: 18, marginRight: 2 }]}>{this.state.conductor.calificacion}</Text>
                 <Icon
                   name='star'
                   color='#000'
@@ -294,11 +289,11 @@ export default class InfoDriver extends React.Component {
               <Text style={[styles.textoNormal, { textAlign: 'center' }]}>Calificación</Text>
             </View>
             <View style={{ flexDirection: 'column' }}>
-              <Text style={[styles.textoBold, { fontSize: 18, textAlign: 'center' }]}>{this.state.viajes.dias}</Text>
+              <Text style={[styles.textoBold, { fontSize: 18, textAlign: 'center' }]}>{this.state.conductor.dias?this.state.conductor.dias:17}</Text>
               <Text style={[styles.textoNormal, { textAlign: 'center' }]}>Días</Text>
             </View>
             <View style={{ flexDirection: 'column' }}>
-              <Text style={[styles.textoNormal, { fontSize: 18, textAlign: 'center' }]}>{`${this.state.viajes.viajesfinalizados}  ${this.state.viajes.viajesfinalizadosporcentaje}`}</Text>
+              <Text style={[styles.textoNormal, { fontSize: 18, textAlign: 'center' }]}>{`${this.state.conductor.viajes_finalizados }   n%`}</Text>
               <Text style={[styles.textoBold, { textAlign: 'center' }]}>Viajes finalizados</Text>
             </View>
           </View>
@@ -311,15 +306,12 @@ export default class InfoDriver extends React.Component {
           <View style={{ marginTop: 10, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='font-awesome'
-                  name='thumbs-o-up'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 2 }}
+                <Image
+                  source={ require('../../assets/images/Excelente-servicio.png') }
+                  style={{ width: 32, height: 32 }}
                 />
                 <Badge
-                  value={this.state.reconocimientos.excelenteservicio}
+                  value={this.state.conductor.reconocimiento1}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -329,15 +321,12 @@ export default class InfoDriver extends React.Component {
             </View>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='material-community'
-                  name='map-marker'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 2 }}
+                <Image
+                  source={ require('../../assets/images/Buena-ruta.png') }
+                  style={{ width: 32, height: 32 }}
                 />
                 <Badge
-                  value={this.state.reconocimientos.buenaruta}
+                  value={this.state.conductor.reconocimiento2}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -347,15 +336,12 @@ export default class InfoDriver extends React.Component {
             </View>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='font-awesome'
-                  name='smile-o'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 2 }}
+                <Image
+                  source={ require('../../assets/images/Amable.png') }
+                  style={{ width: 32, height: 32 }}
                 />
                 <Badge
-                  value={this.state.reconocimientos.amable}
+                  value={this.state.conductor.reconocimiento3}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -365,15 +351,12 @@ export default class InfoDriver extends React.Component {
             </View>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='antdesign'
-                  name='message1'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 2 }}
+                <Image
+                  source={ require('../../assets/images/Buena-charla.png') }
+                  style={{ width: 32, height: 32 }}
                 />
                 <Badge
-                  value={this.state.reconocimientos.buenaconversacion}
+                  value={this.state.conductor.reconocimiento4}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -383,15 +366,12 @@ export default class InfoDriver extends React.Component {
             </View>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='font-awesome'
-                  name='shield'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 6 }}
+                <Image
+                  source={ require('../../assets/images/Heroe.png') }
+                  style={{ width: 32, height: 32 }}
                 />
                 <Badge
-                  value={this.state.reconocimientos.heroe}
+                  value={this.state.conductor.reconocimiento5}
                   status="success"
                   containerStyle={styles.badge}
                   textStyle={styles.textoBadge}
@@ -409,12 +389,9 @@ export default class InfoDriver extends React.Component {
           <View style={{ marginTop: 10, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
-                <Icon
-                  type='ionicon'
-                  name='ios-trophy'
-                  color='#000'
-                  size={32}
-                  style={{ marginTop: 6 }}
+                <Image
+                  source={ require('../../assets/images/Logros.png') }
+                  style={{ width: 32, height: 32 }}
                 />
               </View>
               <Text style={[styles.textoNormal, { fontSize: 12, marginVertical: 7 }]}>{`${this.state.logros.viajesconFestrellas} viajes de 5 estrellas`}</Text>
@@ -492,15 +469,16 @@ const styles = StyleSheet.create({
   },
   textoNormal: {
     fontFamily: 'aller-lt',
-    fontSize: 16
+    fontSize: 14
   },
   textoBold: {
     fontFamily: 'aller-bd',
-    fontSize: 16
+    fontSize: 14
   },
   circuloIcono: {
     flexDirection: "column",
     justifyContent: "center",
+    alignItems: "center",
     width: 46,
     height: 46,
     borderColor: '#000',
