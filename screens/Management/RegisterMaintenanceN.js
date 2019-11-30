@@ -41,7 +41,7 @@ export default class RegisterMaintenance extends Component {
         }
         else {
             try {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz129/registrar_servicio_neumatico', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz129/registrar_servicio_neumatico', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

@@ -49,7 +49,7 @@ export default class RegisterMaintenance extends Component {
             Alert.alert('Info', 'Llena todos los campos.');
         } else {
             try {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz126/registrar_servicio_mecanico', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/registrar_servicio_mecanico', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

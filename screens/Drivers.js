@@ -46,7 +46,7 @@ export default class Drivers extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -102,7 +102,7 @@ export default class Drivers extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz69/desvincular_vehiculo', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz69/desvincular_vehiculo', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

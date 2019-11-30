@@ -30,7 +30,7 @@ export default class ServiceConsultation extends Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz136/obtener_servicios_detalle', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz136/obtener_servicios_detalle', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

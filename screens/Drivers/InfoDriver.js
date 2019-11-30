@@ -28,7 +28,7 @@ export default class InfoDriver extends React.Component {
     const state = await NetInfo.fetch();
     if (state.isConnected) {
         try {
-            const result = await fetch('http://34.95.33.177:3006/webservice/datos_conductor', {
+            const result = await fetch('http://35.203.42.33:3006webservice/datos_conductor', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -56,7 +56,7 @@ export default class InfoDriver extends React.Component {
         }
         
         try {
-          const result = await fetch('http://34.95.33.177:3006/webservice/comentarios_socio_a_conductor', {
+          const result = await fetch('http://35.203.42.33:3006webservice/comentarios_socio_a_conductor', {
               method: 'POST',
               headers: {
                   Accept: 'application/json',
@@ -84,7 +84,7 @@ export default class InfoDriver extends React.Component {
       }
 
       try {
-        const result = await fetch('http://34.95.33.177:3006/webservice/logros_conductor', {
+        const result = await fetch('http://35.203.42.33:3006webservice/logros_conductor', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
