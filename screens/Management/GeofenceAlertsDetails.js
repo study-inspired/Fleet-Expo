@@ -14,7 +14,6 @@ export default class GeofenceAlertsDetails extends Component {
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
-
     async componentDidMount(){
         const state = await NetInfo.fetch();
         if (state.isConnected) {

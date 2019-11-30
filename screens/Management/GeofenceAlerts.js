@@ -16,7 +16,6 @@ export default class GeofenceAlerts extends Component {
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
-
     async componentDidMount(){
         const state = await NetInfo.fetch();
         if (state.isConnected) {
@@ -68,6 +67,7 @@ export default class GeofenceAlerts extends Component {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
+
 
     constructor(props) {
         super(props);
