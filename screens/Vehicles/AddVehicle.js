@@ -121,7 +121,12 @@ export default class AddVehicle extends React.Component {
                             p_id_tipo_vehiculo: this.state.tipo_vehiculo,
                             p_serie: this.state.serie,
                             p_color: this.state.color,
-                            p_id_usuario_propietario: 7
+                            p_id_usuario_propietario: 7,
+                            in_fotografia1: this.state.fotografia1,
+                            in_fotografia2: this.state.fotografia2,
+                            in_fotografia3: this.state.fotografia3,
+                            in_fotografia4: this.state.fotografia4,
+                            in_fotografia5: this.state.fotografia5
                         }),
                     })
 
