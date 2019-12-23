@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, Picker }
 import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
-export default class RegisterMaintenance extends Component {
+export default class RegisterMaintenanceN extends Component {
     static navigationOptions = {
         title: 'Registro mantenimiento neumático',
         headerTitleStyle: {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
@@ -77,6 +77,7 @@ export default class GeofenceAlerts extends Component {
             hasAlerts: false,
             tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa', ''],
             widthArr: [40, 40, 145, 95, 40],
+            vehicle: {},
             data: datos.map(val => {
                 return [
                     val.entradas,
@@ -86,7 +87,11 @@ export default class GeofenceAlerts extends Component {
                         <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                     </View>,
                     val.placa,
-                    <Icon type='material' name='remove-red-eye' size={18} />
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: this.state.vehicle })}
+                    >
+                        <Icon type='material' name='remove-red-eye' size={18} />
+                    </TouchableOpacity>
                 ];
             })
         }
@@ -102,14 +107,6 @@ export default class GeofenceAlerts extends Component {
             fontSize: 18,
             marginLeft: -10
         }
-    }
-
-    async componentDidMount() {
-
-        this.setState({
-            hasAlerts: true,
-            isLoading: false
-        });
     }
 
     //Refresh control  

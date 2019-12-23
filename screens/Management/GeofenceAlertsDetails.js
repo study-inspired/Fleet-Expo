@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
 const datos = [
-    { tipo: "Entrada", hora: "12:24:05", fecha : "20/09/2019" },
-    { tipo: "Salida", hora: "10:24:05", fecha : "25/09/2019" },
-    { tipo: "Salida", hora: "12:24:05", fecha : "30/09/2019" }
+    { tipo: "Entrada", hora: "12:24:05", fecha: "20/09/2019" },
+    { tipo: "Salida", hora: "10:24:05", fecha: "25/09/2019" },
+    { tipo: "Salida", hora: "12:24:05", fecha: "30/09/2019" }
 ];
 
 export default class GeofenceAlertsDetails extends Component {
@@ -14,11 +14,11 @@ export default class GeofenceAlertsDetails extends Component {
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
-    async componentDidMount(){
+    async componentDidMount() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial',{
+                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -28,11 +28,11 @@ export default class GeofenceAlertsDetails extends Component {
                         id_vehiculo: '1'
                     }),
                 })
-    
+
                 const data = await result.json();
-    
+
                 if (data.datos.length != 0) {
-                    let drivers = data.datos.map((d)=>{
+                    let drivers = data.datos.map((d) => {
                         return {
                             tipo_unidad: d.tipo_unidad,
                             fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
@@ -42,17 +42,17 @@ export default class GeofenceAlertsDetails extends Component {
                     })
                     this.setState({
                         hasDrivers: true,
-                        drivers: drivers, 
-                        isLoading: false 
+                        drivers: drivers,
+                        isLoading: false
                     });
-    
+
                 } else {
                     Alert.alert('Info', 'No hay conductores!');
                     this.setState({
                         isLoading: false
                     });
                 }
-    
+
             } catch (error) {
                 Alert.alert('Error', 'Hubo un error.')
                 console.error(error);
@@ -73,12 +73,22 @@ export default class GeofenceAlertsDetails extends Component {
             hasAlerts: false,
             tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
             widthArr: [70, 90, 105, 100],
+            vehicle: {},
             data: datos.map(val => {
                 return [
                     val.tipo,
                     val.hora,
                     val.fecha,
-                    <Icon onPress={() => this.props.navigation.navigate('Interfaz', { vehicle: this.state.vehicle })} type='material' name='remove-red-eye' size={18} />
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', { vehicle: this.state.vehicle })}
+                    >
+                        <Icon
+                            type='material-community'
+                            name='map-marker'
+                            size={18}
+                            color='#ffbb00'
+                        />
+                    </TouchableOpacity>
                 ];
             })
         }

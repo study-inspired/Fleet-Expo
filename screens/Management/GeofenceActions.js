@@ -138,7 +138,7 @@ export default class GeofenceActions extends React.Component {
                                     return (
                                         <TouchableOpacity
                                             key={i}
-                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {id_geocerca: i, nombre: a.nombre})}
+                                            onPress={() => this.props.navigation.navigate('GeofenceAlerts', {id_geocerca: i, nombre: a.nombre})}
                                         >
                                             <Card wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <View

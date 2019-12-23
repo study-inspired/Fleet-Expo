@@ -76,6 +76,26 @@ export default class AddDriver extends React.Component {
                 },
                 isLoading: false
             });
+
+            //
+            const response = await fetch('http://35.203.42.33:3001/get_conductor_radio', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitud_origen: this.state.marker.latitude,
+                    longitud_origen: this.state.marker.longitude,
+                    km: this.state.radio / 1000,
+                })
+            });
+
+            const result = await response.json();
+
+            console.log(result);
+
+            // Marcadores en el mapa de usuarios
         }
     }
 
@@ -83,36 +103,30 @@ export default class AddDriver extends React.Component {
         if (this.state.telefono != '') {
             const state = await NetInfo.fetch();
             if (state.isConnected) {
-                const result = await fetch('http://34.95.33.177:3006/webservice/interfaz54/obtener_conductor', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/id_usuario_geocerca', {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        telefono: `"${this.state.telefono}"`
+                        telefono: this.state.telefono
                     })
                 });
 
                 const datos = await result.json();
 
                 if (datos.datos.length == 0) {
-                    console.log('no hay datos');
+                    console.log('No hay conductor asociado al teléfono proporcionado.');
                     this.setState({
-                        mensaje: 'No hay conductor asociado al teléfono proporcionado',
+                        mensaje: 'No hay conductor asociado al teléfono proporcionado.',
                         verConductor: false,
                         invitacionEnviada: true
                     });
                 } else {
-                    this.setState({
-                        conductor: {
-                            nombre: datos.datos[0].nombre,
-                            num_telefono: datos.datos[0].num_telefono
-                        }
-                    });
+                    console.log(datos.datos);
 
-                    console.log(this.state.conductor);
-
-                    this.setState({ verConductor: true })
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario });
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -261,7 +275,7 @@ export default class AddDriver extends React.Component {
                         title='Ver'
                         buttonStyle={{ height: 32, width: 75, backgroundColor: '#ff8834' }}
                         titleStyle={{ fontFamily: 'aller-lt' }}
-                        onPress={() => { this.props.navigation.navigate('InfoDriver')/*this.obtenerConductor();*/ }}
+                        onPress={() => { this.obtenerConductor(); }}
                     />
                 </View>
                 <Text style={{ fontFamily: 'aller-lt', fontSize: 16 }}>Selecciona un conductor</Text>
@@ -283,12 +297,12 @@ export default class AddDriver extends React.Component {
                                     coordinate={this.state.marker}
                                 />
 
-                                <MapView.Marker
+                                {/* <MapView.Marker
                                     coordinate={{
                                         latitude: this.state.marker.latitude + 0.01,
                                         longitude: this.state.marker.longitude + 0.01
                                     }}
-                                    onPress={ () => this.props.navigation.navigate('InfoDriver') }
+                                    onPress={() => this.props.navigation.navigate('InfoDriver')}
                                 >
                                     <Icon
                                         type='font-awesome'
@@ -296,7 +310,7 @@ export default class AddDriver extends React.Component {
                                         size={24}
                                         color='black'
                                     />
-                                </MapView.Marker>
+                                </MapView.Marker> */}
 
                                 <Circle
                                     center={this.state.marker}

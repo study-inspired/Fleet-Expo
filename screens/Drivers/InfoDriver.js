@@ -27,6 +27,11 @@ export default class InfoDriver extends React.Component {
 
   async componentDidMount() {
     await this.datos_conductor();
+    await this.comentarios();
+    await this.logros();
+    this.setState({
+      isLoading: false
+    });
   }
 
   async datos_conductor() {
@@ -36,11 +41,11 @@ export default class InfoDriver extends React.Component {
         const result = await fetch('http://35.203.42.33:3006/webservice/datos_conductor', {
           method: 'POST',
           headers: {
-            Accept: 'application/json',
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            id_usuario: 1
+            id_usuario: this.props.navigation.getParam('id_usuario', 0)
           }),
         })
 
@@ -52,75 +57,81 @@ export default class InfoDriver extends React.Component {
           Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
           this.props.navigation.goBack();
         }
-        
-      } catch (error) {
-        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-        console.error(error);
-      }
-/*
-      try {
-        const result = await fetch('http://34.95.33.177:3006/webservice/comentarios_socio_a_conductor', {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id_usuario: 1
-          }),
-        })
-
-        const datos = await result.json();
-        if (datos) {
-          if (datos.msg) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(datos.msg);
-          } else if (datos.datos) {
-            Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-          }
-          this.props.navigation.goBack();
-        }
 
       } catch (error) {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
         console.error(error);
       }
-
-      try {
-        const result = await fetch('http://34.95.33.177:3006/webservice/logros_conductor', {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id_usuario: 1
-          }),
-        })
-
-        const comentarios = await result.json();
-        if (comentarios) {
-          if (comentarios.msg) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(comentarios.msg);
-          } else if (comentarios.comentarios) {
-            Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-          }
-          this.props.navigation.goBack();
-        }
-
-      } catch (error) {
-        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-        console.error(error);
-      }
-    */
     } else {
       Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
     }
   }
 
+  async comentarios() {
+    try {
+      const result = await fetch('http://35.203.42.33:3006/webservice/comentarios_socio_a_conductor', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_usuario: this.props.navigation.getParam('id_usuario', 0)
+        }),
+      })
+
+      const datos = await result.json();
+
+      if (datos) {
+        if (datos.msg) {
+          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+          console.error(datos.msg);
+          this.props.navigation.goBack();
+        } else if (datos.datos) {
+          console.log(datos.datos);
+          
+        }
+      }
+
+    } catch (error) {
+      Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+      console.error(error);
+    }
+  }
+
+  async logros() {
+    try {
+      const result = await fetch('http://35.203.42.33:3006/webservice/logros_conductor', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_usuario: this.props.navigation.getParam('id_usuario', 0)
+        }),
+      })
+
+      const comentarios = await result.json();
+      if (comentarios) {
+        if (comentarios.msg) {
+          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+          console.error(comentarios.msg);
+          this.props.navigation.goBack();
+        } else if (comentarios.datos) {
+          console.log(comentarios.datos);
+          
+        }
+      }
+
+    } catch (error) {
+      Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+      console.error(error);
+    }
+  }
+
   state = {
-    isLoading: false,
+    isLoading: true,
     hascommentary: true,
     conductor: {},
     viajes: {
@@ -195,6 +206,7 @@ export default class InfoDriver extends React.Component {
 
   render() {
     return (
+      this.state.isLoading ? <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} /> :
       <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
         <View elevation={4} style={{ flexDirection: 'column' }}>
           <View style={{ paddingTop: 10, flexDirection: "row" }}>
@@ -289,11 +301,11 @@ export default class InfoDriver extends React.Component {
               <Text style={[styles.textoNormal, { textAlign: 'center' }]}>Calificación</Text>
             </View>
             <View style={{ flexDirection: 'column' }}>
-              <Text style={[styles.textoBold, { fontSize: 18, textAlign: 'center' }]}>{this.state.conductor.dias?this.state.conductor.dias:17}</Text>
+              <Text style={[styles.textoBold, { fontSize: 18, textAlign: 'center' }]}>{this.state.conductor.dias ? this.state.conductor.dias : 17}</Text>
               <Text style={[styles.textoNormal, { textAlign: 'center' }]}>Días</Text>
             </View>
             <View style={{ flexDirection: 'column' }}>
-              <Text style={[styles.textoNormal, { fontSize: 18, textAlign: 'center' }]}>{`${this.state.conductor.viajes_finalizados }   n%`}</Text>
+              <Text style={[styles.textoNormal, { fontSize: 18, textAlign: 'center' }]}>{`${this.state.conductor.viajes_finalizados}   n%`}</Text>
               <Text style={[styles.textoBold, { textAlign: 'center' }]}>Viajes finalizados</Text>
             </View>
           </View>
@@ -307,7 +319,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Excelente-servicio.png') }
+                  source={require('../../assets/images/Excelente-servicio.png')}
                   style={{ width: 32, height: 32 }}
                 />
                 <Badge
@@ -322,7 +334,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Buena-ruta.png') }
+                  source={require('../../assets/images/Buena-ruta.png')}
                   style={{ width: 32, height: 32 }}
                 />
                 <Badge
@@ -337,7 +349,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Amable.png') }
+                  source={require('../../assets/images/Amable.png')}
                   style={{ width: 32, height: 32 }}
                 />
                 <Badge
@@ -352,7 +364,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Buena-charla.png') }
+                  source={require('../../assets/images/Buena-charla.png')}
                   style={{ width: 32, height: 32 }}
                 />
                 <Badge
@@ -367,7 +379,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Heroe.png') }
+                  source={require('../../assets/images/Heroe.png')}
                   style={{ width: 32, height: 32 }}
                 />
                 <Badge
@@ -390,7 +402,7 @@ export default class InfoDriver extends React.Component {
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <View style={styles.circuloIcono}>
                 <Image
-                  source={ require('../../assets/images/Logros.png') }
+                  source={require('../../assets/images/Logros.png')}
                   style={{ width: 32, height: 32 }}
                 />
               </View>

@@ -58,17 +58,17 @@ export default class AddPhoto extends React.Component {
 
     onBack(lado, uri) {
         switch (lado) {
-            case 1:
+            case 3:
                 this.setState({
                     trasera: uri
                 })
                 break;
-            case 2:
+            case 5:
                 this.setState({
                     delantera: uri
                 })
                 break;
-            case 3:
+            case 2:
                 this.setState({
                     derecha: uri
                 })
@@ -92,7 +92,9 @@ export default class AddPhoto extends React.Component {
             this.state.derecha != '' &&
             this.state.perfil != ''
         ) {
-            this.props.navigation.state.params.doOnBack('fotos');
+            this.props.navigation.state.params.doOnBack('fotos', 
+                [this.state.perfil, this.state.derecha, this.state.trasera, this.state.izquierda, this.state.delantera]
+            );
             this.props.navigation.pop();
         }
     }
@@ -109,19 +111,24 @@ export default class AddPhoto extends React.Component {
             let foto = 0;
             switch (lado) {
                 case 'trasera':
-                    foto = 1;
-                    break;
-                case 'delantera':
-                    foto = 2;
-                    break;
-                case 'lado derecho':
+                    console.log('Trasera');
                     foto = 3;
                     break;
+                case 'delantera':
+                    console.log('Delantera');
+                    foto = 5;
+                    break;
+                case 'lado derecho':
+                    console.log('Lado derecho');
+                    foto = 2;
+                    break;
                 case 'lado izquierdo':
+                    console.log('Lado izquierdo');
                     foto = 4;
                     break;
                 default:
-                    foto = 5;
+                    console.log('Perfil');
+                    foto = 1;
                     break;
             }
 
@@ -146,19 +153,24 @@ export default class AddPhoto extends React.Component {
             let foto = 0;
             switch (lado) {
                 case 'trasera':
-                    foto = 1;
-                    break;
-                case 'delantera':
-                    foto = 2;
-                    break;
-                case 'lado derecho':
+                    console.log('Trasera');
                     foto = 3;
                     break;
+                case 'delantera':
+                    console.log('Delantera');
+                    foto = 5;
+                    break;
+                case 'lado derecho':
+                    console.log('Lado derecho');
+                    foto = 2;
+                    break;
                 case 'lado izquierdo':
+                    console.log('Lado izquierdo');
                     foto = 4;
                     break;
                 default:
-                    foto = 5;
+                    console.log('Perfil');
+                    foto = 1;
                     break;
             }
 
@@ -201,8 +213,9 @@ export default class AddPhoto extends React.Component {
                         >
                             {this.state.izquierda != '' ?
                                 <Image
+                                    resizeMode='cover'
                                     style={styles.image}
-                                    source={{ uri: this.state.izquierda }}
+                                    source={{ uri: `http://35.203.42.33${this.state.izquierda.replace('/var/www/html', '')}` }}
                                 /> :
                                 <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Lado izquierdo</Text>
                             }
@@ -216,8 +229,9 @@ export default class AddPhoto extends React.Component {
                             >
                                 {this.state.trasera != '' ?
                                     <Image
+                                        resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: this.state.trasera }}
+                                        source={{ uri: `http://35.203.42.33${this.state.trasera.replace('/var/www/html', '')}` }}
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Trasera</Text>
                                 }
@@ -230,8 +244,9 @@ export default class AddPhoto extends React.Component {
                             >
                                 {this.state.perfil != '' ?
                                     <Image
+                                        resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: this.state.perfil }}
+                                        source={{ uri: `http://35.203.42.33${this.state.perfil.replace('/var/www/html', '')}` }}
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Perfil</Text>
                                 }
@@ -244,8 +259,9 @@ export default class AddPhoto extends React.Component {
                             >
                                 {this.state.delantera != '' ?
                                     <Image
+                                        resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: this.state.delantera }}
+                                        source={{ uri: `http://35.203.42.33${this.state.delantera.replace('/var/www/html', '')}` }} //Url de la imagen desde el servidor
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Delantera</Text>
                                 }
@@ -259,8 +275,9 @@ export default class AddPhoto extends React.Component {
                         >
                             {this.state.derecha != '' ?
                                 <Image
+                                    resizeMode='cover'
                                     style={styles.image}
-                                    source={{ uri: this.state.derecha }}
+                                    source={{ uri: `http://35.203.42.33${this.state.derecha.replace('/var/www/html', '')}` }}
                                 /> :
                                 <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>{'Lado\nderecho'}</Text>
                             }
@@ -302,7 +319,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     image: {
-        width: 98,
-        height: 98
+        width: 96,
+        height: 96
     }
 });

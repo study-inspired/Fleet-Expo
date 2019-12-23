@@ -39,42 +39,42 @@ export default class AddVehicle extends React.Component {
             { nombre: 'TAG', imagen: '', estado: 0, screen: 'AddTAG' },
             { nombre: 'Fotografías del vehículo', imagen: '', estado: 0, screen: 'AddPhoto' } // 3 documento aceptado
         ],
-        poliza: false,
-        factura: false,
-        holograma: false,
-        tarjeta: false,
-        tag: false,
-        fotos: false,
+        poliza: { cargado: false, ruta: '' },
+        factura: { cargado: false, ruta: '' },
+        holograma: { cargado: false, ruta: '' },
+        tarjeta: { cargado: false, ruta: '' },
+        tag: { cargado: false, ruta: '' },
+        fotos: { cargado: false, rutas: ['', '', '', '', ''] },
         modelo: '',
         marca: '',
         kilometraje: '',
         placa: '',
-        niv: '',
         serie: '',
         color: '#000',
         tipo_vehiculo: '',
         selectColor: false,
     }
 
-    onBack(documento) {
+    onBack(documento, url) {
         switch (documento) {
             case 'upload_poliza_seguro':
-                this.setState({ poliza: true });
+                this.setState({ poliza: { cargado: true, ruta: url } });
                 break;
             case 'upload_factura_vehiculo':
-                this.setState({ factura: true });
+                this.setState({ factura: { cargado: true, ruta: url } });
                 break;
             case 'upload_Holograma':
-                this.setState({ holograma: true });
+                this.setState({ holograma: { cargado: true, ruta: url } });
                 break;
             case 'upload_Tarjeta_circulacion':
-                this.setState({ tarjeta: true });
+                this.setState({ tarjeta: { cargado: true, ruta: url } });
                 break;
             case 'upload_Tag':
-                this.setState({ tag: true });
+                this.setState({ tag: { cargado: true, ruta: url } });
                 break;
             default:
-                this.setState({ fotos: true })
+                this.setState({ fotos: { cargado: true, rutas: url } });
+
                 break;
         }
     }
@@ -97,18 +97,18 @@ export default class AddVehicle extends React.Component {
                 this.state.placa != '' &&
                 this.state.serie != '' &&
                 this.state.tipo_vehiculo != '' &&
-                this.state.poliza &&
-                this.state.factura &&
-                this.state.holograma &&
-                this.state.tarjeta &&
-                this.state.tag &&
-                this.state.fotos
+                this.state.poliza.cargado &&
+                this.state.factura.cargado &&
+                this.state.holograma.cargado &&
+                this.state.tarjeta.cargado &&
+                this.state.tag.cargado &&
+                this.state.fotos.cargado
             ) {
                 try {
                     const result = await fetch('http://35.203.42.33:3006/webservice/interfaz61/agregar_unidad', {
                         method: 'POST',
                         headers: {
-                            Accept: 'application/json',
+                            'Accept': 'application/json',
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
@@ -119,26 +119,31 @@ export default class AddVehicle extends React.Component {
                             p_descripcion: '',
                             p_niv: this.state.serie,
                             p_id_tipo_vehiculo: this.state.tipo_vehiculo,
-                            p_serie: this.state.serie,
                             p_color: this.state.color,
-                            p_id_usuario_propietario: 7
+                            p_id_usuario_propietario: 7,
+                            in_fotografia1: this.state.fotos.rutas[0],
+                            in_fotografia2: this.state.fotos.rutas[1],
+                            in_fotografia3: this.state.fotos.rutas[2],
+                            in_fotografia4: this.state.fotos.rutas[3],
+                            in_fotografia5: this.state.fotos.rutas[4],
                         }),
                     })
 
                     const datos = await result.json();
+                    console.log('Agregar unidad:');
                     console.log(datos);
-                    if (datos.datos.length > 0) {
-                        this.setState({ conductor: datos.datos[0] });
-                    } else {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        this.props.navigation.goBack();
-                    }
+                    // if (datos.datos.length > 0) {
+                    //     //this.setState({ conductor: datos.datos[0] });
+                    //     this.props.navigation.navigate('DataSent');
+                    // } else {
+                    //     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    //     //this.props.navigation.goBack();
+                    // }
 
                 } catch (error) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(error);
                 }
-                this.props.navigation.navigate('DataSent');
             } else {
                 Alert.alert('Atención', 'Debes llenar todos los campos y subir los todos documentos antes de continuar.');
             }
@@ -210,21 +215,18 @@ export default class AddVehicle extends React.Component {
                     <View style={{ marginHorizontal: 15 }}>
                         <View style={{ flexDirection: 'row', marginTop: 5 }}>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({ modelo: text })}
-                                />
                                 <Input title="Marca" placeholder="Marca" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ marca: text })}
+                                />
+                                <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}
+                                    onChangeText={text => this.setState({ modelo: text })}
                                 />
                                 <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ kilometraje: text })}
                                 />
                             </View>
                             <View style={{ flex: 1, flexDirection: 'column' }}>
-                                <Input title="NIV" placeholder="NIV" inputStyle={styles.textoRegular16}
-                                    onChangeText={text => this.setState({ niv: text })}
-                                />
-                                <Input title="Serie" placeholder="Serie" inputStyle={styles.textoRegular16}
+                                <Input title="NIV o Serie" placeholder="NIV o Serie" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ serie: text })}
                                 />
                                 <Input title="Placa" placeholder="Placa" inputStyle={styles.textoRegular16}
@@ -279,9 +281,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>Póliza de seguro</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.poliza ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.poliza.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.poliza ?
+                                        !this.state.poliza.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
@@ -302,9 +304,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>Factura del vehículo</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.factura ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.factura.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.factura ?
+                                        !this.state.factura.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
@@ -325,9 +327,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>Holograma ambiental</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.holograma ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.holograma.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.holograma ?
+                                        !this.state.holograma.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
@@ -348,9 +350,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>Tarjeta de circulación</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.tarjeta ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.tarjeta.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.tarjeta ?
+                                        !this.state.tarjeta.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
@@ -371,9 +373,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>TAG</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.tag ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.tag.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.tag ?
+                                        !this.state.tag.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
@@ -394,9 +396,9 @@ export default class AddVehicle extends React.Component {
                                     <Text style={styles.textoRegular16}>Fotografías del vehículo</Text>
                                 </View>
                                 <View style={styles.viewTouchable}>
-                                    <Text style={[styles.textoRegular16, { color: !this.state.fotos ? '#000' : '#fff' }]}>Cargar</Text>
+                                    <Text style={[styles.textoRegular16, { color: !this.state.fotos.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                     {
-                                        !this.state.fotos ?
+                                        !this.state.fotos.cargado ?
                                             <FontAwesome name="chevron-right" size={18} color='black' /> :
                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                     }
