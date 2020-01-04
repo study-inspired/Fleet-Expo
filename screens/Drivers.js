@@ -49,11 +49,11 @@ export default class Drivers extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario',{
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'propietario1@gmail.com',
+                        p_correo: 'carlos@gmail.com',
                         p_pass: '123456',
                     }),
                 })

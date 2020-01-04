@@ -51,11 +51,11 @@ export default class VehiclesView extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carloslarios.159@gmail.com',
+                        p_correo: 'carlos@gmail.com',
                         p_pass: '123456',
                     }),
                 })
@@ -72,7 +72,7 @@ export default class VehiclesView extends React.Component {
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
                             imagen: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',//v.foto
                             vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
-                            problema: v.estado == 0
+                            problema: v.estado != 0
                         }
                     })
                     this.setState({
@@ -123,6 +123,20 @@ export default class VehiclesView extends React.Component {
         this.setState({ refreshing: false }) //Stop Rendering Spinner
     }
     //Termina el refresh  
+
+    _eliminarVehiculo() {
+        Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo', [
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancelar eliminar vehículo'),
+                style: 'cancel',
+            },
+            {
+                text: 'Aceptar', 
+                onPress: () => console.log('Aceptar eliminar vehículo.')
+            },
+        ], {cancelable: false})
+    }
 
     render() {
         return (
@@ -244,6 +258,7 @@ export default class VehiclesView extends React.Component {
                                                     fontSize: 12
                                                 }}
                                                 title="Eliminar"
+                                                onPress={() => this._eliminarVehiculo(v.id)}
                                             />
                                         </TouchableOpacity>
                                     </Card>

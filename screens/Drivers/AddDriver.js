@@ -145,6 +145,7 @@ export default class AddDriver extends React.Component {
             const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
                 method: 'POST',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({

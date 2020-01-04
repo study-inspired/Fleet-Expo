@@ -120,7 +120,7 @@ export default class AddVehicle extends React.Component {
                             p_niv: this.state.serie,
                             p_id_tipo_vehiculo: this.state.tipo_vehiculo,
                             p_color: this.state.color,
-                            p_id_usuario_propietario: 7,
+                            p_id_usuario_propietario: 2,
                             in_fotografia1: this.state.fotos.rutas[0],
                             in_fotografia2: this.state.fotos.rutas[1],
                             in_fotografia3: this.state.fotos.rutas[2],
@@ -149,6 +149,14 @@ export default class AddVehicle extends React.Component {
             }
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    verificarNIV(nextScreen) {
+        if (this.state.serie != '') {
+            this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this) })
+        } else {
+            Alert.alert('Atención', 'Debes llenar los datos anteriores antes de seleccionar los documentos o fotografías.');
         }
     }
 
@@ -268,7 +276,7 @@ export default class AddVehicle extends React.Component {
                             </Picker>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddPolicy', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddPolicy')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
@@ -291,7 +299,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddBill', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddBill')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
@@ -314,7 +322,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddHologram', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddHologram')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
@@ -337,7 +345,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddCard', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddCard')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
@@ -360,7 +368,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddTAG', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddTAG')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
@@ -383,7 +391,7 @@ export default class AddVehicle extends React.Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('AddPhoto', { doOnBack: this.onBack.bind(this) })}
+                                onPress={() => this.verificarNIV('AddPhoto')}
                                 style={{
                                     height: 30,
                                     flexDirection: 'row',
