@@ -75,7 +75,7 @@ export default class AssignVehicle extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carloslarios.159@gmail.com',
+                    p_correo: 'carlos@gmail.com',
                     p_pass: '123456',
                 }),
             })

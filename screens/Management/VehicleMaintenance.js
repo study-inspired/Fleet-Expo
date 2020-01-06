@@ -188,6 +188,7 @@ export default class VehicleMaintenance extends Component {
           isVisible={this.state.registroServicio}
           windowBackgroundColor="rgba(0, 0, 0, .4)"
           height="auto"
+          onBackdropPress = {() => this.setState({ registroServicio: false }) }
         >
           <View style={{ marginBottom: 15 }}>
             <Card>

@@ -9,13 +9,6 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Button,
-  Overlay
-} from 'react-native-elements'
-
-import { Calendar } from 'react-native-calendars';
-
 import { MonoText } from '../components/StyledText';
 
 export default class StartScreen extends React.Component {
@@ -28,61 +21,9 @@ export default class StartScreen extends React.Component {
     markedDates: null
   }
 
-  componentDidMount() {
-    this.getWeek(new Date());
-  }
-
-  formatDate(yyyy, mm, dd) {
-    let m = (mm > 9) ? `${mm}` : `0${mm}`;
-    let d = (dd > 9) ? `${dd}` : `0${dd}`;
-    return `${yyyy}-${m}-${d}`;
-  }
-
-  getWeek(date) {
-    // console.log(date);
-    
-    let dates = {};
-    let startDay = date;
-    startDay.setDate(date.getDate() - (date.getDay() - 0)); // domingo
-    // console.log(startDay);
-
-    dates[this.formatDate(startDay.getFullYear(), startDay.getMonth()+1, startDay.getDate())] = {color: '#ff8834', textColor: 'white'};
-
-    for (let day = 1; day < 7; day++) {
-      startDay.setDate(startDay.getDate() + 1);
-      dates[this.formatDate(startDay.getFullYear(), startDay.getMonth()+1, startDay.getDate())] = {color: '#ff8834', textColor: 'white'};
-    }
-
-    this.setState({ markedDates: dates });
-  }
-
   render() {
     return ( 
       <View style={styles.container}>
-        <Overlay
-          isVisible={this.state.visible}
-          width={300}
-          height={400}
-          onBackdropPress={ () => this.setState({ visible: false }) }
-        >
-          <View style={{ flex: 1 }}>
-            <Calendar
-              theme={{
-                textDayFontFamily: 'aller-lt',
-                textMonthFontFamily: 'aller-lt',
-                textDayHeaderFontFamily: 'aller-bd',
-              }}
-              onDayPress={ (day) => this.getWeek(new Date(day.dateString)) }
-              markedDates={ this.state.markedDates }
-              markingType={'period'}
-            />
-            {/*<Button
-              title='cerrar'
-              onPress={ () => this.setState({ visible: false }) }
-            />*/}
-          </View>
-        </Overlay>
-
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
@@ -106,11 +47,6 @@ export default class StartScreen extends React.Component {
         </ScrollView>
   
         <View style={styles.tabBarInfoContainer}>
-          <Button
-            title='Seleccionar semana'
-            onPress={ () => this.setState( { visible: true } ) }
-          />
-  
           <View
             style={[styles.codeHighlightContainer, styles.navigationFilename]}>
             <MonoText style={styles.codeHighlightText}>
