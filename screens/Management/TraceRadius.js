@@ -64,8 +64,8 @@ export default class TraceRadius extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
                     body: JSON.stringify({
-                        nombre: this.state.nombre,
-                        coordenadas: JSON.stringify(this.state.LatLng),
+                        p_nombre: this.state.nombre,
+                        p_coordenadas: JSON.stringify(this.state.LatLng),
                         radio: this.state.radio
                     })
                 })

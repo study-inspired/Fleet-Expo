@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
+import NetInfo from '@react-native-community/netinfo';
 
 const datos = [
     { vehiculo: 'Chevrolet beat', placa: 'COL-4568R', color: '#dddddd', entradas: 6, salidas: 5 },
@@ -23,11 +24,11 @@ export default class GeofenceAlerts extends Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_genera',{
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_propietario: '1'
+                        id_propietario: '2'
                     }),
                 })
     

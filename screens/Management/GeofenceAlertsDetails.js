@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
+import NetInfo from '@react-native-community/netinfo';
 
 const datos = [
     { tipo: "Entrada", hora: "12:24:05", fecha: "20/09/2019" },
@@ -21,7 +22,7 @@ export default class GeofenceAlertsDetails extends Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial', {
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({

@@ -118,14 +118,16 @@ export default class AssignVehicle extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/asignar_unidad_geocerca', {
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         p_id_unidad: this.state.vehiculo.id,
                         p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0)
                     }),
-                })
+                });
+
+                console.log(result);
     
                 const datos = await result.json();
                 if (datos) {
@@ -153,7 +155,8 @@ export default class AssignVehicle extends React.Component {
         return (
             <RefreshControl
                 refreshing={this.state.refreshing}
-                onRefresh={() => this._refreshListView()} />
+                onRefresh={() => this._refreshListView()} 
+            />
         )
     }
 
@@ -308,9 +311,9 @@ export default class AssignVehicle extends React.Component {
                     <View style={{ marginBottom: 15 }}>
                         {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                         { !this.state.isLoading && this.state.hasVehicles &&
-                            this.state.vehicles.map((v, i) => {
+                            this.state.vehicles.map( v => {
                                 return (
-                                    <Card key={i}>
+                                    <Card key={v.id}>
                                         <TouchableOpacity
                                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                                             onPress={() => this.setState({ vehiculo: v, seleccionado: true })}

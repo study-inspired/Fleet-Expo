@@ -15,8 +15,6 @@ export default class GeofenceAlertsDetailsMap extends Component {
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
 
-
-
     constructor(props) {
         super(props);
         this.state = {
@@ -73,8 +71,6 @@ export default class GeofenceAlertsDetailsMap extends Component {
     //Termina el refresh 
 
     render() {
-        const state = this.state;
-
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ height: 120, flexDirection: 'row', alignContent: 'center' }}>

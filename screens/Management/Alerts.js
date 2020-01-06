@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { Icon, Button, Card, Overlay } from 'react-native-elements';
 import { Calendar } from 'react-native-calendars';
-import { Table, Row, Rows, } from 'react-native-table-component';
 import { Text } from 'react-native';
 
 
@@ -162,7 +161,7 @@ export default class Alerts extends Component {
                                 textDayHeaderFontFamily: 'aller-bd',
                             }}
                             onDayPress={(day) => this.getWeek(new Date(day.dateString))}
-                            markedDates={this.state.markedDates}
+                            markedDates={state.markedDates}
                             markingType={'period'}
                         />
                         {/*<Button
@@ -210,6 +209,8 @@ export default class Alerts extends Component {
                 <View style={{ flexDirection: "row", justifyContent: "center" }}>
                     <Button
                         title={state.selectedWeek}
+                        buttonStyle={{backgroundColor: '#ff8834'}}
+                        titleStyle={{ fontFamily: 'aller-lt' }}
                         onPress={() => this.setState({ visible: true })}
                     />
                     <Icon type='font-awesome' name="calendar" size={32} containerStyle={{ marginLeft: 5, marginTop: 3 }} />
