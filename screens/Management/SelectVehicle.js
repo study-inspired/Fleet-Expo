@@ -78,27 +78,27 @@ export default class SelectVehicle extends React.Component {
                     p_pass: '123456',
                 }),
             })
-            
+
             const data = await result.json();
             console.log(data);
-            
+
             if (data.datos.length != 0) {
-                let vehicles = data.datos.map((v)=>{
+                let vehicles = data.datos.map((v) => {
                     return {
-                        id: v.id_unidad, 
+                        id: v.id_unidad,
                         nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
-                        color: v.color.includes('#')?v.color:'#a8a8a8',
-                        imagen: v.foto=='link'?'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg':v.foto
+                        color: v.color.includes('#') ? v.color : '#a8a8a8',
+                        imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
                     }
                 })
                 this.setState({
                     hasVehicles: true,
-                    vehicles: vehicles, 
-                    isLoading: false 
+                    vehicles: vehicles,
+                    isLoading: false
                 });
             } else {
-                Alert.alert('Info','No hay vehiculos!');
+                Alert.alert('Info', 'No hay vehiculos!');
                 this.props.navigation.goBack();
             }
 
@@ -113,7 +113,7 @@ export default class SelectVehicle extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
-                    <Text style={[styles.textoBold,{ marginVertical: 25, flex: 5 }]}>{this.state.text}</Text>
+                    <Text style={[styles.textoBold, { marginVertical: 25, flex: 5 }]}>{this.state.text}</Text>
                     <Button
                         type='clear'
                         icon={{
@@ -138,40 +138,46 @@ export default class SelectVehicle extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-                    <View style={{ marginBottom: 15 }}>
-                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        { !this.state.isLoading && this.state.hasVehicles &&
-                            this.state.vehicles.map((v, i) => {
-                                return (
-                                    <Card key={i}>
-                                        <TouchableOpacity
-                                            style={styles.touchableOpacity}
-                                            onPress={() => { this.props.navigation.navigate(this.state.nextScreen, { vehicle: v }) }}
-                                        >
-                                            <View
-                                                style={styles.imagenContainer}>
-                                                <Image
-                                                    style={styles.imagenVehiculo}
-                                                    resizeMode="cover"
-                                                    source={{ uri: v.imagen }}
-                                                />
-                                            </View>
-                                            <View
-                                                style={styles.vehiculoContainer}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={[styles.textoBold, { marginBottom: 5 }]}>{v.nombre}</Text>
-                                                    <View style={[styles.colorVehiculo, { backgroundColor: v.color }]}></View>
-                                                </View>
-                                                <Text style={[styles.textoNormal, { fontSize: 12, marginBottom: 10 }]}>{v.placas}</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </Card>
-                                );
-                            })
-                        }
-                    </View>
-                </ScrollView>
+                {
+                    this.state.isLoading ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{flex: 1}} />
+                        :
+                        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                            <View style={{ marginBottom: 15 }}>
+                                {!this.state.isLoading && this.state.hasVehicles &&
+                                    this.state.vehicles.map((v, i) => {
+                                        return (
+                                            <Card key={i}>
+                                                <TouchableOpacity
+                                                    style={styles.touchableOpacity}
+                                                    onPress={() => { this.props.navigation.navigate(this.state.nextScreen, { vehicle: v }) }}
+                                                >
+                                                    <View
+                                                        style={styles.imagenContainer}>
+                                                        <Image
+                                                            style={styles.imagenVehiculo}
+                                                            resizeMode="cover"
+                                                            source={{ uri: v.imagen }}
+                                                        />
+                                                    </View>
+                                                    <View
+                                                        style={styles.vehiculoContainer}>
+                                                        <View style={{ flexDirection: 'row' }}>
+                                                            <Text style={[styles.textoBold, { marginBottom: 5 }]}>{v.nombre}</Text>
+                                                            <View style={[styles.colorVehiculo, { backgroundColor: v.color }]}></View>
+                                                        </View>
+                                                        <Text style={[styles.textoNormal, { fontSize: 12, marginBottom: 10 }]}>{v.placas}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </Card>
+                                        );
+                                    })
+                                }
+                            </View>
+                        </ScrollView>
+                }
+
+
             </View>
         );
     }
@@ -221,16 +227,16 @@ const styles = StyleSheet.create({
     imagenContainer: {
         flex: 1,
         flexDirection: 'row',
-    }, 
-    touchableOpacity: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'space-between' 
+    },
+    touchableOpacity: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     subHeader: {
-        height: 70, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
+        height: 70,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         marginLeft: 16
     }
 });

@@ -192,81 +192,85 @@ export default class VehiclesView extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <ScrollView
-                    contentInsetAdjustmentBehavior="automatic"
-                    style={styles.scrollView}
-                    refreshControl={this._refreshControl()}
-                >
-                    <View style={{ marginBottom: 15 }}>
-                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        {!this.state.isLoading && this.state.hasVehicles &&
-                            this.state.vehicles.map((v, i) => {
-                                return (
-                                    <Card key={i}>
-                                        <TouchableOpacity
-                                            /*key={i}*/
-                                            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                            onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle') : null }}
-                                        >
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    flexDirection: 'row',
-                                                }}>
-                                                <Image
-                                                    style={styles.imagen}
-                                                    resizeMode="cover"
-                                                    source={{ uri: v.imagen }}
-                                                />
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flex: 5,
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={styles.texto700}>{v.nombre}</Text>
-                                                    <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                {
+                    this.state.isLoading ? 
+                    <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
+                    :
+                    <ScrollView
+                        contentInsetAdjustmentBehavior="automatic"
+                        style={styles.scrollView}
+                        refreshControl={this._refreshControl()}
+                    >
+                        <View style={{ marginBottom: 15 }}>
+                            {!this.state.isLoading && this.state.hasVehicles &&
+                                this.state.vehicles.map((v, i) => {
+                                    return (
+                                        <Card key={i}>
+                                            <TouchableOpacity
+                                                /*key={i}*/
+                                                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+                                                onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle') : null }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        flex: 1,
+                                                        flexDirection: 'row',
+                                                    }}>
+                                                    <Image
+                                                        style={styles.imagen}
+                                                        resizeMode="cover"
+                                                        source={{ uri: v.imagen }}
+                                                    />
                                                 </View>
+                                                <View
+                                                    style={{
+                                                        flex: 5,
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }}>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.texto700}>{v.nombre}</Text>
+                                                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                    </View>
 
-                                                <Text style={styles.texto600}>{v.placas}</Text>
-                                                <Text style={styles.texto70012}>Vigencia de operación:</Text>
-                                                <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
-                                            </View>
-                                            <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
-                                            <Button
-                                                type='clear'
-                                                icon={{
-                                                    name: "delete",
-                                                    size: 24,
-                                                    color: '#ff8834'
-                                                }}
-                                                buttonStyle={{
-                                                    position: 'absolute',
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    right: -15,
-                                                }}
-                                                iconContainerStyle={{
-                                                    flex: 1,
-                                                }}
-                                                titleStyle={{
-                                                    fontFamily: 'aller-lt',
-                                                    flex: 1,
-                                                    fontSize: 12
-                                                }}
-                                                title="Eliminar"
-                                                onPress={() => this._eliminarVehiculo(v.id)}
-                                            />
-                                        </TouchableOpacity>
-                                    </Card>
-                                );
-                            })
-                        }
-                    </View>
-                </ScrollView>
+                                                    <Text style={styles.texto600}>{v.placas}</Text>
+                                                    <Text style={styles.texto70012}>Vigencia de operación:</Text>
+                                                    <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
+                                                </View>
+                                                <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
+                                                <Button
+                                                    type='clear'
+                                                    icon={{
+                                                        name: "delete",
+                                                        size: 24,
+                                                        color: '#ff8834'
+                                                    }}
+                                                    buttonStyle={{
+                                                        position: 'absolute',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        right: -15,
+                                                    }}
+                                                    iconContainerStyle={{
+                                                        flex: 1,
+                                                    }}
+                                                    titleStyle={{
+                                                        fontFamily: 'aller-lt',
+                                                        flex: 1,
+                                                        fontSize: 12
+                                                    }}
+                                                    title="Eliminar"
+                                                    onPress={() => this._eliminarVehiculo(v.id)}
+                                                />
+                                            </TouchableOpacity>
+                                        </Card>
+                                    );
+                                })
+                            }
+                        </View>
+                    </ScrollView>
+                }
             </View>
         )
     }

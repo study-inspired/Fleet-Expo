@@ -84,36 +84,39 @@ export default class RegisteredGeofences extends React.Component {
                             geocercas.map((g, i) => {
                                 return (
                                     <Card key={i} wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <View
+                                        <TouchableOpacity
                                             style={{
                                                 flex: 2,
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
-                                            }}>
+                                            }}
+
+                                            onPress={() => this.props.navigation.navigate('GeofenceVehicles', {id_geocerca: 0})}
+                                        >
                                             <Icon type='material-community' name="map" size={42} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
                                             <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{g.nombre}</Text>
-                                        </View>
-                                            <TouchableOpacity
-                                                style={{
-                                                    flex: 1,
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center'
-                                                }}
-                                                onPress={ () => this.props.navigation.navigate('AssignVehicle') }
-                                            >
-                                                <Icon type='font-awesome' name='plus' size={18} iconStyle={{ position: 'absolute', right: -24, top: -5 }} />
-                                                <Icon type='font-awesome' name='car' size={24} iconStyle={{ marginHorizontal: 5 }} />
-                                                {
-                                                    g.vehiculo &&
-                                                    <Icon type='font-awesome' name='check-circle' size={14} color='#20d447' iconStyle={{ position: 'absolute', right: -32, top: -15 }} />
-                                                }
-                                                {
-                                                    !g.vehiculo && 
-                                                    <Text style={{ fontFamily: 'aller-bd', fontSize: 10, marginBottom: 1, marginTop:9 }}>Asignar vehículo</Text>
-                                                }
-                                                
-                                            </TouchableOpacity>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{
+                                                flex: 1,
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                            }}
+                                            onPress={() => this.props.navigation.navigate('AssignVehicle')}
+                                        >
+                                            <Icon type='font-awesome' name='plus' size={18} iconStyle={{ position: 'absolute', right: -24, top: -5 }} />
+                                            <Icon type='font-awesome' name='car' size={24} iconStyle={{ marginHorizontal: 5 }} />
+                                            {
+                                                g.vehiculo &&
+                                                <Icon type='font-awesome' name='check-circle' size={14} color='#20d447' iconStyle={{ position: 'absolute', right: -32, top: -15 }} />
+                                            }
+                                            {
+                                                !g.vehiculo &&
+                                                <Text style={{ fontFamily: 'aller-bd', fontSize: 10, marginBottom: 1, marginTop: 9 }}>Asignar vehículo</Text>
+                                            }
+
+                                        </TouchableOpacity>
                                     </Card>
                                 )
                             })

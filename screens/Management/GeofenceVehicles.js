@@ -18,7 +18,7 @@ import {
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
 
-export default class AssignVehicle extends React.Component {
+export default class GeofenceVehicles extends React.Component {
 
     static navigationOptions = {
         title: 'Asignar vehículo a geocerca',
@@ -50,7 +50,7 @@ export default class AssignVehicle extends React.Component {
             const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -146,6 +146,20 @@ export default class AssignVehicle extends React.Component {
     }
     //Termina el refresh  
 
+    _eliminarVehiculo() {
+        Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de esta geocerca', [
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancelar eliminar vehículo'),
+                style: 'cancel',
+            },
+            {
+                text: 'Aceptar',
+                onPress: () => console.log('Aceptar eliminar vehículo.')
+            },
+        ], { cancelable: false })
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -154,9 +168,10 @@ export default class AssignVehicle extends React.Component {
                     isVisible={this.state.seleccionado}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({ vehiculo: {}, seleccionado: false, entrada: false, salida: false })}
                 >
                     <View>
-                        <Button
+                        {/* <Button
                             type='clear'
                             icon={{
                                 type: 'material-community',
@@ -170,7 +185,7 @@ export default class AssignVehicle extends React.Component {
                                 right: 0
                             }}
                             onPress={() => this.setState({ vehiculo: {}, seleccionado: false, entrada: false, salida: false })}
-                        />
+                        /> */}
                         <View style={{ alignItems: 'center' }}>
                             <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Has seleccionado el vehículo:</Text>
                             <View style={{ flexDirection: 'row' }}>
@@ -219,9 +234,10 @@ export default class AssignVehicle extends React.Component {
                     isVisible={this.state.asignacionRealizada}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({ vehiculo: {}, seleccionado: false, asignacionRealizada: false, entrada: false, salida: false })}
                 >
                     <View>
-                        <Button
+                        {/* <Button
                             type='clear'
                             icon={{
                                 type: 'material-community',
@@ -235,7 +251,7 @@ export default class AssignVehicle extends React.Component {
                                 right: 0
                             }}
                             onPress={() => this.setState({ vehiculo: {}, seleccionado: false, asignacionRealizada: false, entrada: false, salida: false })}
-                        />
+                        /> */}
                         <View style={{ justifyContent: 'center' }}>
                             <Icon
                                 name='check-circle'
@@ -256,8 +272,7 @@ export default class AssignVehicle extends React.Component {
                         </View>
                     </View>
                 </Overlay>
-                <View elevation={2} style={{ height: 140, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginTop: 75, textAlign: "center", marginHorizontal: 16 }}>Elige el vehículo que deseas agregar a la geocerca y selecciona el tipo de alerta asignada</Text>
+                <View elevation={2} style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Button
                         type='clear'
                         icon={{
@@ -285,7 +300,7 @@ export default class AssignVehicle extends React.Component {
                 </View>
                 {
                     this.state.isLoading ?
-                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{flex: 1}} />
                         :
                         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView} refreshControl={this._refreshControl()}>
                             <View style={{ marginBottom: 15 }}>
@@ -293,9 +308,8 @@ export default class AssignVehicle extends React.Component {
                                     this.state.vehicles.map(v => {
                                         return (
                                             <Card key={v.id}>
-                                                <TouchableOpacity
+                                                <View
                                                     style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                                    onPress={() => this.setState({ vehiculo: v, seleccionado: true })}
                                                 >
                                                     <View
                                                         style={{
@@ -321,7 +335,30 @@ export default class AssignVehicle extends React.Component {
                                                         </View>
                                                         <Text style={{ fontFamily: 'aller-lt', fontSize: 12, marginBottom: 10 }}>{v.placas}</Text>
                                                     </View>
-                                                </TouchableOpacity>
+                                                    <View style={{ flexDirection: 'column' }}>
+                                                        <TouchableOpacity
+                                                            onPress={() => this.setState({ vehiculo: v, seleccionado: true })}
+                                                            style={{ position: 'absolute', bottom: 3, right: 0 }}
+                                                        >
+                                                            <Icon
+                                                                type='font-awesome'
+                                                                name='edit'
+                                                                size={30}
+
+                                                            />
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity
+                                                            onPress={() => this._eliminarVehiculo(v.id)}
+                                                            style={{ position: 'absolute', top: 5, right: 2 }}
+                                                        >
+                                                            <Icon
+                                                                type='material'
+                                                                name='delete'
+                                                                size={32}
+                                                            />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                </View>
                                             </Card>
                                         );
                                     })
@@ -329,8 +366,6 @@ export default class AssignVehicle extends React.Component {
                             </View>
                         </ScrollView>
                 }
-
-
             </View>
         );
     }

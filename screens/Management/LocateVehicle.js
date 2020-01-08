@@ -14,27 +14,7 @@ import {
 import { Button } from 'react-native-elements'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-
-const vehiculos = [
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6462J',
-        color: '#948d8d'
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684D',
-        color: '#ffffff'
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4568R',
-        color: '#c72020'
-    },
-]
+import { ActivityIndicator } from 'react-native';
 
 export default class LocateVehicle extends React.Component {
 
@@ -50,8 +30,56 @@ export default class LocateVehicle extends React.Component {
     }
 
     state = {
-        vehiculo: '',
-        nextScreen: this.props.navigation.getParam('nextScreen', '')
+        isLoading: true,
+        vehiculo: 0,
+        hasVehicles: false,
+        vehicles: [],
+        latitude: 19.245455,
+        longitude: -103.722538,
+    }
+
+    async componentDidMount() {
+        try {
+            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_correo: 'carlos@gmail.com',
+                    p_pass: '123456',
+                }),
+            })
+    
+            const data = await result.json();
+            console.log(data);
+    
+            if (data.datos.length != 0) {
+                let vehicles = data.datos.map((v) => {
+                    return {
+                        id: v.id_unidad,
+                        nombre: `${v.marca} ${v.modelo}`,
+                        placas: v.placas,
+                        color: v.color.includes('#') ? v.color : '#a8a8a8',
+                        imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
+                    }
+                })
+                this.setState({
+                    hasVehicles: true,
+                    vehicles: vehicles,
+                    isLoading: false
+                });
+            } else {
+                Alert.alert('Info', 'No hay vehiculos!');
+                this.props.navigation.goBack();
+            }
+    
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+            this.props.navigation.goBack();
+        }
     }
 
     render() {
@@ -91,25 +119,30 @@ export default class LocateVehicle extends React.Component {
                     }}
                     selectedValue={this.state.vehiculo}
                     onValueChange={vehiculo => this.setState({ vehiculo: vehiculo })}>
-                    <Picker.Item label="Vehículo..." />
+                    <Picker.Item label="Vehículo..." value={0} />
                     {
-                        vehiculos.map(v => {
+                        this.state.vehicles.map(v => {
                             return (
-                                <Picker.Item label={`${v.nombre} - ${v.placa}`} value={v.placa} key={v.placa} />
+                                <Picker.Item label={`${v.nombre} - ${v.placas}`} value={v.id} key={v.id} />
                             )
                         })
                     }
                 </Picker>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={{
-                        latitude: 19.245455,
-                        longitude: -103.722538,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                    style={styles.mapView}
-                />
+                {
+                    (this.state.isLoading || this.state.vehiculo==0) ?
+                    <ActivityIndicator size="large" color="#ff8834" animating={(this.state.isLoading || this.state.vehiculo==0)} style={{flex: 1}} />
+                    :
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        region={{
+                            latitude: this.state.latitude,
+                            longitude: this.state.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                        style={styles.mapView}
+                    />
+                }
             </View>
         );
     }

@@ -50,6 +50,7 @@ import GeofenceAlerts from '../screens/Management/GeofenceAlerts';
 import GeofenceAlertsDetails from '../screens/Management/GeofenceAlertsDetails';
 import GeofenceAlertsDetailsMap from '../screens/Management/GeofenceAlertsDetailsMap';
 import RegisteredGeofences from '../screens/Management/RegisteredGeofences';
+import GeofenceVehicles from '../screens/Management/GeofenceVehicles'
 import AssignVehicle from '../screens/Management/AssignVehicle';
 import Alerts from '../screens/Management/Alerts';
 import ServiceConsultation from '../screens/Management/ServiceConsultation';
@@ -198,6 +199,7 @@ const ManagementStack = createStackNavigator(
     LocateVehicle: LocateVehicle,
     GeofenceActions: GeofenceActions,
     RegisteredGeofences: RegisteredGeofences,
+    GeofenceVehicles: GeofenceVehicles,
     AssignVehicle: AssignVehicle,
     Alerts: Alerts,
     ServicesConsultation: ServicesConsultation,
