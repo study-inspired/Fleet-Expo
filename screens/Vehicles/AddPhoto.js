@@ -136,7 +136,9 @@ export default class AddPhoto extends React.Component {
                 doOnBack: this.onBack.bind(this),
                 ruta_post_documento: 'upload_fotografia1',
                 numero_foto: foto,
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             });
         }
     }
@@ -178,7 +180,9 @@ export default class AddPhoto extends React.Component {
                 doOnBack: this.onBack.bind(this),
                 ruta_post_documento: 'upload_fotografia1',
                 numero_foto: foto,
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             });
         }
     }

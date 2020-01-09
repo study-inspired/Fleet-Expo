@@ -60,7 +60,9 @@ export default class AddCard extends React.Component {
             this.props.navigation.navigate('AttachedPicture', { 
                 doOnBack: this.props.navigation.state.params.doOnBack,
                 ruta_post_documento: 'upload_Tarjeta_circulacion',
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             })
         }
     }
@@ -79,7 +81,9 @@ export default class AddCard extends React.Component {
             this.props.navigation.navigate('AttachedPicture', { 
                 doOnBack: this.props.navigation.state.params.doOnBack,
                 ruta_post_documento: 'upload_Tarjeta_circulacion',
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             })
         }
     }

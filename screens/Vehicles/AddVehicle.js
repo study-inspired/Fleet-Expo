@@ -154,7 +154,7 @@ export default class AddVehicle extends React.Component {
 
     verificarNIV(nextScreen) {
         if (this.state.serie != '') {
-            this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this) })
+            this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this), id_usuario: 2, niv: this.state.serie })
         } else {
             Alert.alert('Atención', 'Debes llenar los datos anteriores antes de seleccionar los documentos o fotografías.');
         }

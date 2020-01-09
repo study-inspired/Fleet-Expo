@@ -21,7 +21,7 @@ import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
 export default class GeofenceVehicles extends React.Component {
 
     static navigationOptions = {
-        title: 'Asignar vehículo a geocerca',
+        title: 'Geocerca: ',
         headerTitleStyle: {
             flex: 1,
             textAlign: "center",

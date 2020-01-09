@@ -60,7 +60,9 @@ export default class AddBill extends React.Component {
             this.props.navigation.navigate('AttachedPicture', { 
                 doOnBack: this.props.navigation.state.params.doOnBack,
                 ruta_post_documento: 'upload_factura_vehiculo',
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             })
         }
     }
@@ -79,14 +81,15 @@ export default class AddBill extends React.Component {
             this.props.navigation.navigate('AttachedPicture', { 
                 doOnBack: this.props.navigation.state.params.doOnBack,
                 ruta_post_documento: 'upload_factura_vehiculo',
-                image: { uri: result.uri }
+                image: { uri: result.uri },
+                id_usuario: this.props.navigation.getParam('id_usuario', 0),
+                niv: this.props.navigation.getParam('niv', '01234567891234567')
             })
         }
     }
 
     render() {
         return (
-
             <View style={{ flex:1, marginHorizontal: 25, flexDirection: 'column' }}>
                 <View style={{ flex:1, justifyContent: 'center', alignItems: "center" }}>
                     <Icon type='material-community' name="file-document-outline" size={160} color='#000' />
@@ -135,7 +138,6 @@ export default class AddBill extends React.Component {
             </View>
         );
     }
-
 }
 
 const styles = StyleSheet.create({
