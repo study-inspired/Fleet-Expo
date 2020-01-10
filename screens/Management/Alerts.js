@@ -65,7 +65,8 @@ export default class Alerts extends Component {
                     return {
                         fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
                         hora: date.toLocaleTimeString(),
-                        concepto: d.concepto_alerta
+                        concepto: d.concepto_alerta,
+                        coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
                     }
                 });
                 console.log(alerts);
@@ -238,7 +239,7 @@ export default class Alerts extends Component {
                                             <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                         </View>
                                         <TouchableOpacity 
-                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {alerta: {fecha: '', hora: '', tipo:''}})}
+                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {coordenadas: alerta.coordenadas, concepto: alerta.concepto})}
                                         >
                                             <Icon
                                                 type='material-community'

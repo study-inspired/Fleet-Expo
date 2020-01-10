@@ -29,7 +29,6 @@ export default class GeofenceAlerts extends Component {
             hasAlerts: false,
             tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa', ''],
             widthArr: [40, 40, 145, 95, 40],
-            vehicle: this.props.navigation.getParam('vehicle', {}),
             data: []
         }
     }
@@ -50,10 +49,10 @@ export default class GeofenceAlerts extends Component {
                 })
 
                 const data = await result.json();
+                console.log(data);
+                
 
                 if (data.datos.length != 0) {
-                    console.log(data.datos);
-                    
                     this.setState({
                         hasAlerts: true, 
                         data: data.datos.map(val => {
@@ -61,12 +60,12 @@ export default class GeofenceAlerts extends Component {
                                 val.entradas,
                                 val.salidas,
                                 <View style={styles.view1}>
-                                    <Text style={{ fontFamily: 'aller-lt' }}>{val.vehiculo}</Text>
-                                    <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                    <Text style={{ fontFamily: 'aller-lt' }}>{`${val.marca} - ${val.modelo}`}</Text>
+                                    <View style={{ width: 16, height: 16, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                 </View>,
-                                val.placas,
+                                val.placa,
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: this.state.vehicle })}
+                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: {id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa}  })}
                                 >
                                     <Icon type='material' name='remove-red-eye' size={18} />
                                 </TouchableOpacity>

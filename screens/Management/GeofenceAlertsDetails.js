@@ -4,17 +4,36 @@ import { Icon, Button } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 import NetInfo from '@react-native-community/netinfo';
 
-const datos = [
-    { tipo: "Entrada", hora: "12:24:05", fecha: "20/09/2019" },
-    { tipo: "Salida", hora: "10:24:05", fecha: "25/09/2019" },
-    { tipo: "Salida", hora: "12:24:05", fecha: "30/09/2019" }
-];
-
 export default class GeofenceAlertsDetails extends Component {
 
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
+    static navigationOptions = {
+        title: 'Entradas y salidas de geocerca',
+        headerTitleStyle: {
+            flex: 1,
+            textAlign: "center",
+            fontFamily: 'aller-bd',
+            fontWeight: '200',
+            fontSize: 18,
+            marginLeft: -10
+        }
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false,
+            isLoading: true,
+            hasAlerts: false,
+            tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
+            widthArr: [70, 90, 105, 100],
+            vehicle: this.props.navigation.getParam('vehicle', {}),
+            data: []
+        }
+    }
+
     async componentDidMount() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
@@ -26,24 +45,42 @@ export default class GeofenceAlertsDetails extends Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_vehiculo: '1'
+                        id_vehiculo: this.state.vehicle.id
                     }),
                 })
 
                 const data = await result.json();
 
+                console.log(data);
+
                 if (data.datos.length != 0) {
                     let drivers = data.datos.map((d) => {
-                        return {
-                            tipo_unidad: d.tipo_unidad,
-                            fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
-                            hora: d.hora,
-                            coordenadas: d.coordenadas
-                        }
-                    })
+                        return [
+                            d.tipo_alerta,
+                            d.hora,
+                            d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                            <TouchableOpacity
+                                onPress={() => {
+                                    this.props.navigation.navigate('GeofenceAlertsDetailsMap', { 
+                                        tipo: d.tipo_alerta,
+                                        hora: d.hora,
+                                        fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                                        coordenadas: {latitude: parseFloat(d.coordenadas.split(',')[0]), longitude: parseFloat(d.coordenadas.split(',')[1])} 
+                                    })
+                                }}
+                            >
+                                <Icon
+                                    type='material-community'
+                                    name='map-marker'
+                                    size={18}
+                                    color='#ffbb00'
+                                />
+                            </TouchableOpacity>
+                        ]
+                    });
                     this.setState({
-                        hasDrivers: true,
-                        drivers: drivers,
+                        hasAlerts: true,
+                        data: drivers,
                         isLoading: false
                     });
 
@@ -64,55 +101,6 @@ export default class GeofenceAlertsDetails extends Component {
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
-    }
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            refreshing: false,
-            isLoading: true,
-            hasAlerts: false,
-            tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
-            widthArr: [70, 90, 105, 100],
-            vehicle: {},
-            data: datos.map(val => {
-                return [
-                    val.tipo,
-                    val.hora,
-                    val.fecha,
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', { vehicle: this.state.vehicle })}
-                    >
-                        <Icon
-                            type='material-community'
-                            name='map-marker'
-                            size={18}
-                            color='#ffbb00'
-                        />
-                    </TouchableOpacity>
-                ];
-            })
-        }
-    }
-
-    static navigationOptions = {
-        title: 'Entradas y salidas de geocerca',
-        headerTitleStyle: {
-            flex: 1,
-            textAlign: "center",
-            fontFamily: 'aller-bd',
-            fontWeight: '200',
-            fontSize: 18,
-            marginLeft: -10
-        }
-    }
-
-    async componentDidMount() {
-
-        this.setState({
-            hasAlerts: true,
-            isLoading: false
-        });
     }
 
     //Refresh control  
@@ -136,10 +124,15 @@ export default class GeofenceAlertsDetails extends Component {
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ height: 120, flexDirection: 'row', alignContent: 'center' }}>
+                <View style={{ height: 130, flexDirection: 'row', alignContent: 'center' }}>
                     <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
                         <Icon type='font-awesome' name="map-signs" size={52} containerStyle={{ flex: 1, marginTop: 20 }} />
-                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginVertical: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
+                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginTop: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
+                        <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
+                            <Text style={[{ fontFamily: 'aller-lt', fontSize: 16 }]}>{state.vehicle.nombre}</Text>
+                            <View style={{ width: 16, height: 16, marginTop: 2, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            <Text style={[{ fontFamily: 'aller-lt', fontSize: 16 }]}>- {state.vehicle.placas}</Text>
+                        </View>
                     </View>
                     <Button
                         type='clear'

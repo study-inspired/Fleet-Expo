@@ -1,38 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+import { StyleSheet, View, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
+import { Button } from 'react-native-elements';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-
-const datos = [
-    { tipo: "Entrada", hora: "12:24:05", fecha: "20/09/2019" },
-    { tipo: "Salida", hora: "10:24:05", fecha: "25/09/2019" },
-    { tipo: "Salida", hora: "12:24:05", fecha: "30/09/2019" }
-];
 
 export default class GeofenceAlertsDetailsMap extends Component {
 
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            refreshing: false,
-            isLoading: true,
-            hasAlerts: false,
-            tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
-            widthArr: [70, 90, 105, 100],
-            data: datos.map(val => {
-                return [
-                    val.tipo,
-                    val.hora,
-                    val.fecha,
-                    <Icon onPress={() => this.props.navigation.navigate('Interfaz', { vehicle: this.state.vehicle })} type='material' name='remove-red-eye' size={18} />
-                ];
-            })
-        }
-    }
 
     static navigationOptions = {
         title: 'Entradas y salidas de geocerca',
@@ -46,10 +21,26 @@ export default class GeofenceAlertsDetailsMap extends Component {
         }
     }
 
-    async componentDidMount() {
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false,
+            isLoading: true,
+            coordenadas: {},
+            tipo: '',
+            hora: '',
+            fecha: '',
+            concepto: ''
+        }
+    }
 
+    componentDidMount() {
         this.setState({
-            hasAlerts: true,
+            coordenadas: this.props.navigation.getParam('coordenadas', {}),
+            tipo: this.props.navigation.getParam('tipo', 'E/S'),
+            hora: this.props.navigation.getParam('hora', '00:00:00'),
+            fecha: this.props.navigation.getParam('fecha', '00/00/0000'),
+            concepto: this.props.navigation.getParam('concepto', ''),
             isLoading: false
         });
     }
@@ -74,11 +65,24 @@ export default class GeofenceAlertsDetailsMap extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ height: 120, flexDirection: 'row', alignContent: 'center' }}>
-                    <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
-                    <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 18, marginVertical: 5, textAlign: "center" }}>Acción en Geocerca </Text>
-                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginVertical: 5, textAlign: "center" }}>Tipo:  </Text>
-                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 14, marginVertical: 5, textAlign: "center" }}>Hora: - Fecha: </Text>
-                    </View>
+                    {
+                        this.state.concepto == '' ?
+                            <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
+                                    <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 18, marginVertical: 5, textAlign: "center" }}>Acción en Geocerca </Text>
+                                    <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginVertical: 5, textAlign: "center" }}>Tipo: {this.state.tipo} </Text>
+                                    <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 14, marginVertical: 5, textAlign: "center" }}>Hora: {this.state.hora}   -   Fecha: {this.state.fecha} </Text>
+                                </View>
+                            </View>
+                            :
+                            <View style={{ flex: 1, marginTop: 25, marginHorizontal: 50 }}>
+                                <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
+                                    <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginTop: 5, textAlign: "center" }}>Alerta presentada en la siguiente ubicación:</Text>
+                                    <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5, textAlign: "center" }}>{this.state.concepto}</Text>
+                                </View>
+                            </View>
+                    }
+
                     <Button
                         type='clear'
                         icon={{
@@ -103,16 +107,26 @@ export default class GeofenceAlertsDetailsMap extends Component {
                         title="Ayuda"
                     />
                 </View>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={{
-                        latitude: 19.245455,
-                        longitude: -103.722538,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                    style={styles.mapView}
-                />
+
+                {
+                    !this.state.isLoading &&
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                            latitude: this.state.coordenadas.latitude,
+                            longitude: this.state.coordenadas.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                        style={styles.mapView}
+
+                    >
+                        <MapView.Marker
+                            coordinate={this.state.coordenadas}
+                            title='Ubicación'
+                        />
+                    </MapView>
+                }
             </View>
         );
     }

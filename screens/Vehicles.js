@@ -70,11 +70,13 @@ export default class VehiclesView extends React.Component {
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
-                            imagen: 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg',//v.foto
+                            imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33'),
                             vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
                             problema: v.estado != 0
                         }
                     })
+                    console.log(vehicles);
+                    
                     this.setState({
                         hasVehicles: true,
                         vehicles: vehicles,

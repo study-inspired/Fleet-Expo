@@ -105,6 +105,9 @@ export default class ReportVehicle extends Component {
 
             const data = await result.json();
 
+            console.log(data);
+            
+            
             if (data.datos.length != 0) {
                 let alerts = Object.values(data.datos).map((d) => {
                     let date = new Date();
@@ -114,9 +117,12 @@ export default class ReportVehicle extends Component {
                     return {
                         fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
                         hora: date.toLocaleTimeString(),
-                        concepto: d.concepto_alerta
+                        concepto: d.concepto_alerta,
+                        coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
                     }
                 });
+
+                console.log(alerts);
 
                 this.setState({
                     alertas: alerts,
@@ -182,7 +188,7 @@ export default class ReportVehicle extends Component {
     }
 
     render() {
-        const { vehicle, viajes, viajesHead, alertas, alertasHead } = this.state
+        const { vehicle, viajes, viajesHead } = this.state
         return (
             <ScrollView
                 refreshControl={this._refreshControl()}
@@ -323,8 +329,9 @@ export default class ReportVehicle extends Component {
                                             </View>
                                             <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                         </View>
-                                        <TouchableOpacity>
-                                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {alerta: {fecha: '', hora: '', tipo:''}})}
+                                        <TouchableOpacity
+                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {coordenadas: alerta.coordenadas, concepto: alerta.concepto})}
+                                        >
                                             <Icon
                                                 type='material-community'
                                                 name='map-marker'
