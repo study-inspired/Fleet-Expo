@@ -144,7 +144,6 @@ export default class Alerts extends Component {
 
     render() {
         const state = this.state;
-
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <Overlay
@@ -238,7 +237,9 @@ export default class Alerts extends Component {
                                             </View>
                                             <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                         </View>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity 
+                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {alerta: {fecha: '', hora: '', tipo:''}})}
+                                        >
                                             <Icon
                                                 type='material-community'
                                                 name='map-marker'
@@ -247,7 +248,6 @@ export default class Alerts extends Component {
                                                 containerStyle={{ marginRight: 5, marginTop: 3 }}
                                             />
                                         </TouchableOpacity>
-                                        
                                     </Card>
                                 );
                             })

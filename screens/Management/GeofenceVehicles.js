@@ -16,7 +16,8 @@ import {
     RefreshControl
 } from 'react-native';
 
-import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
+import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements';
+import NetInfo from '@react-native-community/netinfo';
 
 export default class GeofenceVehicles extends React.Component {
 
@@ -46,48 +47,51 @@ export default class GeofenceVehicles extends React.Component {
         salida: false,
     }
 
-
     async componentDidMount() {
-        try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_correo: 'carlos@gmail.com',
-                    p_pass: '123456',
-                }),
-            })
-
-            const data = await result.json();
-            console.log(data);
-
-            if (data.datos.length != 0) {
-                let vehicles = data.datos.map((v) => {
-                    return {
-                        id: v.id_unidad,
-                        nombre: `${v.marca} ${v.modelo}`,
-                        placas: v.placas,
-                        color: v.color.includes('#') ? v.color : '#a8a8a8',
-                        imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
-                    }
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_correo: 'carlos@gmail.com',
+                        p_pass: '123456',
+                    }),
                 })
-                this.setState({
-                    hasVehicles: true,
-                    vehicles: vehicles,
-                    isLoading: false
-                });
-            } else {
-                Alert.alert('Info', 'No hay vehiculos!');
+    
+                const data = await result.json();
+                console.log(data);
+    
+                if (data.datos.length != 0) {
+                    let vehicles = data.datos.map((v) => {
+                        return {
+                            id: v.id_unidad,
+                            nombre: `${v.marca} ${v.modelo}`,
+                            placas: v.placas,
+                            color: v.color.includes('#') ? v.color : '#a8a8a8',
+                            imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
+                        }
+                    })
+                    this.setState({
+                        hasVehicles: true,
+                        vehicles: vehicles,
+                        isLoading: false
+                    });
+                } else {
+                    Alert.alert('Info', 'No hay vehiculos!');
+                    this.props.navigation.goBack();
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
                 this.props.navigation.goBack();
             }
-
-        } catch (error) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(error);
-            this.props.navigation.goBack();
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
     }
 
@@ -159,7 +163,7 @@ export default class GeofenceVehicles extends React.Component {
                 text: 'Aceptar',
                 onPress: () => console.log('Aceptar eliminar vehículo.')
             },
-        ], { cancelable: false })
+        ], { cancelable: false });
     }
 
     render() {

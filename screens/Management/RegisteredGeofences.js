@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements';
-import NetInfo from '@react-native-community/netinfo'
+import NetInfo from '@react-native-community/netinfo';
 
 
 export default class RegisteredGeofences extends React.Component {

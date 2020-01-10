@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
         right: 6
     },
     imagen: {
-        width: 50,
-        height: 50,
+        width: 70,
+        height: 70,
     }
 });

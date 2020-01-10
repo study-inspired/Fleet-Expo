@@ -238,7 +238,6 @@ export default class Drivers extends React.Component {
                             onPress={() => this._agregarComentario()}
                         />
                     </View>
-
                 </Overlay>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
@@ -326,7 +325,7 @@ export default class Drivers extends React.Component {
                                                     </View>
                                                     <View
                                                         style={{
-                                                            flex: 4,
+                                                            flex: 5,
                                                             flexDirection: 'column',
                                                             justifyContent: 'center',
                                                             alignItems: 'center'
@@ -372,8 +371,6 @@ export default class Drivers extends React.Component {
                             </View>
                         </ScrollView>
                 }
-
-
             </SafeAreaView>
         )
     }
