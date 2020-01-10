@@ -42,7 +42,7 @@ export default class AttachedPicture extends React.Component {
             try {
                 const data = new FormData();
                 data.append('id_usuario', this.props.navigation.getParam('id_usuario', 0));
-                data.append('niv', this.props.navigation.getParam('niv', '01234567891234567'));
+                data.append('niv_unidad', this.props.navigation.getParam('niv', '01234567891234567'));
                 data.append('file', {
                     uri: this.state.image.uri,
                     name: this.state.image.uri.match(/(\w-*)+((\.jp\w{1,2})|(\.png))/)[0],

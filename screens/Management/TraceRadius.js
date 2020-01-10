@@ -61,27 +61,36 @@ export default class TraceRadius extends React.Component {
     async registerRadius() {
         if (this.state.nombre.length = !0) {
             try {
+                let mm = [this.state.LatLng, {radio: this.state.radio/1000}];
+                console.log(JSON.stringify(mm));
+                
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
                         p_nombre: this.state.nombre,
-                        p_coordenadas: JSON.stringify(this.state.LatLng),
-                        radio: this.state.radio
+                        p_coordenadas: mm,
+                        p_id_tipo_geocerca: 0,
+                        p_id_usuario: 2
                     })
                 })
 
                 const data = await result.json();
-                if (data) {
-                    if (datos.msg) {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        console.error(datos.msg);
-                    } else if (datos.datos) {
-                        this.setState({
-                            setNombre: false,
-                            registrado: true
-                        })
-                    }
+                console.log(data);
+
+                if (data.msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(data.msg);
+                } else {
+                    this.setState({
+                        setNombre: false,
+                        registrado: true
+                    })
                 }
+
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -99,6 +108,7 @@ export default class TraceRadius extends React.Component {
                     isVisible={this.state.setNombre}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({ setNombre: false, nombre: '' })}
                 >
                     <View>
                         <Button

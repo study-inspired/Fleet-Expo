@@ -69,6 +69,8 @@ export default class Drivers extends React.Component {
                     let drivers = data.datos.map((d) => {
                         return {
                             id: d.id_usuario,
+                            id_unidad: d.id_unidad,
+                            id_chofer: d.chofer,
                             nombre: `${d.nombre} ${d.apellido.split(' ')[0]}`,
                             auto: d.marca ? {
                                 nombre: `${d.marca} ${d.modelo}`,
@@ -76,6 +78,7 @@ export default class Drivers extends React.Component {
                                 color: d.color.includes('#') ? d.color : '#a8a8a8',
                             } : {},
                             avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
+                            vinculado: d.estado != 0
                         }
                     })
                     this.setState({
@@ -103,7 +106,7 @@ export default class Drivers extends React.Component {
         }
     }
 
-    async desvincularVehiculo(unidad) {
+    async desvincularVehiculo(unidad, chofer) {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
@@ -115,8 +118,8 @@ export default class Drivers extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_unidad: unidad,
-                        p_id_propietario: 1,
-                        p_id_chofer1: 1
+                        p_id_propietario: 2,
+                        p_id_chofer1: chofer
                     }),
                 })
 
@@ -126,9 +129,48 @@ export default class Drivers extends React.Component {
                         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                         console.error(datos.msg);
                     } else if (datos.datos) {
+                        console.log(datos);
+                        
                         Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
                     }
                     this.props.navigation.goBack();
+                }
+
+            } catch (error) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    async _agregarComentario() {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://35.203.42.33:3006/webservice/registrar_comentario_jefe_chofer', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        in_id_jefe: 2,
+                        in_id_usuario: this.state.id_chofer,
+                        in_comentario: this.state.comentario
+                    }),
+                })
+
+                const datos = await result.json();
+                if (datos) {
+                    if (datos.msg) {
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                        console.error(datos.msg);
+                    } else if (datos.datos) {
+                        Alert.alert('Operación exitosa!', 'Se agregó el comentario correctamente.')
+                    }
+                    this.setState({ comenting: false });
                 }
 
             } catch (error) {
@@ -193,6 +235,7 @@ export default class Drivers extends React.Component {
                             title='Enviar'
                             buttonStyle={{ backgroundColor: '#ff8834' }}
                             titleStyle={{ fontFamily: 'aller-lt' }}
+                            onPress={() => this._agregarComentario()}
                         />
                     </View>
 
@@ -261,7 +304,7 @@ export default class Drivers extends React.Component {
                             <View style={{ marginBottom: 15 }}>
                                 {!this.state.isLoading && this.state.hasDrivers &&
                                     this.state.drivers.map((d, i) => {
-                                        let vinculado = Object.entries(d.auto).length !== 0;
+                                        //let vinculado = Object.entries(d.auto).length !== 0;
                                         return (
                                             <Card key={i}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
@@ -289,7 +332,7 @@ export default class Drivers extends React.Component {
                                                             alignItems: 'center'
                                                         }}>
                                                         <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5 }}>{d.nombre}</Text>
-                                                        {vinculado &&
+                                                        {d.vinculado &&
                                                             <View style={{ flexDirection: 'row' }}>
                                                                 <Text style={{ fontFamily: 'aller-lt', fontSize: 12 }}>{d.auto.nombre}</Text>
                                                                 <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: d.auto.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
@@ -297,14 +340,14 @@ export default class Drivers extends React.Component {
                                                             </View>
                                                         }
                                                         <Button
-                                                            title={vinculado ? 'Desvincular auto' : 'Vincular auto'}
+                                                            title={d.vinculado ? 'Desvincular auto' : 'Vincular auto'}
                                                             buttonStyle={{
                                                                 width: 140,
                                                                 marginLeft: 5,
                                                                 backgroundColor: '#ff8834'
                                                             }}
                                                             titleStyle={{ fontFamily: 'aller-lt' }}
-                                                            onPress={() => { !vinculado ? this.props.navigation.navigate('LinkVehicle', { id_propietario: 1, id_chofer: 1 }) : this.desvincularVehiculo(d.id) }}
+                                                            onPress={() => { !d.vinculado ? this.props.navigation.navigate('LinkVehicle', { id_propietario: 2, id_chofer: d.id_chofer }) : this.desvincularVehiculo(d.id_unidad, d.id_chofer) }}
                                                         />
                                                     </View>
                                                     <Icon

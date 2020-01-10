@@ -15,56 +15,12 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
-
-const vehiculos = [
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6462J',
-        color: '#e0e0e0',
-        problema: false
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684D',
-        color: '#ffffff',
-        problema: false
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4518V',
-        color: '#4287f5',
-        problema: true
-    },
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6472J',
-        color: '#948d8d',
-        problema: true
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684E',
-        color: '#ffffff',
-        problema: false
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4562R',
-        color: '#c72020',
-        problema: false
-    },
-]
 
 export default class LinkVehicle extends React.Component {
     static navigationOptions = {
@@ -89,11 +45,11 @@ export default class LinkVehicle extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carloslarios.159@gmail.com',
+                        p_correo: 'carlos@gmail.com',
                         p_pass: '123456',
                     }),
                 })
@@ -137,7 +93,7 @@ export default class LinkVehicle extends React.Component {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz57/vincular_vehiculo', {
                     method: 'POST',
                     headers: {
-                        Accept: 'application/json',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -195,50 +151,52 @@ export default class LinkVehicle extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    <View style={{ marginBottom: 15 }}>
-                        {!this.state.isLoading && this.state.hasVehicles &&
-                            this.state.vehicles.map((v) => {
-                                return (
-                                    <Card key={v.id}>
-                                        <TouchableOpacity
-                                            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                            onPress={this.vincularVehiculo.bind(this, v.id)}
-                                        >
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    flexDirection: 'row',
-                                                }}>
-                                                <Image
-                                                    style={{ width: 50, height: 50, alignSelf: 'flex-start' }}
-                                                    resizeMode="cover"
-                                                    source={{ uri: v.imagen }}
-                                                />
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flex: 4,
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={[styles.texto700, { marginTop: 6 }]}>{v.nombre}</Text>
-                                                    <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                                                </View>
-                                                <Text style={[styles.texto600, { fontSize: 12 }]}>{v.placas}</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </Card>
-                                );
-                            })
-                        }
-
-                    </View>
-
-                </ScrollView>
+                {
+                    this.state.isLoading ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
+                        :
+                        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                            <View style={{ marginBottom: 15 }}>
+                                {!this.state.isLoading && this.state.hasVehicles &&
+                                    this.state.vehicles.map((v) => {
+                                        return (
+                                            <Card key={v.id}>
+                                                <TouchableOpacity
+                                                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+                                                    onPress={this.vincularVehiculo.bind(this, v.id)}
+                                                >
+                                                    <View
+                                                        style={{
+                                                            flex: 1,
+                                                            flexDirection: 'row',
+                                                        }}>
+                                                        <Image
+                                                            style={{ width: 50, height: 50, alignSelf: 'flex-start' }}
+                                                            resizeMode="cover"
+                                                            source={{ uri: v.imagen }}
+                                                        />
+                                                    </View>
+                                                    <View
+                                                        style={{
+                                                            flex: 4,
+                                                            flexDirection: 'column',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                        <View style={{ flexDirection: 'row' }}>
+                                                            <Text style={[styles.texto700, { marginTop: 6 }]}>{v.nombre}</Text>
+                                                            <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                        </View>
+                                                        <Text style={[styles.texto600, { fontSize: 12 }]}>{v.placas}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </Card>
+                                        );
+                                    })
+                                }
+                            </View>
+                        </ScrollView>
+                }
             </SafeAreaView>
         );
     }

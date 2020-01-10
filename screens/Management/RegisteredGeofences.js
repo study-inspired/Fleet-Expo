@@ -10,28 +10,13 @@ import {
     View,
     Text,
     TouchableOpacity,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 
-import { Button, Card, Icon } from 'react-native-elements'
+import { Button, Card, Icon } from 'react-native-elements';
+import NetInfo from '@react-native-community/netinfo'
 
-const geocercas = [
-    {
-        nombre: 'Zona norte',
-        vehiculo: true,
-    },
-    {
-        nombre: 'Centro ciudad',
-        vehiculo: false,
-    },
-    {
-        nombre: 'Sur',
-        vehiculo: false,
-    },
-    {
-        nombre: 'Zona costera',
-        vehiculo: false,
-    },
-]
 
 export default class RegisteredGeofences extends React.Component {
 
@@ -47,10 +32,51 @@ export default class RegisteredGeofences extends React.Component {
         headerRight: <View></View>
     }
 
+    state = {
+        isLoading: true,
+        geocercas: []
+    }
+
+    async componentDidMount() {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try {
+                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_id_usuario: 2,
+                    }),
+                })
+
+                const datos = await result.json();
+
+                if (datos.msg) {
+                    Alert.alert('Hubo un error', datos.msg);
+                    this.setState({ isLoading: false });
+                } else {
+                    if (datos.datos.length != 0) {
+                        this.setState({ geocercas: datos.datos, isLoading: false });
+                    } else {
+                        Alert.alert('Info', 'No hay geocercas registradas.');
+                        this.setState({ isLoading: false });
+                    }
+                }
+
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.');
+                console.error(error);
+            }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
     render() {
-
         return (
-
             <View style={{ flex: 1 }}>
                 <View style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 16 }}>
                     <Button
@@ -78,51 +104,56 @@ export default class RegisteredGeofences extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-                    <View style={{ marginBottom: 15 }}>
-                        {
-                            geocercas.map((g, i) => {
-                                return (
-                                    <Card key={i} wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <TouchableOpacity
-                                            style={{
-                                                flex: 2,
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                            }}
+                {
+                    this.state.isLoading ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
+                        :
+                        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                            <View style={{ marginBottom: 15 }}>
+                                {
+                                    this.state.geocercas.map((g, i) => {
+                                        return (
+                                            <Card key={i} wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <TouchableOpacity
+                                                    style={{
+                                                        flex: 2,
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                    }}
 
-                                            onPress={() => this.props.navigation.navigate('GeofenceVehicles', {id_geocerca: 0})}
-                                        >
-                                            <Icon type='material-community' name="map" size={42} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
-                                            <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{g.nombre}</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={{
-                                                flex: 1,
-                                                flexDirection: 'column',
-                                                justifyContent: 'center',
-                                                alignItems: 'center'
-                                            }}
-                                            onPress={() => this.props.navigation.navigate('AssignVehicle')}
-                                        >
-                                            <Icon type='font-awesome' name='plus' size={18} iconStyle={{ position: 'absolute', right: -24, top: -5 }} />
-                                            <Icon type='font-awesome' name='car' size={24} iconStyle={{ marginHorizontal: 5 }} />
-                                            {
-                                                g.vehiculo &&
-                                                <Icon type='font-awesome' name='check-circle' size={14} color='#20d447' iconStyle={{ position: 'absolute', right: -32, top: -15 }} />
-                                            }
-                                            {
-                                                !g.vehiculo &&
-                                                <Text style={{ fontFamily: 'aller-bd', fontSize: 10, marginBottom: 1, marginTop: 9 }}>Asignar vehículo</Text>
-                                            }
+                                                    onPress={() => this.props.navigation.navigate('GeofenceVehicles', { id_geocerca: g.id_geocercas, nombre_geocerca: g.nombre })}
+                                                >
+                                                    <Icon type='material-community' name="map" size={42} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
+                                                    <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{g.nombre}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={{
+                                                        flex: 1,
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }}
+                                                    onPress={() => this.props.navigation.navigate('AssignVehicle')}
+                                                >
+                                                    <Icon type='font-awesome' name='plus' size={18} iconStyle={{ position: 'absolute', right: -24, top: -5 }} />
+                                                    <Icon type='font-awesome' name='car' size={24} iconStyle={{ marginHorizontal: 5 }} />
+                                                    {
+                                                        g.vehiculo &&
+                                                        <Icon type='font-awesome' name='check-circle' size={14} color='#20d447' iconStyle={{ position: 'absolute', right: -32, top: -15 }} />
+                                                    }
+                                                    {
+                                                        !g.vehiculo &&
+                                                        <Text style={{ fontFamily: 'aller-bd', fontSize: 10, marginBottom: 1, marginTop: 9 }}>Asignar vehículo</Text>
+                                                    }
 
-                                        </TouchableOpacity>
-                                    </Card>
-                                )
-                            })
-                        }
-                    </View>
-                </ScrollView>
+                                                </TouchableOpacity>
+                                            </Card>
+                                        )
+                                    })
+                                }
+                            </View>
+                        </ScrollView>
+                }
             </View>
         );
     }

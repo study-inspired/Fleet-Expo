@@ -20,16 +20,18 @@ import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
 
 export default class GeofenceVehicles extends React.Component {
 
-    static navigationOptions = {
-        title: 'Geocerca: ',
-        headerTitleStyle: {
-            flex: 1,
-            textAlign: "center",
-            fontFamily: 'aller-bd',
-            fontWeight: '200',
-            fontSize: 18,
-        },
-        headerRight: <View></View>
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: `Geocerca: ${navigation.getParam('nombre_geocerca', '')}`,
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: "center",
+                fontFamily: 'aller-bd',
+                fontWeight: '200',
+                fontSize: 18,
+            },
+            headerRight: <View></View>
+        }
     }
 
     state = {

@@ -124,7 +124,7 @@ export default class VehiclesView extends React.Component {
     }
     //Termina el refresh  
 
-    _eliminarVehiculo() {
+    _eliminarVehiculo(id_unidad) {
         Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo', [
             {
                 text: 'Cancelar',
@@ -133,10 +133,40 @@ export default class VehiclesView extends React.Component {
             },
             {
                 text: 'Aceptar', 
-                onPress: () => console.log('Aceptar eliminar vehículo.')
+                onPress: async () => {
+                    const state = await NetInfo.fetch();
+                    if (state.isConnected) {
+                        try {
+                            const result = await fetch('http://35.203.42.33:3006/webservice/delete_vehiculo', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    p_id_unidad: id_unidad
+                                }),
+                            })
+            
+                            const data = await result.json();
+                            // console.log(data);
+
+                            if (data.datos.length != 0) {
+                                Alert.alert('Operación exitosa', 'Se ha eliminado el vehículo correctamente.');
+                                this._refreshListView();
+                            }
+
+                        } catch (error) {
+                            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                            console.error(error);
+                        }
+                    }
+                }
             },
         ], {cancelable: false})
     }
+
+    
 
     render() {
         return (

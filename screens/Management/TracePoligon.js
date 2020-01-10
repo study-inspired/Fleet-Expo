@@ -37,7 +37,7 @@ export default class TracePoligon extends React.Component {
 
     async componentDidMount() {
         console.log(Dimensions.get('window').width);
-        
+
         const state = await NetInfo.fetch();
         if (!state.isConnected) {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -74,24 +74,31 @@ export default class TracePoligon extends React.Component {
             try {
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
                         p_nombre: this.state.nombre,
-                        p_coordenadas: this.state.markers
+                        p_coordenadas: this.state.markers.map(m => { return m.LatLng }),
+                        p_id_tipo_geocerca: 1,
+                        p_id_usuario: 2
                     })
                 })
 
                 const data = await result.json();
-                if (data) {
-                    if (datos.msg) {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        console.error(datos.msg);
-                    } else if (datos.datos) {
-                        this.setState({
-                            setNombre: false,
-                            registrado: true
-                        })
-                    }
+                console.log(data);
+
+                if (data.msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(datos.msg);
+                } else {
+                    this.setState({
+                        setNombre: false,
+                        registrado: true
+                    });
                 }
+
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -109,6 +116,7 @@ export default class TracePoligon extends React.Component {
                     isVisible={this.state.setNombre}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
+                    onBackdropPress={() => this.setState({ setNombre: false, nombre: '' })}
                 >
                     <View>
                         <Button

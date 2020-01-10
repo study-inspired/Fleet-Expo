@@ -229,7 +229,7 @@ export default class AddVehicle extends React.Component {
                                 <Input title="Modelo" placeholder="Modelo" inputStyle={styles.textoRegular16}
                                     onChangeText={text => this.setState({ modelo: text })}
                                 />
-                                <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16}
+                                <Input title="Kilometraje" placeholder="Kilometraje" inputStyle={styles.textoRegular16} keyboardType='numeric'
                                     onChangeText={text => this.setState({ kilometraje: text })}
                                 />
                             </View>
