@@ -324,6 +324,7 @@ export default class ReportVehicle extends Component {
                                             <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                         </View>
                                         <TouchableOpacity>
+                                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {alerta: {fecha: '', hora: '', tipo:''}})}
                                             <Icon
                                                 type='material-community'
                                                 name='map-marker'
