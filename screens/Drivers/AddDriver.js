@@ -10,6 +10,7 @@ import {
     Text,
     Alert,
     ActivityIndicator,
+    YellowBox
 } from 'react-native';
 
 import { Button, Input, Slider, Overlay, Icon } from 'react-native-elements'
@@ -17,6 +18,12 @@ import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import io from 'socket.io-client/dist/socket.io';
+
+console.ignoredYellowBox = ['Remote debugger'];
+YellowBox.ignoreWarnings([
+  'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
 
 export default class AddDriver extends React.Component {
     static navigationOptions = {
@@ -35,19 +42,31 @@ export default class AddDriver extends React.Component {
             }}
         />,
     }
-    state = {
-        isLoading: true,
-        telefono: '',
-        conductor: {
-            nombre: '',
-            num_telefono: ''
-        },
-        verConductor: false,
-        invitacionEnviada: false,
-        mensaje: '',
-        location: null,
-        marker: {},
-        radio: 5000
+    
+    constructor(props) {
+        super(props);
+        this.socket = io('http://35.203.42.33:3001/');
+        
+        this.socket.on('vehiclesDisponibles', (a) => {
+            console.log('respuesta');
+            console.log(a)
+        });
+        this.socket.emit('consultVehicles', null);
+
+        this.state = {
+            isLoading: true,
+            telefono: '',
+            conductor: {
+                nombre: '',
+                num_telefono: ''
+            },
+            verConductor: false,
+            invitacionEnviada: false,
+            mensaje: '',
+            location: null,
+            marker: {},
+            radio: 5000
+        }  
     }
 
     onPress(nombre) {
@@ -78,6 +97,9 @@ export default class AddDriver extends React.Component {
             });
 
             //
+
+            
+
             const response = await fetch('http://35.203.42.33:3001/get_conductor_radio', {
                 method: 'POST',
                 headers: {
@@ -93,7 +115,7 @@ export default class AddDriver extends React.Component {
 
             const result = await response.json();
 
-            console.log(result);
+            // console.log(result);
 
             // Marcadores en el mapa de usuarios
         }
@@ -124,9 +146,9 @@ export default class AddDriver extends React.Component {
                         invitacionEnviada: true
                     });
                 } else {
-                    console.log(datos.datos);
+                    // console.log(datos.datos);
 
-                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: 2 });
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.props.navigation.getParam('id_propietario', 0) });
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -155,7 +177,7 @@ export default class AddDriver extends React.Component {
 
             const datos = await result.json();
 
-            console.log(datos.datos[0]);
+            // console.log(datos.datos[0]);
 
 
             if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {

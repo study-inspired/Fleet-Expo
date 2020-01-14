@@ -73,7 +73,7 @@ export default class GeofenceVehicles extends React.Component {
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
-                            imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
+                            imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33')
                         }
                     })
                     this.setState({

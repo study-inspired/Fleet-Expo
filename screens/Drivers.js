@@ -263,7 +263,7 @@ export default class Drivers extends React.Component {
                             fontSize: 16
                         }}
                         title="Agregar conductor"
-                        onPress={() => { this.props.navigation.navigate('AddDriver') }}
+                        onPress={() => { this.props.navigation.navigate('AddDriver', { id_propietario: 2 }) }}
                     />
 
                     <Button

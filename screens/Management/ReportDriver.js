@@ -58,7 +58,7 @@ export default class ReportDriver extends React.Component {
             const result = await fetch('http://35.203.42.33:3006/webservice/interfaz134/reporte_conductor_actual', {
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
