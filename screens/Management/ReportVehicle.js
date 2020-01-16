@@ -10,13 +10,13 @@ import { Calendar } from 'react-native-calendars';
 
 //Checar _refreshListView()  ya que como no hay fetch en esta parte no se actualizaran las tablas
 
-const viajes_prueba = [
-    { origen: 'Plaza san fernando', destino: 'Central foranea', fecha: '23/08/2019', hora: '16:16:00' },
-    { origen: 'Zentralia', destino: 'Piedra lisa', fecha: '28/08/2019', hora: '12:56:00' },
-    { origen: 'Central forana', destino: 'Plaza country', fecha: '02/09/2019', hora: '14:31:00' },
-    { origen: 'Hotel Maria Isabel', destino: 'Comala', fecha: '10/09/2019', hora: '02:31:00' },
-    { origen: 'Colima centro', destino: 'Placetas', fecha: '22/09/2019', hora: '21:41:00' }
-]
+// const viajes_prueba = [
+//     { origen: 'Plaza san fernando', destino: 'Central foranea', fecha: '23/08/2019', hora: '16:16:00' },
+//     { origen: 'Zentralia', destino: 'Piedra lisa', fecha: '28/08/2019', hora: '12:56:00' },
+//     { origen: 'Central forana', destino: 'Plaza country', fecha: '02/09/2019', hora: '14:31:00' },
+//     { origen: 'Hotel Maria Isabel', destino: 'Comala', fecha: '10/09/2019', hora: '02:31:00' },
+//     { origen: 'Colima centro', destino: 'Placetas', fecha: '22/09/2019', hora: '21:41:00' }
+// ]
 
 // const alertas = [
 //     ['Salida geocerca', '22/09/2019', '10:00 pm'],
@@ -41,11 +41,9 @@ export default class ReportVehicle extends Component {
     state = {
         refreshing: false,
         isLoading: true,
-        hasAlerts: false,
+        hasAlerts: true,
         hasTravels: false,
-        viajesHead: ['Origen', 'Destino', 'Fecha'],
-        viajes: [],
-        alertasHead: ['Alerta', 'Fecha', 'Hora'],
+        viajes: [{fecha: '00-00-0000', hora: '00:00:00', origen: 'A', destino: 'B'}],
         alertas: [],
         vehicle: this.props.navigation.getParam('vehicle', {}),
         visible: false,
@@ -71,7 +69,7 @@ export default class ReportVehicle extends Component {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    key: 'val'
+                    id_unidad: this.state.vehicle.id
                 })
             });
 
@@ -79,7 +77,7 @@ export default class ReportVehicle extends Component {
             console.log(data);
             if (data.datos.length != 0) {
                 this.setState({
-                    viajes: [],
+                    viajes: [{fecha: '00-00-0000', hora: '00:00:00', origen: 'A', destino: 'B'}],
                     hasTravels: true
                 });
             } else {
@@ -106,8 +104,7 @@ export default class ReportVehicle extends Component {
             const data = await result.json();
 
             console.log(data);
-            
-            
+
             if (data.datos.length != 0) {
                 let alerts = Object.values(data.datos).map((d) => {
                     let date = new Date();
@@ -118,7 +115,7 @@ export default class ReportVehicle extends Component {
                         fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
                         hora: date.toLocaleTimeString(),
                         concepto: d.concepto_alerta,
-                        coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
+                        coordenadas: { latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1]) }
                     }
                 });
 
@@ -188,7 +185,7 @@ export default class ReportVehicle extends Component {
     }
 
     render() {
-        const { vehicle, viajes, viajesHead } = this.state
+        const { vehicle, viajes } = this.state
         return (
             <ScrollView
                 refreshControl={this._refreshControl()}
@@ -259,6 +256,7 @@ export default class ReportVehicle extends Component {
                     </View>
 
                     {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                    
                     <View style={{ margin: 4 }} >
                         <View style={styles.view1}>
                             <Icon type='ionicon' name='ios-send' size={16} />
@@ -281,37 +279,22 @@ export default class ReportVehicle extends Component {
                             <Text style={styles.textoBold}>Origen</Text>
                             <Text style={styles.textoBold}>Destino</Text>
                         </Card>
-                        {/* {
-                        viajes_prueba.map(viaje => {
-                            <Card
-                                wrapperStyle={{flexDirection: 'column'}}
-                            >
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text>{viaje.fecha}</Text>
-                                    <Text>{viaje.hora}</Text>
-                                </View>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text>{viaje.origen}</Text>
-                                    <Text>{viaje.destino}</Text>
-                                </View>
-                            </Card>
-                        })
-                    } */}
-
-
-
                         {
-                            !this.state.isLoading && this.state.hasTravels &&
-                            <Table borderStyle={styles.border}>
-                                <Row data={viajesHead} style={styles.head} textStyle={styles.text} />
-                                <Rows data={viajes} textStyle={styles.text} />
-                            </Table>
+                            !this.state.isLoading && /*this.state.hasTravels &&*/
+                            this.state.viajes.map((viaje, k) => {
+                                return (
+                                    <Card key={k} wrapperStyle={{ flexDirection: 'column' }} containerStyle={{ marginVertical: 1 }}>
+                                        <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                            <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{viaje.fecha}   {viaje.hora}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', flex: 1 }}>
+                                            <Text style={{ fontFamily: 'aller-lt', flex: 1 }}>{viaje.origen}</Text>
+                                            <Text style={{ fontFamily: 'aller-lt', flex: 1, textAlign: 'right' }}>{viaje.destino}</Text>
+                                        </View>
+                                    </Card>
+                                );
+                            })
                         }
-
-                        {/* <View style={styles.view1}>
-                        <Icon type='material-community' name='alert' size={16} />
-                        <Text style={styles.titulo}>  Alertas</Text>
-                    </View> */}
 
                         <Card wrapperStyle={{ flexDirection: 'row', justifyContent: 'space-between' }} containerStyle={{ marginBottom: 2 }}>
                             <Text style={styles.textoBold}>Alerta</Text>
@@ -330,7 +313,7 @@ export default class ReportVehicle extends Component {
                                             <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                         </View>
                                         <TouchableOpacity
-                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {coordenadas: alerta.coordenadas, concepto: alerta.concepto})}
+                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', { coordenadas: alerta.coordenadas, concepto: alerta.concepto })}
                                         >
                                             <Icon
                                                 type='material-community'

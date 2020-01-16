@@ -61,7 +61,7 @@ export default class TraceRadius extends React.Component {
     async registerRadius() {
         if (this.state.nombre.length = !0) {
             try {
-                let mm = [this.state.LatLng, {radio: this.state.radio/1000}];
+                let mm = [[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio/1000]];
                 console.log(JSON.stringify(mm));
                 
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {

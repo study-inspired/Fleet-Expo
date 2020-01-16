@@ -22,7 +22,7 @@ import io from 'socket.io-client/dist/socket.io';
 
 console.ignoredYellowBox = ['Remote debugger'];
 YellowBox.ignoreWarnings([
-  'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
 
 export default class AddDriver extends React.Component {
@@ -42,19 +42,13 @@ export default class AddDriver extends React.Component {
             }}
         />,
     }
-    
+
     constructor(props) {
         super(props);
-        this.socket = io('http://35.203.42.33:3001/');
-        
-        this.socket.on('vehiclesDisponibles', (a) => {
-            console.log('respuesta');
-            console.log(a)
-        });
-        this.socket.emit('consultVehicles', null);
 
         this.state = {
             isLoading: true,
+            hasDrivers: false,
             telefono: '',
             conductor: {
                 nombre: '',
@@ -65,13 +59,46 @@ export default class AddDriver extends React.Component {
             mensaje: '',
             location: null,
             marker: {},
+            conductores: [],
             radio: 5000
-        }  
+        }
+
+        this.socket = io.connect('http://35.203.42.33:3001/');
+
+        this.socket.on('connect', () => {
+            console.log(this.socket.id);
+        });
+
+        this.socket.on('obtenerCondutoresCercanos', (res) => {
+            // console.log('Conductores cercanos: ', res.length);
+
+            this.setState({
+                conductores: res.map(info => {
+                    return {
+                        latitude: info.latitud,
+                        longitude: info.longitud,
+                        id_conductor: info.datos_chofer.idChofer,
+                        nombre_conductor: info.datos_chofer.nombreChofer
+                    }
+                }),
+                hasDrivers: true
+            });
+            // console.log(this.state.conductores);
+        });
     }
 
     onPress(nombre) {
         this.setState({ selected: nombre })
         alert(nombre)
+    }
+
+    consultarConductoresCercanos(lat, lon) {
+        this.socket.emit('consultarCondutoresCercanos', {
+            socket_id: this.socket.id,
+            radio: this.state.radio / 1000,
+            latitud: lat,
+            longitud: lon
+        });
     }
 
     async componentDidMount() {
@@ -85,8 +112,8 @@ export default class AddDriver extends React.Component {
             }
 
             let location = await Location.getCurrentPositionAsync({});
-            console.log(location);
-
+            // console.log(location);
+            this.consultarConductoresCercanos(location.coords.latitude, location.coords.longitude);
             this.setState({
                 location: location.coords,
                 marker: {
@@ -95,29 +122,6 @@ export default class AddDriver extends React.Component {
                 },
                 isLoading: false
             });
-
-            //
-
-            
-
-            const response = await fetch('http://35.203.42.33:3001/get_conductor_radio', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    latitud_origen: this.state.marker.latitude,
-                    longitud_origen: this.state.marker.longitude,
-                    km: this.state.radio / 1000,
-                })
-            });
-
-            const result = await response.json();
-
-            // console.log(result);
-
-            // Marcadores en el mapa de usuarios
         }
     }
 
@@ -148,7 +152,7 @@ export default class AddDriver extends React.Component {
                 } else {
                     // console.log(datos.datos);
 
-                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.props.navigation.getParam('id_propietario', 0) });
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.props.navigation.getParam('id_propietario', 0), socket: this.socket });
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -161,41 +165,41 @@ export default class AddDriver extends React.Component {
         }
     }
 
-    async invitarConductor() {
-        const state = await NetInfo.fetch();
-        if (state.isConnected) {
-            const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_operador: 1
-                })
-            });
+    // async invitarConductor() {
+    //     const state = await NetInfo.fetch();
+    //     if (state.isConnected) {
+    //         const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({
+    //                 id_operador: 1
+    //             })
+    //         });
 
-            const datos = await result.json();
+    //         const datos = await result.json();
 
-            // console.log(datos.datos[0]);
+    //         // console.log(datos.datos[0]);
 
 
-            if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
-                this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
-            } else {
-                this.setState({ mensaje: 'Error al enviar la invitación al conductor, intente de nuevo más tarde.' });
-            }
+    //         if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
+    //             this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
+    //         } else {
+    //             this.setState({ mensaje: 'Error al enviar la invitación al conductor, intente de nuevo más tarde.' });
+    //         }
 
-            this.setState({ verConductor: false, invitacionEnviada: true });
-        } else {
-            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
-        }
-    }
+    //         this.setState({ verConductor: false, invitacionEnviada: true });
+    //     } else {
+    //         Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+    //     }
+    // }
 
     render() {
         return (
             <View style={{ flex: 1, flexDirection: 'column', marginHorizontal: 15 }}>
-                <Overlay
+                {/* <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.verConductor}
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
@@ -228,7 +232,7 @@ export default class AddDriver extends React.Component {
                             />
                         </View>
                     </View>
-                </Overlay>
+                </Overlay> */}
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.invitacionEnviada}
@@ -314,27 +318,39 @@ export default class AddDriver extends React.Component {
                                     longitudeDelta: 0.0421,
                                 }}
                                 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                                onPress={e => this.setState({ marker: e.nativeEvent.coordinate })}
+                                onPress={e => {
+                                    this.setState({ marker: e.nativeEvent.coordinate });
+                                    setTimeout(() => {
+                                        this.consultarConductoresCercanos(this.state.marker.latitude, this.state.marker.longitude);
+                                    }, 250);
+                                }}
                             >
                                 <MapView.Marker
                                     coordinate={this.state.marker}
                                 />
 
-                                {/* <MapView.Marker
-                                    coordinate={{
-                                        latitude: this.state.marker.latitude + 0.01,
-                                        longitude: this.state.marker.longitude + 0.01
-                                    }}
-                                    onPress={() => this.props.navigation.navigate('InfoDriver')}
-                                >
-                                    <Icon
-                                        type='font-awesome'
-                                        name='user'
-                                        size={24}
-                                        color='black'
-                                    />
-                                </MapView.Marker> */}
-
+                                {
+                                    this.state.hasDrivers &&
+                                    this.state.conductores.map(conductor => {
+                                        return (
+                                            <MapView.Marker
+                                                key={conductor.id_conductor}
+                                                coordinate={{
+                                                    latitude: conductor.latitude,
+                                                    longitude: conductor.longitude
+                                                }}
+                                                onPress={() => this.props.navigation.navigate('InfoDriver', { id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
+                                            >
+                                                <Icon
+                                                    type='font-awesome'
+                                                    name='user'
+                                                    size={24}
+                                                    color='black'
+                                                />
+                                            </MapView.Marker>
+                                        )
+                                    })
+                                }
                                 <Circle
                                     center={this.state.marker}
                                     radius={this.state.radio}
@@ -360,7 +376,6 @@ export default class AddDriver extends React.Component {
             </View>
         );
     }
-
 }
 /*
 const styles = StyleSheet.create({

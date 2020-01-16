@@ -44,6 +44,31 @@ export default class VehiclesView extends React.Component {
         vehicles: {}
     }
 
+    async _getEstadoDocumentosVehiculoGeneral(niv_unidad) {
+        try {
+            const result = await fetch('http://35.203.42.33:3000/EstadoDocumentosVehiculoxUsuarioGeneral', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    in_niv: niv_unidad,
+                }),
+            });
+
+            const data = await result.json();
+
+            // console.log(niv_unidad, data.data[0].sp_estado_all_documentos_vehiculos_general);
+            
+            return (data.data[0].sp_estado_all_documentos_vehiculos_general != 0) ? true : false;
+
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+        }
+    }
+
     async componentDidMount() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
@@ -61,10 +86,11 @@ export default class VehiclesView extends React.Component {
                 })
 
                 const data = await result.json();
-                console.log(data);
+                // console.log(data);
 
                 if (data.datos.length != 0) {
-                    let vehicles = data.datos.map((v) => {
+                    let vehicles = data.datos.map( async (v) => {
+                        let problema = await this._getEstadoDocumentosVehiculoGeneral(`${v.niv}`)
                         return {
                             id: v.id_unidad,
                             nombre: `${v.marca} ${v.modelo}`,
@@ -72,15 +98,18 @@ export default class VehiclesView extends React.Component {
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
                             imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33'),
                             vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
-                            problema: v.estado != 0
+                            problema: problema,
+                            niv: v.niv
                         }
-                    })
-                    console.log(vehicles);
-                    
-                    this.setState({
-                        hasVehicles: true,
-                        vehicles: vehicles,
-                        isLoading: false
+                    });
+
+                    Promise.all(vehicles).then((completed) => {
+                        // console.log(completed); 
+                        this.setState({
+                            hasVehicles: true,
+                            vehicles: completed,
+                            isLoading: false
+                        });
                     });
                 } else {
                     Alert.alert('Info', 'No hay vehiculos!');
@@ -134,7 +163,7 @@ export default class VehiclesView extends React.Component {
                 style: 'cancel',
             },
             {
-                text: 'Aceptar', 
+                text: 'Aceptar',
                 onPress: async () => {
                     const state = await NetInfo.fetch();
                     if (state.isConnected) {
@@ -149,7 +178,7 @@ export default class VehiclesView extends React.Component {
                                     p_id_unidad: id_unidad
                                 }),
                             })
-            
+
                             const data = await result.json();
                             // console.log(data);
 
@@ -165,10 +194,10 @@ export default class VehiclesView extends React.Component {
                     }
                 }
             },
-        ], {cancelable: false})
+        ], { cancelable: false })
     }
 
-    
+
 
     render() {
         return (
@@ -225,83 +254,83 @@ export default class VehiclesView extends React.Component {
                     />
                 </View>
                 {
-                    this.state.isLoading ? 
-                    <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
-                    :
-                    <ScrollView
-                        contentInsetAdjustmentBehavior="automatic"
-                        style={styles.scrollView}
-                        refreshControl={this._refreshControl()}
-                    >
-                        <View style={{ marginBottom: 15 }}>
-                            {!this.state.isLoading && this.state.hasVehicles &&
-                                this.state.vehicles.map((v, i) => {
-                                    return (
-                                        <Card key={i}>
-                                            <TouchableOpacity
-                                                /*key={i}*/
-                                                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                                onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle') : null }}
-                                            >
-                                                <View
-                                                    style={{
-                                                        flex: 1,
-                                                        flexDirection: 'row',
-                                                    }}>
-                                                    <Image
-                                                        style={styles.imagen}
-                                                        resizeMode="cover"
-                                                        source={{ uri: v.imagen }}
-                                                    />
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flex: 5,
-                                                        flexDirection: 'column',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center'
-                                                    }}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.texto700}>{v.nombre}</Text>
-                                                        <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                    this.state.isLoading ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
+                        :
+                        <ScrollView
+                            contentInsetAdjustmentBehavior="automatic"
+                            style={styles.scrollView}
+                            refreshControl={this._refreshControl()}
+                        >
+                            <View style={{ marginBottom: 15 }}>
+                                {!this.state.isLoading && this.state.hasVehicles &&
+                                    this.state.vehicles.map((v, i) => {
+                                        return (
+                                            <Card key={i}>
+                                                <TouchableOpacity
+                                                    /*key={i}*/
+                                                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+                                                    onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle', { problema: true, niv: v.niv, id_unidad: v.id }) : null }}
+                                                >
+                                                    <View
+                                                        style={{
+                                                            flex: 1,
+                                                            flexDirection: 'row',
+                                                        }}>
+                                                        <Image
+                                                            style={styles.imagen}
+                                                            resizeMode="cover"
+                                                            source={{ uri: v.imagen }}
+                                                        />
                                                     </View>
+                                                    <View
+                                                        style={{
+                                                            flex: 5,
+                                                            flexDirection: 'column',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                        <View style={{ flexDirection: 'row' }}>
+                                                            <Text style={styles.texto700}>{v.nombre}</Text>
+                                                            <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                        </View>
 
-                                                    <Text style={styles.texto600}>{v.placas}</Text>
-                                                    <Text style={styles.texto70012}>Vigencia de operación:</Text>
-                                                    <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
-                                                </View>
-                                                <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
-                                                <Button
-                                                    type='clear'
-                                                    icon={{
-                                                        name: "delete",
-                                                        size: 24,
-                                                        color: '#ff8834'
-                                                    }}
-                                                    buttonStyle={{
-                                                        position: 'absolute',
-                                                        flexDirection: 'column',
-                                                        justifyContent: 'center',
-                                                        right: -15,
-                                                    }}
-                                                    iconContainerStyle={{
-                                                        flex: 1,
-                                                    }}
-                                                    titleStyle={{
-                                                        fontFamily: 'aller-lt',
-                                                        flex: 1,
-                                                        fontSize: 12
-                                                    }}
-                                                    title="Eliminar"
-                                                    onPress={() => this._eliminarVehiculo(v.id)}
-                                                />
-                                            </TouchableOpacity>
-                                        </Card>
-                                    );
-                                })
-                            }
-                        </View>
-                    </ScrollView>
+                                                        <Text style={styles.texto600}>{v.placas}</Text>
+                                                        <Text style={styles.texto70012}>Vigencia de operación:</Text>
+                                                        <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
+                                                    </View>
+                                                    <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
+                                                    <Button
+                                                        type='clear'
+                                                        icon={{
+                                                            name: "delete",
+                                                            size: 24,
+                                                            color: '#ff8834'
+                                                        }}
+                                                        buttonStyle={{
+                                                            position: 'absolute',
+                                                            flexDirection: 'column',
+                                                            justifyContent: 'center',
+                                                            right: -15,
+                                                        }}
+                                                        iconContainerStyle={{
+                                                            flex: 1,
+                                                        }}
+                                                        titleStyle={{
+                                                            fontFamily: 'aller-lt',
+                                                            flex: 1,
+                                                            fontSize: 12
+                                                        }}
+                                                        title="Eliminar"
+                                                        onPress={() => this._eliminarVehiculo(v.id)}
+                                                    />
+                                                </TouchableOpacity>
+                                            </Card>
+                                        );
+                                    })
+                                }
+                            </View>
+                        </ScrollView>
                 }
             </View>
         )

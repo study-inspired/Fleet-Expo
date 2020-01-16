@@ -134,7 +134,7 @@ export default class AddPhoto extends React.Component {
 
             this.props.navigation.navigate('AttachedPicture', {
                 doOnBack: this.onBack.bind(this),
-                ruta_post_documento: 'upload_fotografia1',
+                ruta_post_documento: `upload_fotografia${foto}`,
                 numero_foto: foto,
                 image: { uri: result.uri },
                 id_usuario: this.props.navigation.getParam('id_usuario', 0),
@@ -178,7 +178,7 @@ export default class AddPhoto extends React.Component {
 
             this.props.navigation.navigate('AttachedPicture', {
                 doOnBack: this.onBack.bind(this),
-                ruta_post_documento: 'upload_fotografia1',
+                ruta_post_documento:  `upload_fotografia${foto}`,
                 numero_foto: foto,
                 image: { uri: result.uri },
                 id_usuario: this.props.navigation.getParam('id_usuario', 0),

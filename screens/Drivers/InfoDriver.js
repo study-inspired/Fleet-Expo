@@ -19,7 +19,7 @@ import {
 
 import { Button, Icon, Divider, Badge } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
-import io from 'socket.io-client/dist/socket.io';
+// import io from 'socket.io-client/dist/socket.io';
 import { YellowBox } from 'react-native';
 
 console.ignoredYellowBox = ['Remote debugger'];
@@ -35,26 +35,11 @@ export default class InfoDriver extends React.Component {
 
   constructor(props) {
     super(props);
-    this.socket = io('http://35.203.42.33:3006/');
+    // this.socket = io.connect('http://35.203.42.33:3001/');
     this.state = {
       isLoading: true,
       hascommentary: true,
-      conductcor: {},
-      viajes: {
-        tasaaceptacion: "87%",
-        tasacancelacion: "13%",
-        calificacion: "4.99",
-        dias: "17",
-        viajesfinalizados: "1,245",
-        viajesfinalizadosporcentaje: "94%"
-      },
-      reconocimientos: {
-        excelenteservicio: "10",
-        buenaruta: "8",
-        amable: "19",
-        buenaconversacion: "+99",
-        heroe: "10"
-      },
+      conductor: {},
       logros: {
         viajesconFestrellas: "90"
       },
@@ -62,6 +47,12 @@ export default class InfoDriver extends React.Component {
       id_propietario: this.props.navigation.getParam('id_propietario', 0),
       id_conductor: this.props.navigation.getParam('id_usuario', 0)
     }
+
+    this.socket = this.props.navigation.getParam('socket', null);
+
+    this.socket.on('invitacionAceptada', (res) => {
+      console.log(res);
+    });
   }
 
   async componentDidMount() {
@@ -71,18 +62,6 @@ export default class InfoDriver extends React.Component {
     this.setState({
       isLoading: false
     });
-
-    this.socket.emit('procesar_invitacion', {
-      datos: {
-        id_propietario: this.state.id_propietario,
-        id_conductor: this.state.id_conductor
-      }
-    });
-    this.socket.on('seguimiento_usuario', (a) => {
-      console.log('respuesta');
-      console.log(a)
-    });
-
   }
 
   async datos_conductor() {
@@ -131,16 +110,16 @@ export default class InfoDriver extends React.Component {
         }),
       })
 
-      const datos = await result.json();
+      const comentarios = await result.json();
 
-      if (datos.msg) {
+      if (comentarios.msg) {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-        console.error(datos.msg);
+        console.error(comentarios.msg);
         this.props.navigation.goBack();
       } else {
         // console.log(datos.datos);
         this.setState({
-          comentarios: datos.datos.map(comentario => {
+          comentarios: comentarios.datos.map(comentario => {
             return {
               socio: comentario.nombre_socio,
               msg: comentario.comentario
@@ -149,7 +128,6 @@ export default class InfoDriver extends React.Component {
         });
 
         // console.log(this.state.comentarios);
-        
       }
     } catch (error) {
       Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -170,15 +148,13 @@ export default class InfoDriver extends React.Component {
         }),
       })
 
-      const comentarios = await result.json();
-      if (comentarios) {
-        if (comentarios.msg) {
-          Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-          console.error(comentarios.msg);
-          this.props.navigation.goBack();
-        } else if (comentarios.datos) {
-          // console.log(comentarios.datos);
-        }
+      const logros = await result.json();
+      if (logros.msg) {
+        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+        console.error(logros.msg);
+        this.props.navigation.goBack();
+      } else {
+        // console.log(comentarios.datos);
       }
 
     } catch (error) {
@@ -188,23 +164,14 @@ export default class InfoDriver extends React.Component {
   }
 
   async _invitarConductor() {
-    Alert.alert('Invitar', 'Invitando');
-
     try {
-      const result = await fetch(`http://35.203.42.33y:3006/webservice/invitar_conductor`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id_operador: this.state.id_propietario
-        }),
-      })
+      this.socket.emit('inivtarConductor', {
+        socket_id: this.socket.id,
+        id_conductor: this.state.id_conductor
+      });
 
-      const data = await result.json();
-      
-      // console.log(data);
+      Alert.alert('Información', 'Invitación enviada.');
+
     } catch (error) {
       Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
       console.error(error);

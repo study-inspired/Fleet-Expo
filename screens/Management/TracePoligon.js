@@ -71,7 +71,8 @@ export default class TracePoligon extends React.Component {
 
     async registerPolygon() {
         if (this.state.nombre.length != 0) {
-            try {
+            try {     
+                let coordenadas = JSON.stringify(this.state.markers.map(m => { return ([m.LatLng.latitude, m.LatLng.longitude]) }));
                 const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
                     headers: {
@@ -80,7 +81,7 @@ export default class TracePoligon extends React.Component {
                     },
                     body: JSON.stringify({
                         p_nombre: this.state.nombre,
-                        p_coordenadas: this.state.markers.map(m => { return m.LatLng }),
+                        p_coordenadas: coordenadas,
                         p_id_tipo_geocerca: 1,
                         p_id_usuario: 2
                     })
