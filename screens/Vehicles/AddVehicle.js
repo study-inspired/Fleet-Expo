@@ -163,6 +163,15 @@ export default class AddVehicle extends React.Component {
         } else {
             if (this.state.problema) {
                 console.log('Problema con documentos.');
+                this.setState({
+                    poliza: { cargado: true, ruta: '', estado: false },
+                    factura: { cargado: true, ruta: '', estado: false },
+                    holograma: { cargado: true, ruta: '', estado: false },
+                    tarjeta: { cargado: true, ruta: '', estado: false },
+                    tag: { cargado: true, ruta: '', estado: false },
+                    fotos: { cargado: true, rutas: ['', '', '', '', ''], estado: false, numero_foto: 0 },
+                });
+
                 await this._datosUnidad(this.state.id_unidad);
                 await this._getEstadoDocumentosVehiculoGeneral(this.state.serie);
             }
@@ -243,7 +252,7 @@ export default class AddVehicle extends React.Component {
     }
 
     verificarNIV(nextScreen) {
-        if (this.verificarEscrituraNiv()) {
+        if (this.state.serie != '' && this.state.serie.length == 17) {
             this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this), id_usuario: 2, niv: this.state.serie })
         } else {
             Alert.alert('Atención', 'Debes llenar los datos anteriores antes de seleccionar los documentos o fotografías.');
@@ -411,7 +420,7 @@ export default class AddVehicle extends React.Component {
                                 </Picker>
 
                                 <TouchableOpacity
-                                    onPress={() => this.state.poliza.estado && !this.state.poliza.cargado ? this.verificarNIV('AddPolicy') : null}
+                                    onPress={() => (this.state.poliza.estado || !this.state.poliza.cargado) ? this.verificarNIV('AddPolicy') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -426,14 +435,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.poliza.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.poliza.estado && !this.state.poliza.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.poliza.estado && !this.state.poliza.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.poliza.estado && !this.state.poliza.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    :
-                                                    !this.state.poliza.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.poliza.estado && this.state.poliza.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }
@@ -441,7 +450,7 @@ export default class AddVehicle extends React.Component {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    onPress={() => this.state.factura.estado && !this.state.factura.cargado ? this.verificarNIV('AddBill') : null}
+                                    onPress={() => (this.state.factura.estado || !this.state.factura.cargado) ? this.verificarNIV('AddBill') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -456,14 +465,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.factura.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.factura.estado && !this.state.factura.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.factura.estado && !this.state.factura.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.factura.estado && !this.state.factura.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    :
-                                                    !this.state.factura.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.factura.estado && this.state.factura.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }
@@ -471,7 +480,7 @@ export default class AddVehicle extends React.Component {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    onPress={() => this.state.holograma.estado && !this.state.holograma.cargado ? this.verificarNIV('AddHologram') : null}
+                                    onPress={() => (this.state.holograma.estado || !this.state.holograma.cargado) ? this.verificarNIV('AddHologram') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -486,14 +495,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.holograma.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.holograma.estado && !this.state.holograma.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.holograma.estado && !this.state.holograma.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.holograma.estado && !this.state.holograma.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    : 
-                                                    !this.state.holograma.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.holograma.estado && this.state.holograma.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }
@@ -501,7 +510,7 @@ export default class AddVehicle extends React.Component {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    onPress={() => this.state.tarjeta.estado && !this.state.tarjeta.cargado ? this.verificarNIV('AddCard') : null}
+                                    onPress={() => (this.state.tarjeta.estado || !this.state.tarjeta.cargado) ? this.verificarNIV('AddCard') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -516,14 +525,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.tarjeta.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.tarjeta.estado && !this.state.tarjeta.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.tarjeta.estado && !this.state.tarjeta.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.tarjeta.estado && !this.state.tarjeta.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    : 
-                                                    !this.state.tarjeta.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.tarjeta.estado && this.state.tarjeta.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }
@@ -531,7 +540,7 @@ export default class AddVehicle extends React.Component {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    onPress={() => this.state.tag.estado && !this.state.tag.cargado ? this.verificarNIV('AddTAG') : null}
+                                    onPress={() => (this.state.tag.estado || !this.state.tag.cargado) ? this.verificarNIV('AddTAG') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -546,14 +555,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.tag.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.tag.estado && !this.state.tag.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.tag.estado && !this.state.tag.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.tag.estado && !this.state.tag.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    : 
-                                                    !this.state.tag.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.tag.estado && this.state.tag.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }
@@ -563,7 +572,7 @@ export default class AddVehicle extends React.Component {
     Cargar las 5 imagenes del vehiculo si hay problema e indicar cual es la que tiene el problema.
 */}
                                 <TouchableOpacity
-                                    onPress={() => this.state.fotos.estado && !this.state.fotos.cargado ? this.verificarNIV('AddPhoto') : null}
+                                    onPress={() => (this.state.fotos.estado || !this.state.fotos.cargado) ? this.verificarNIV('AddPhoto') : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',
@@ -578,14 +587,14 @@ export default class AddVehicle extends React.Component {
                                     <View style={styles.viewTouchable}>
                                         <Text style={[styles.textoRegular16, { color: !this.state.fotos.cargado ? '#000' : '#fff' }]}>Cargar</Text>
                                         {
+                                            !this.state.fotos.estado && !this.state.fotos.cargado ?
+                                            <FontAwesome name="chevron-right" size={18} color='black' />
+                                            :
                                             this.state.fotos.estado && !this.state.fotos.cargado ?
                                                 <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                 :
-                                                !this.state.fotos.estado && !this.state.fotos.cargado ?
-                                                    <FontAwesome name="check-circle" size={18} color='#20d447' />
-                                                    : 
-                                                    !this.state.fotos.cargado ?
-                                                        <FontAwesome name="chevron-right" size={18} color='black' />
+                                                !this.state.fotos.estado && this.state.fotos.cargado ?
+                                                    <FontAwesome name="check-circle" size={18} color='#20d447' /> 
                                                         :
                                                         <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
                                         }

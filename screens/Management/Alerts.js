@@ -23,7 +23,9 @@ export default class Alerts extends Component {
             vehicle: this.props.navigation.getParam('vehicle', {}),
             visible: false,
             markedDates: null,
-            selectedWeek: ''
+            selectedWeek: '',
+            fecha_inicial: '',
+            fecha_final: ''
         }
     }
 
@@ -41,55 +43,56 @@ export default class Alerts extends Component {
 
     async componentDidMount() {
         this.getWeek(new Date());
-        try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id_unidad: this.state.vehicle.id
-                }),
-            });
-
-            const data = await result.json();
-            console.log(data);
-
-            if (data.datos.length != 0) {
-                let alerts = Object.values(data.datos).map((d) => {
-                    let date = new Date();
-                    let hm = d.hora.split(':');
-                    date.setHours(hm[0]);
-                    date.setMinutes(hm[1]);
-                    return {
-                        fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
-                        hora: date.toLocaleTimeString(),
-                        concepto: d.concepto_alerta,
-                        coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
-                    }
+        setTimeout( async () => {
+            try {
+                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        p_id_unidad: this.state.vehicle.id,
+                        p_fecha_inicial: this.state.fecha_inicial,
+                        p_fecha_final: this.state.fecha_final
+                    }),
                 });
-                console.log(alerts);
-
-                this.setState({
-                    alerts: alerts,
-                    hasAlerts: true,
-                    isLoading: false
-                });
-            } else {
-                Alert.alert('Info', 'No hay alertas registradas!');
+    
+                const data = await result.json();
+                
+                if (data.datos.length != 0) {
+                    let alerts = Object.values(data.datos).map( d => {
+                        let date = new Date();
+                        let hm = d.hora.split(':');
+                        date.setHours(hm[0]);
+                        date.setMinutes(hm[1]);
+                        return {
+                            fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                            hora: date.toLocaleTimeString(),
+                            concepto: d.concepto_alerta,
+                            coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
+                        }
+                    });
+                    this.setState({
+                        alerts: alerts,
+                        hasAlerts: true,
+                        isLoading: false
+                    });
+                } else {
+                    Alert.alert('Información', 'No hay alertas registradas.');
+                    this.setState({
+                        isLoading: false
+                    });
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+                //this.props.navigation.goBack();
                 this.setState({
                     isLoading: false
                 });
             }
-        } catch (error) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(error);
-            //this.props.navigation.goBack();
-            this.setState({
-                isLoading: false
-            });
-        }
+        }, 100);
     }
 
     //Refresh control  
@@ -116,7 +119,6 @@ export default class Alerts extends Component {
 
     getWeek(date) {
         // console.log(date);
-
         let dates = {};
         let startDay = date;
         let first, last;
@@ -133,13 +135,16 @@ export default class Alerts extends Component {
             }
             dates[this.formatDate(startDay.getFullYear(), startDay.getMonth() + 1, startDay.getDate())] = { color: '#ff8834', textColor: 'white' };
         }
-
+        let fechas = Object.keys(dates);
         this.setState({
             markedDates: dates,
             selectedWeek: `${first} - ${last}`,
-            visible: false
+            visible: false,
+            fecha_inicial: fechas[0],
+            fecha_final: fechas[6]
         });
-
+        console.log(fechas);
+        
         // Fetch para obtener las alertas
     }
 

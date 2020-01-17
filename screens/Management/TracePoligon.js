@@ -92,14 +92,17 @@ export default class TracePoligon extends React.Component {
 
                 if (data.msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(datos.msg);
+                    console.error(data.msg);
                 } else {
-                    this.setState({
-                        setNombre: false,
-                        registrado: true
-                    });
+                    if (data.datos[0].sp_registrar_geocerca.includes('1')) {
+                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    } else {
+                        this.setState({
+                            setNombre: false,
+                            registrado: true
+                        });
+                    }
                 }
-
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);

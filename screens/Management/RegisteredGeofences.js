@@ -11,7 +11,8 @@ import {
     Text,
     TouchableOpacity,
     ActivityIndicator,
-    Alert
+    Alert,
+    RefreshControl
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements';
@@ -35,6 +36,20 @@ export default class RegisteredGeofences extends React.Component {
     state = {
         isLoading: true,
         geocercas: []
+    }
+
+    _refreshControl() {
+        return (
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this._refreshListView()} />
+        )
+    }
+
+    _refreshListView() {
+        this.setState({ refreshing: true }) //Start Rendering Spinner
+        this.componentDidMount()  //<-- Recargo el refresh control
+        this.setState({ refreshing: false }) //Stop Rendering Spinner
     }
 
     async componentDidMount() {
@@ -65,7 +80,6 @@ export default class RegisteredGeofences extends React.Component {
                         this.setState({ isLoading: false });
                     }
                 }
-
             } catch (error) {
                 Alert.alert('Error', 'Hubo un error.');
                 console.error(error);
@@ -108,7 +122,7 @@ export default class RegisteredGeofences extends React.Component {
                     this.state.isLoading ?
                         <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
                         :
-                        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView} refreshControl={this._refreshControl()} >
                             <View style={{ marginBottom: 15 }}>
                                 {
                                     this.state.geocercas.map((g, i) => {
@@ -121,7 +135,7 @@ export default class RegisteredGeofences extends React.Component {
                                                         alignItems: 'center',
                                                     }}
 
-                                                    onPress={() => this.props.navigation.navigate('GeofenceVehicles', { id_geocerca: g.id_geocercas, nombre_geocerca: g.nombre })}
+                                                    onPress={() => this.props.navigation.navigate('GeofenceVehicles', { id_propietario: 2, id_geocerca: g.id_geocercas, nombre_geocerca: g.nombre })}
                                                 >
                                                     <Icon type='material-community' name="map" size={42} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
                                                     <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{g.nombre}</Text>
@@ -133,7 +147,7 @@ export default class RegisteredGeofences extends React.Component {
                                                         justifyContent: 'center',
                                                         alignItems: 'center'
                                                     }}
-                                                    onPress={() => this.props.navigation.navigate('AssignVehicle')}
+                                                    onPress={() => this.props.navigation.navigate('AssignVehicle', { id_geocerca: g.id_geocercas, id_propietario: 2 })}
                                                 >
                                                     <Icon type='font-awesome' name='plus' size={18} iconStyle={{ position: 'absolute', right: -24, top: -5 }} />
                                                     <Icon type='font-awesome' name='car' size={24} iconStyle={{ marginHorizontal: 5 }} />

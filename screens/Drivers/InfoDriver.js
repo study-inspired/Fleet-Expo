@@ -50,8 +50,9 @@ export default class InfoDriver extends React.Component {
 
     this.socket = this.props.navigation.getParam('socket', null);
 
-    this.socket.on('invitacionAceptada', (res) => {
-      console.log(res);
+    this.socket.on('respuesta_invitacion', (res) => {
+      console.log('Respuesta invitación:', res);// notificación
+      Alert.alert('Información', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);
     });
   }
 
@@ -87,7 +88,6 @@ export default class InfoDriver extends React.Component {
           Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
           this.props.navigation.goBack();
         }
-
       } catch (error) {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
         console.error(error);
@@ -165,13 +165,36 @@ export default class InfoDriver extends React.Component {
 
   async _invitarConductor() {
     try {
-      this.socket.emit('inivtarConductor', {
-        socket_id: this.socket.id,
-        id_conductor: this.state.id_conductor
-      });
+      let datos = {
+        socket_id: this.props.navigation.getParam('socket_id', ''),
+        id_conductor: this.state.id_conductor,
+        // id_propietario: this.state.id_propietario
+      };
 
-      Alert.alert('Información', 'Invitación enviada.');
+      this.socket.emit('enviarInvitacion', datos);
+      // console.log('Enviar invitación');
 
+      const result = await fetch('http://35.203.42.33:3006/webservice/interfaz55/invitar_conductor', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          in_id_propietario: this.state.id_propietario,
+          in_usuario_conductor: this.state.id_conductor,
+        })
+      })
+
+      const data = await result.json();
+      // console.log(data);
+
+      if (data.msg) {
+        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+        console.error(data.msg);
+      } else {
+        Alert.alert('Información', 'La invitación fué enviada con exito.');
+      }
     } catch (error) {
       Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
       console.error(error);

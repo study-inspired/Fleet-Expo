@@ -44,11 +44,10 @@ export default class VehicleMaintenance extends Component {
       });
       
       const data = await result.json();
-      
-      if (data.datos.lenght != 0) {
+      if (data.datos.length != 0) {
         const datos = await data.datos[0];
         
-        let newData = Object.keys(datos).map(key => {
+        let newData = Object.keys(datos).map( key => {
           let elemento = [];
           if (key == 'funcionamiento_motor') {
             elemento.push('Funcionamiento del motor');

@@ -80,7 +80,7 @@ export default class SelectVehicle extends React.Component {
             })
 
             const data = await result.json();
-            console.log(data);
+            // console.log(data);
 
             if (data.datos.length != 0) {
                 let vehicles = data.datos.map((v) => {

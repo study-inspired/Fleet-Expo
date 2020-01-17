@@ -102,24 +102,26 @@ export default class AssignVehicle extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_unidad: this.state.vehiculo.id,
-                        p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0)
+                        p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0),
+                        alertaentrada: this.state.entrada ? 1 : 0,
+                        alertasalida: this.state.salida ? 1 : 0,
+                        p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
                     }),
                 });
 
                 console.log(result);
 
                 const datos = await result.json();
-                if (datos) {
-                    if (datos.msg) {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        console.error(datos.msg);
-                        this.props.navigation.goBack();
-                    } else if (datos.datos) {
-                        this.setState({
-                            seleccionado: false,
-                            asignacionRealizada: true
-                        });
-                    }
+
+                if (datos.msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(datos.msg);
+                    this.props.navigation.goBack();
+                } else if (datos.datos) {
+                    this.setState({
+                        seleccionado: false,
+                        asignacionRealizada: true
+                    });
                 }
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -329,8 +331,6 @@ export default class AssignVehicle extends React.Component {
                             </View>
                         </ScrollView>
                 }
-
-
             </View>
         );
     }

@@ -35,54 +35,56 @@ export default class GeofenceVehicles extends React.Component {
         }
     }
 
-    state = {
-        refreshing: false,
-        isLoading: true,
-        hasVehicles: false,
-        vehicles: [],
-        vehiculo: {},
-        seleccionado: false,
-        asignacionRealizada: false,
-        entrada: false,
-        salida: false,
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false,
+            isLoading: true,
+            hasVehicles: false,
+            vehicles: [],
+            vehiculo: {},
+            seleccionado: false,
+            asignacionRealizada: false,
+            entrada: false,
+            salida: false,
+            id_geocerca: this.props.navigation.getParam('id_geocerca', 0),
+            id_propietario: this.props.navigation.getParam('id_propietario', 0),
+        }
     }
 
     async componentDidMount() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_geocercas', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carlos@gmail.com',
-                        p_pass: '123456',
+                        p_id_geocercas: this.state.id_geocerca,
+                        p_id_propietario: this.state.id_propietario,
                     }),
                 })
-    
+
                 const data = await result.json();
                 console.log(data);
-    
+
                 if (data.datos.length != 0) {
-                    let vehicles = data.datos.map((v) => {
-                        return {
-                            id: v.id_unidad,
-                            nombre: `${v.marca} ${v.modelo}`,
-                            placas: v.placas,
-                            color: v.color.includes('#') ? v.color : '#a8a8a8',
-                            imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33')
-                        }
-                    })
-                    this.setState({
-                        hasVehicles: true,
-                        vehicles: vehicles,
-                        isLoading: false
+                    let vehicles = data.datos.map(async v => {
+                        let unidad = await this._datosUnidad(v.id_unidad);
+                        return unidad;
+                    });
+                    Promise.all(vehicles).then(completed => {
+                        this.setState({
+                            hasVehicles: true,
+                            vehicles: completed,
+                            isLoading: false
+                        });
                     });
                 } else {
-                    Alert.alert('Info', 'No hay vehiculos!');
+                    Alert.alert('Información', 'No hay vehiculos asignados a esta geocerca.');
                     this.props.navigation.goBack();
                 }
             } catch (error) {
@@ -92,6 +94,32 @@ export default class GeofenceVehicles extends React.Component {
             }
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    async _datosUnidad(id_unidad) {
+        try {
+            const result = await fetch('http://35.203.42.33:3006/webservice/datos_unidad', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    in_id_unidad: id_unidad,
+                }),
+            });
+            const data = await result.json();
+            return {
+                id: id_unidad,
+                nombre: `${data.datos[0].marca} ${data.datos[0].modelo}`,
+                placas: data.datos[0].placas,
+                color: data.datos[0].color.includes('#') ? data.datos[0].color : '#a8a8a8',
+                imagen: data.datos[0].foto.replace('/var/www/html', 'http://35.203.42.33')
+            };
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
         }
     }
 
@@ -108,7 +136,7 @@ export default class GeofenceVehicles extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_unidad: this.state.vehiculo.id,
-                        p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0)
+                        p_id_geocercas: this.state.id_geocerca
                     }),
                 });
 
@@ -153,7 +181,7 @@ export default class GeofenceVehicles extends React.Component {
     //Termina el refresh  
 
     _eliminarVehiculo() {
-        Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de esta geocerca', [
+        Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de ésta geocerca', [
             {
                 text: 'Cancelar',
                 onPress: () => console.log('Cancelar eliminar vehículo'),
@@ -161,9 +189,13 @@ export default class GeofenceVehicles extends React.Component {
             },
             {
                 text: 'Aceptar',
-                onPress: () => console.log('Aceptar eliminar vehículo.')
+                onPress: () => this._eliminarVehiculoWS()
             },
         ], { cancelable: false });
+    }
+
+    _eliminarVehiculoWS() {
+        console.log('Aceptar eliminar vehículo.');
     }
 
     render() {
@@ -306,7 +338,7 @@ export default class GeofenceVehicles extends React.Component {
                 </View>
                 {
                     this.state.isLoading ?
-                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{flex: 1}} />
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
                         :
                         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView} refreshControl={this._refreshControl()}>
                             <View style={{ marginBottom: 15 }}>
@@ -350,7 +382,6 @@ export default class GeofenceVehicles extends React.Component {
                                                                 type='font-awesome'
                                                                 name='edit'
                                                                 size={30}
-
                                                             />
                                                         </TouchableOpacity>
                                                         <TouchableOpacity
@@ -375,7 +406,6 @@ export default class GeofenceVehicles extends React.Component {
             </View>
         );
     }
-
 }
 
 const styles = StyleSheet.create({

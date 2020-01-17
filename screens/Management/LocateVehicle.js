@@ -9,12 +9,21 @@ import {
     View,
     Text,
     Picker,
+    YellowBox,
+    Alert
 } from 'react-native';
 
-import { Button } from 'react-native-elements'
+import { Button, Icon } from 'react-native-elements'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ActivityIndicator } from 'react-native';
+
+import io from 'socket.io-client/dist/socket.io';
+
+console.ignoredYellowBox = ['Remote debugger'];
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
 
 export default class LocateVehicle extends React.Component {
 
@@ -29,13 +38,40 @@ export default class LocateVehicle extends React.Component {
         headerRight: <View></View>
     }
 
-    state = {
-        isLoading: true,
-        vehiculo: 0,
-        hasVehicles: false,
-        vehicles: [],
-        latitude: 19.245455,
-        longitude: -103.722538,
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            vehiculo: 0,
+            hasVehicles: false,
+            vehicles: [],
+            latitude: 0,
+            longitude: 0,
+            disponible: false
+        }
+
+        this.socket = io.connect('http://35.203.42.33:3001/');
+
+        this.socket.on('connect', () => {
+            console.log(this.socket.id);
+        });
+
+        this.socket.on('consultar_vehiculo', (res) => {
+            // console.log(res);
+            if (res.mensaje) {
+                Alert.alert('Información', 'El vehículo seleccionado no está disponible.');
+                this.setState({
+                    disponible: false
+                });
+            } else {
+                this.setState({
+                    latitud: res.latitud,
+                    longitud: res.longitud,
+                    disponible: true,
+                    isLoading: false
+                });
+            }
+        });
     }
 
     async componentDidMount() {
@@ -51,10 +87,10 @@ export default class LocateVehicle extends React.Component {
                     p_pass: '123456',
                 }),
             })
-    
+
             const data = await result.json();
-            console.log(data);
-    
+            // console.log(data);
+
             if (data.datos.length != 0) {
                 let vehicles = data.datos.map((v) => {
                     return {
@@ -62,7 +98,7 @@ export default class LocateVehicle extends React.Component {
                         nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
                         color: v.color.includes('#') ? v.color : '#a8a8a8',
-                        imagen: v.foto == 'link' ? 'https://allauthor.com/images/poster/large/1501476185342-the-nights-come-alive.jpg' : v.foto
+                        imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33'),
                     }
                 })
                 this.setState({
@@ -74,12 +110,18 @@ export default class LocateVehicle extends React.Component {
                 Alert.alert('Info', 'No hay vehiculos!');
                 this.props.navigation.goBack();
             }
-    
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
             this.props.navigation.goBack();
         }
+    }
+
+    _localizarUnidad(id_unidad) {
+        this.socket.emit('consultar_vehiculo', {
+            socket_id: this.socket.id,
+            id_unidad: id_unidad
+        })
     }
 
     render() {
@@ -118,7 +160,13 @@ export default class LocateVehicle extends React.Component {
                         marginLeft: 7
                     }}
                     selectedValue={this.state.vehiculo}
-                    onValueChange={vehiculo => this.setState({ vehiculo: vehiculo })}>
+                    onValueChange={(vehiculo) => {
+                        if (vehiculo != 0) {
+                            this.setState({ vehiculo: vehiculo });
+                            this._localizarUnidad(vehiculo);
+                        }
+                    }}
+                >
                     <Picker.Item label="Vehículo..." value={0} />
                     {
                         this.state.vehicles.map(v => {
@@ -129,19 +177,37 @@ export default class LocateVehicle extends React.Component {
                     }
                 </Picker>
                 {
-                    (this.state.isLoading || this.state.vehiculo==0) ?
-                    <ActivityIndicator size="large" color="#ff8834" animating={(this.state.isLoading || this.state.vehiculo==0)} style={{flex: 1}} />
-                    :
-                    <MapView
-                        provider={PROVIDER_GOOGLE}
-                        region={{
-                            latitude: this.state.latitude,
-                            longitude: this.state.longitude,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                        style={styles.mapView}
-                    />
+                    (this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible) ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={(this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible)} style={{ flex: 1 }} />
+                        :
+                        <MapView
+                            provider={PROVIDER_GOOGLE}
+                            region={{
+                                latitude: this.state.latitude,
+                                longitude: this.state.longitude,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            }}
+                            style={styles.mapView}
+                        >
+                            {
+                                this.state.disponible &&
+                                <MapView.Marker
+                                    coordinate={{
+                                        latitude: this.state.latitude,
+                                        longitude: this.state.longitude
+                                    }}
+                                    onPress={() => this.props.navigation.navigate('InfoDriver', { id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
+                                >
+                                    <Icon
+                                        type='material-community'
+                                        name='car-side'
+                                        size={24}
+                                        color='black'
+                                    />
+                                </MapView.Marker>
+                            }
+                        </MapView>
                 }
             </View>
         );
@@ -162,11 +228,11 @@ const styles = StyleSheet.create({
     mapView: {
         flex: 1,
     },
-    subHeader: { 
-        height: 70, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        marginLeft: 16 
+    subHeader: {
+        height: 70,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginLeft: 16
     },
     textoBold: {
         fontFamily: 'aller-bd',

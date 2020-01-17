@@ -58,35 +58,31 @@ export default class Drivers extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carlos@gmail.com',
-                        p_pass: '123456',
+                        in_id_propietario: 2
                     }),
                 })
 
                 const data = await result.json();
 
                 if (data.datos.length != 0) {
-                    let drivers = data.datos.map((d) => {
+                    let drivers = data.datos.map(async (d) => {
+                        let unidad = (d.id_unidad != null) ? await this._datosUnidad(d.id_unidad) : null;
+                        let { nombre, fotografia } = await this._datosUsuario(d.id_chofer1);
                         return {
-                            id: d.id_usuario,
-                            id_unidad: d.id_unidad,
-                            id_chofer: d.chofer,
-                            nombre: `${d.nombre} ${d.apellido.split(' ')[0]}`,
-                            auto: d.marca ? {
-                                nombre: `${d.marca} ${d.modelo}`,
-                                placas: d.placas,
-                                color: d.color.includes('#') ? d.color : '#a8a8a8',
-                            } : {},
-                            avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-                            vinculado: d.estado != 0
+                            id_propietario: d.id_propietario,
+                            id_chofer: d.id_chofer1,
+                            nombre: nombre,
+                            unidad: unidad,
+                            fotografia: fotografia
                         }
                     })
-                    this.setState({
-                        hasDrivers: true,
-                        drivers: drivers,
-                        isLoading: false
+                    Promise.all(drivers).then( completed => {
+                        this.setState({
+                            hasDrivers: true,
+                            drivers: completed,
+                            isLoading: false
+                        });
                     });
-
                 } else {
                     Alert.alert('Info', 'No hay conductores!');
                     this.setState({
@@ -103,6 +99,64 @@ export default class Drivers extends React.Component {
             }
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    async _datosUsuario(id_usuario_chofer) {
+        try {
+            const result = await fetch(`http://35.203.42.33:3006/webservice/datos_conductor`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_usuario: id_usuario_chofer
+                }),
+            })
+
+            const datos = await result.json();
+
+            if (datos.datos.length > 0) {
+                return {
+                    nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
+                    fotografia: datos.datos[0].fotografia
+                }
+            } else {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                this.props.navigation.goBack();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+        }
+    }
+
+    async _datosUnidad(id_unidad) {
+        try {
+            const result = await fetch('http://35.203.42.33:3006/webservice/datos_unidad', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    in_id_unidad: id_unidad,
+                }),
+            });
+
+            const data = await result.json();
+
+            return {
+                id_unidad: id_unidad,
+                marca: data.datos[0].marca,
+                modelo: data.datos[0].modelo,
+                placas: data.datos[0].placas,
+                color: data.datos[0].color
+            };
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
         }
     }
 
@@ -130,7 +184,7 @@ export default class Drivers extends React.Component {
                         console.error(datos.msg);
                     } else if (datos.datos) {
                         console.log(datos);
-                        
+
                         Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
                     }
                     this.props.navigation.goBack();
@@ -302,10 +356,9 @@ export default class Drivers extends React.Component {
                         >
                             <View style={{ marginBottom: 15 }}>
                                 {!this.state.isLoading && this.state.hasDrivers &&
-                                    this.state.drivers.map((d, i) => {
-                                        //let vinculado = Object.entries(d.auto).length !== 0;
+                                    this.state.drivers.map(d => {
                                         return (
-                                            <Card key={i}>
+                                            <Card key={d.id_chofer}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
                                                     <View
                                                         style={{
@@ -320,7 +373,7 @@ export default class Drivers extends React.Component {
                                                                 marginLeft: 5
                                                             }}
                                                             resizeMode="cover"
-                                                            source={{ uri: d.avatar }}
+                                                            source={{ uri: d.fotografia }}
                                                         />
                                                     </View>
                                                     <View
@@ -331,31 +384,35 @@ export default class Drivers extends React.Component {
                                                             alignItems: 'center'
                                                         }}>
                                                         <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5 }}>{d.nombre}</Text>
-                                                        {d.vinculado &&
+                                                        {
+                                                            (d.unidad != null) &&
                                                             <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 12 }}>{d.auto.nombre}</Text>
-                                                                <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: d.auto.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                                                                <Text style={{ fontSize: 12, marginBottom: 10, fontFamily: 'aller-lt' }}>{d.auto.placas}</Text>
+                                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 12 }}>{`${d.unidad.marca} ${d.unidad.modelo}`}</Text>
+                                                                <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: d.unidad.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                                <Text style={{ fontSize: 12, marginBottom: 10, fontFamily: 'aller-lt' }}>{d.unidad.placas}</Text>
                                                             </View>
                                                         }
                                                         <Button
-                                                            title={d.vinculado ? 'Desvincular auto' : 'Vincular auto'}
+                                                            title={(d.unidad != null) ? 'Desvincular auto' : 'Vincular auto'}
                                                             buttonStyle={{
                                                                 width: 140,
                                                                 marginLeft: 5,
                                                                 backgroundColor: '#ff8834'
                                                             }}
                                                             titleStyle={{ fontFamily: 'aller-lt' }}
-                                                            onPress={() => { !d.vinculado ? this.props.navigation.navigate('LinkVehicle', { id_propietario: 2, id_chofer: d.id_chofer }) : this.desvincularVehiculo(d.id_unidad, d.id_chofer) }}
+                                                            onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this.props.navigation.navigate('LinkVehicle', { id_propietario: d.id_propietario, id_chofer: d.id_chofer }) }}
                                                         />
                                                     </View>
+
                                                     <Icon
                                                         type='font-awesome'
                                                         name='car'
+                                                        color={(d.unidad != null) ? 'black' : 'white'}
                                                         size={18}
                                                     />
+
                                                     <TouchableOpacity style={{ position: 'absolute', top: -7, right: -3 }}
-                                                        onPress={() => { this.setState({ comenting: true, id_chofer: d.id }); }}
+                                                        onPress={() => { this.setState({ comenting: true, id_chofer: d.id_chofer }); }}
                                                     >
                                                         <Icon
                                                             type='font-awesome'

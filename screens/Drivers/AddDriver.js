@@ -66,19 +66,18 @@ export default class AddDriver extends React.Component {
         this.socket = io.connect('http://35.203.42.33:3001/');
 
         this.socket.on('connect', () => {
-            console.log(this.socket.id);
+            console.log('Conectado:', this.socket.id);
         });
 
         this.socket.on('obtenerCondutoresCercanos', (res) => {
-            // console.log('Conductores cercanos: ', res.length);
-
             this.setState({
                 conductores: res.map(info => {
                     return {
                         latitude: info.latitud,
                         longitude: info.longitud,
                         id_conductor: info.datos_chofer.idChofer,
-                        nombre_conductor: info.datos_chofer.nombreChofer
+                        nombre_conductor: info.datos_chofer.nombreChofer,
+                        id_socket: info.id_socket
                     }
                 }),
                 hasDrivers: true
@@ -318,7 +317,7 @@ export default class AddDriver extends React.Component {
                                     longitudeDelta: 0.0421,
                                 }}
                                 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                                onPress={e => {
+                                onPress={ e => {
                                     this.setState({ marker: e.nativeEvent.coordinate });
                                     setTimeout(() => {
                                         this.consultarConductoresCercanos(this.state.marker.latitude, this.state.marker.longitude);
@@ -339,7 +338,7 @@ export default class AddDriver extends React.Component {
                                                     latitude: conductor.latitude,
                                                     longitude: conductor.longitude
                                                 }}
-                                                onPress={() => this.props.navigation.navigate('InfoDriver', { id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
+                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, socket: this.socket, id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
                                             >
                                                 <Icon
                                                     type='font-awesome'
