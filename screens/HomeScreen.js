@@ -6,10 +6,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
+
+// var token;
 
 export default class StartScreen extends React.Component {
   static navigationOptions = {
@@ -18,11 +20,47 @@ export default class StartScreen extends React.Component {
 
   state = {
     visible: false,
-    markedDates: null
+    markedDates: null,
+    notification: {}
   }
 
+  componentDidMount() {
+    // this.props.screenProps.enviarNotificacionLocal('Pantalla iniciada', `HomeScreen iniciado`);
+    // this.registerForPushNotificationsAsync();
+
+    // this._notificationSubscription = Notifications.addListener(
+    //   this._handleNotification
+    // );
+    //this.enviarNotificacionLocal('Prueba notificación local', 'Mensaje');
+  }
+
+  // _handleNotification = notification => {
+  //   this.setState({ notification: notification });
+  // };
+
+  // sendPushNotification = async (body) => {
+  //   const message = {
+  //     to: token,
+  //     sound: 'default',
+  //     title: 'Respuesta invitación',
+  //     body: body,
+  //     data: { data: 'Aqui va data.' },
+  //   };
+  //   const response = await fetch('https://exp.host/--/api/v2/push/send', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Accept-encoding': 'gzip, deflate',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(message),
+  //   });
+  //   const data = await response.json();
+  //   console.log(`Status & Response ID->`, data);
+  // };
+
   render() {
-    return ( 
+    return (
       <View style={styles.container}>
         <ScrollView
           style={styles.container}
@@ -37,7 +75,7 @@ export default class StartScreen extends React.Component {
               style={styles.welcomeImage}
             />
           </View>
-  
+
           <View style={styles.getStartedContainer}>
             <DevelopmentModeNotice />
             <Text style={[styles.getStartedText, styles.fontNormal]}>
@@ -45,7 +83,6 @@ export default class StartScreen extends React.Component {
             </Text>
           </View>
         </ScrollView>
-  
         <View style={styles.tabBarInfoContainer}>
           <View
             style={[styles.codeHighlightContainer, styles.navigationFilename]}>

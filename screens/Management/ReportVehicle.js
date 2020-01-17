@@ -10,22 +10,6 @@ import { Calendar } from 'react-native-calendars';
 
 //Checar _refreshListView()  ya que como no hay fetch en esta parte no se actualizaran las tablas
 
-// const viajes_prueba = [
-//     { origen: 'Plaza san fernando', destino: 'Central foranea', fecha: '23/08/2019', hora: '16:16:00' },
-//     { origen: 'Zentralia', destino: 'Piedra lisa', fecha: '28/08/2019', hora: '12:56:00' },
-//     { origen: 'Central forana', destino: 'Plaza country', fecha: '02/09/2019', hora: '14:31:00' },
-//     { origen: 'Hotel Maria Isabel', destino: 'Comala', fecha: '10/09/2019', hora: '02:31:00' },
-//     { origen: 'Colima centro', destino: 'Placetas', fecha: '22/09/2019', hora: '21:41:00' }
-// ]
-
-// const alertas = [
-//     ['Salida geocerca', '22/09/2019', '10:00 pm'],
-//     ['Conectado', '24/09/2019', '08:00 am'],
-//     ['Conectado', '27/09/2019', '11:00 am'],
-//     ['Salida geocerca', '30/09/2019', '10:00 am'],
-//     ['Entrada geocerca', '04/10/2019', '04:00 pm'],
-// ]
-
 export default class ReportVehicle extends Component {
     static navigationOptions = {
         title: 'Reporte vehículo',
@@ -48,40 +32,50 @@ export default class ReportVehicle extends Component {
         vehicle: this.props.navigation.getParam('vehicle', {}),
         visible: false,
         markedDates: null,
-        selectedWeek: ''
+        selectedWeek: '',
+        fecha_inicial: '',
+        fecha_final: ''
     }
 
     async componentDidMount() {
         this.getWeek(new Date());
-        await this.obtenerViajes();
-        await this.obtenerAlertas();
-        this.setState({
-            isLoading: false
-        });
+        setTimeout( async () => {
+            await this.obtenerViajes();
+            await this.obtenerAlertas();
+            this.setState({
+                isLoading: false
+            });
+        }, 100);
     }
 
     async obtenerViajes() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz151/obtener_viajes', {
+            const result = await fetch('http://35.203.42.33:3006/webservice/obtener_viajes_origen_destino', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    id_unidad: this.state.vehicle.id
+                    p_id_unidad: this.state.vehicle.id,
+                    p_fecha_inicio: this.state.fecha_inicial,
+                    p_fecha_final: this.state.fecha_final
                 })
             });
-
             const data = await result.json();
             console.log(data);
             if (data.datos.length != 0) {
                 this.setState({
-                    viajes: [{fecha: '00-00-0000', hora: '00:00:00', origen: 'A', destino: 'B'}],
+                    viajes: data.datos.map( viaje => { return {
+                        fecha: viaje.fecha,
+                        hora: viaje.hora,
+                        origen: viaje.origen,
+                        destino: viaje.destino
+                    }}),
                     hasTravels: true
                 });
             } else {
-                Alert.alert('Info', 'No hay viajes registrados.');
+                Alert.alert('Info', 'No se encontrarón viajes registrados.');
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error al obtener los viajes.');
@@ -97,13 +91,15 @@ export default class ReportVehicle extends Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id_unidad: this.state.vehicle.id
+                    p_id_unidad: this.state.vehicle.id,
+                    p_fecha_inicial: this.state.fecha_inicial,
+                    p_fecha_final: this.state.fecha_final
                 }),
             });
 
             const data = await result.json();
 
-            console.log(data);
+            // console.log(data);
 
             if (data.datos.length != 0) {
                 let alerts = Object.values(data.datos).map((d) => {
@@ -119,7 +115,7 @@ export default class ReportVehicle extends Component {
                     }
                 });
 
-                console.log(alerts);
+                // console.log(alerts);
 
                 this.setState({
                     alertas: alerts,
@@ -156,8 +152,6 @@ export default class ReportVehicle extends Component {
     }
 
     getWeek(date) {
-        // console.log(date);
-
         let dates = {};
         let startDay = date;
         let first, last;
@@ -174,14 +168,14 @@ export default class ReportVehicle extends Component {
             }
             dates[this.formatDate(startDay.getFullYear(), startDay.getMonth() + 1, startDay.getDate())] = { color: '#ff8834', textColor: 'white' };
         }
-
+        let fechas = Object.keys(dates);
         this.setState({
             markedDates: dates,
             selectedWeek: `${first} - ${last}`,
-            visible: false
+            visible: false,
+            fecha_inicial: fechas[0],
+            fecha_final: fechas[6]
         });
-
-        // Fetch para obtener las alertas
     }
 
     render() {
@@ -250,7 +244,7 @@ export default class ReportVehicle extends Component {
                         </View>
                         <View style={styles.view1}>
                             <Text style={styles.textoBold}>{vehicle.nombre}</Text>
-                            <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            <View style={{ width: 16, height: 16, marginTop: -2, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                             <Text style={styles.textoNormal}>- {vehicle.placas}</Text>
                         </View>
                     </View>
@@ -363,8 +357,8 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     imagen: {
-        width: 200,
-        height: 200,
+        width: 150,
+        height: 150,
         alignSelf: 'center'
     },
     border: {

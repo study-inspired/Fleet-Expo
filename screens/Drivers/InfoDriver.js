@@ -19,19 +19,13 @@ import {
 
 import { Button, Icon, Divider, Badge } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
-// import io from 'socket.io-client/dist/socket.io';
-import { YellowBox } from 'react-native';
-
-console.ignoredYellowBox = ['Remote debugger'];
-YellowBox.ignoreWarnings([
-  'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
-]);
 
 export default class InfoDriver extends React.Component {
 
   static navigationOptions = {
     header: null
   };
+
 
   constructor(props) {
     super(props);
@@ -45,18 +39,31 @@ export default class InfoDriver extends React.Component {
       },
       comentarios: [],
       id_propietario: this.props.navigation.getParam('id_propietario', 0),
-      id_conductor: this.props.navigation.getParam('id_usuario', 0)
+      id_conductor: this.props.navigation.getParam('id_usuario', 0),
+      notification: {}
     }
 
-    this.socket = this.props.navigation.getParam('socket', null);
-
-    this.socket.on('respuesta_invitacion', (res) => {
-      console.log('Respuesta invitación:', res);// notificación
-      Alert.alert('Información', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);
-    });
+    this.socket = this.props.screenProps.socket;
+    this.resibido = 0;
   }
 
+  // enviarNotificacionLocal = async (title, body) => {
+  //   let notificationId = await Notifications.presentLocalNotificationAsync({
+  //     title: title,
+  //     body: body,
+  //   });
+  //   console.log(notificationId); // can be saved in AsyncStorage or send to server
+  // };
+
   async componentDidMount() {
+    this.socket.on('respuesta_invitacion', (res) => {
+      console.log('Respuesta invitación:', res);
+      if (this.resibido == 0) {        
+        this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);
+        this.resibido++;
+      }
+    });
+
     await this.comentarios();
     await this.datos_conductor();
     await this.logros();
@@ -168,7 +175,7 @@ export default class InfoDriver extends React.Component {
       let datos = {
         socket_id: this.props.navigation.getParam('socket_id', ''),
         id_conductor: this.state.id_conductor,
-        // id_propietario: this.state.id_propietario
+        id_propietario: this.state.id_propietario
       };
 
       this.socket.emit('enviarInvitacion', datos);

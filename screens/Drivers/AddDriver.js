@@ -10,7 +10,6 @@ import {
     Text,
     Alert,
     ActivityIndicator,
-    YellowBox
 } from 'react-native';
 
 import { Button, Input, Slider, Overlay, Icon } from 'react-native-elements'
@@ -18,12 +17,6 @@ import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import io from 'socket.io-client/dist/socket.io';
-
-console.ignoredYellowBox = ['Remote debugger'];
-YellowBox.ignoreWarnings([
-    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
-]);
 
 export default class AddDriver extends React.Component {
     static navigationOptions = {
@@ -60,15 +53,19 @@ export default class AddDriver extends React.Component {
             location: null,
             marker: {},
             conductores: [],
-            radio: 5000
+            radio: 5000,
+            id_propietario: this.props.navigation.getParam('id_propietario', 0)
         }
 
-        this.socket = io.connect('http://35.203.42.33:3001/');
+        this.socket = this.props.screenProps.socket;
+    }
 
-        this.socket.on('connect', () => {
-            console.log('Conectado:', this.socket.id);
-        });
+    onPress(nombre) {
+        this.setState({ selected: nombre });
+        alert(nombre);
+    }
 
+    consultarConductoresCercanos(lat, lon) {
         this.socket.on('obtenerCondutoresCercanos', (res) => {
             this.setState({
                 conductores: res.map(info => {
@@ -84,14 +81,7 @@ export default class AddDriver extends React.Component {
             });
             // console.log(this.state.conductores);
         });
-    }
 
-    onPress(nombre) {
-        this.setState({ selected: nombre })
-        alert(nombre)
-    }
-
-    consultarConductoresCercanos(lat, lon) {
         this.socket.emit('consultarCondutoresCercanos', {
             socket_id: this.socket.id,
             radio: this.state.radio / 1000,
@@ -150,8 +140,7 @@ export default class AddDriver extends React.Component {
                     });
                 } else {
                     // console.log(datos.datos);
-
-                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.props.navigation.getParam('id_propietario', 0), socket: this.socket });
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.state.id_propietario});
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -317,7 +306,7 @@ export default class AddDriver extends React.Component {
                                     longitudeDelta: 0.0421,
                                 }}
                                 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                                onPress={ e => {
+                                onPress={e => {
                                     this.setState({ marker: e.nativeEvent.coordinate });
                                     setTimeout(() => {
                                         this.consultarConductoresCercanos(this.state.marker.latitude, this.state.marker.longitude);
@@ -338,7 +327,7 @@ export default class AddDriver extends React.Component {
                                                     latitude: conductor.latitude,
                                                     longitude: conductor.longitude
                                                 }}
-                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, socket: this.socket, id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
+                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, socket: this.socket, id_usuario: conductor.id_conductor, id_propietario: this.state.id_propietario })}
                                             >
                                                 <Icon
                                                     type='font-awesome'

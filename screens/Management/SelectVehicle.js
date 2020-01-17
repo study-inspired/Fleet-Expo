@@ -17,27 +17,6 @@ import {
 
 import { Button, Card } from 'react-native-elements'
 
-const vehiculos = [
-    {
-        nombre: 'Chevrolet Aveo',
-        imagen: 'http://www.cosasdeautos.com.ar/wp-content/uploads/2011/06/aveo2012-mexico-3.jpg',
-        placa: 'COL-6462J',
-        color: '#948d8d'
-    },
-    {
-        nombre: 'NISSAN Versa',
-        imagen: 'https://dealerimages.dealereprocess.com/image/upload/c_limit,f_auto,fl_lossy/v1/svp/Pix_PNG1280/2017/17nissan/17nissanversasedansv2a/nissan_17versasedansv2a_frontview',
-        placa: 'COL-1684D',
-        color: '#ffffff'
-    },
-    {
-        nombre: 'Chevrolet Beat',
-        imagen: 'https://images-na.ssl-images-amazon.com/images/I/812y-rC3v0L._SX425_.jpg',
-        placa: 'COL-4568R',
-        color: '#c72020'
-    },
-]
-
 export default class SelectVehicle extends React.Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -176,8 +155,6 @@ export default class SelectVehicle extends React.Component {
                             </View>
                         </ScrollView>
                 }
-
-
             </View>
         );
     }

@@ -69,7 +69,7 @@ export default class GeofenceVehicles extends React.Component {
                 })
 
                 const data = await result.json();
-                console.log(data);
+                // console.log(data);
 
                 if (data.datos.length != 0) {
                     let vehicles = data.datos.map(async v => {
@@ -140,7 +140,7 @@ export default class GeofenceVehicles extends React.Component {
                     }),
                 });
 
-                console.log(result);
+                // console.log(result);
 
                 const datos = await result.json();
                 if (datos) {
@@ -184,7 +184,7 @@ export default class GeofenceVehicles extends React.Component {
         Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de ésta geocerca', [
             {
                 text: 'Cancelar',
-                onPress: () => console.log('Cancelar eliminar vehículo'),
+                onPress: () => console.log('Cancelar eliminar vehículo.'),
                 style: 'cancel',
             },
             {

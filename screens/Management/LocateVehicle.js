@@ -9,7 +9,6 @@ import {
     View,
     Text,
     Picker,
-    YellowBox,
     Alert
 } from 'react-native';
 
@@ -17,13 +16,6 @@ import { Button, Icon } from 'react-native-elements'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ActivityIndicator } from 'react-native';
-
-import io from 'socket.io-client/dist/socket.io';
-
-console.ignoredYellowBox = ['Remote debugger'];
-YellowBox.ignoreWarnings([
-    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
-]);
 
 export default class LocateVehicle extends React.Component {
 
@@ -50,11 +42,7 @@ export default class LocateVehicle extends React.Component {
             disponible: false
         }
 
-        this.socket = io.connect('http://35.203.42.33:3001/');
-
-        this.socket.on('connect', () => {
-            console.log(this.socket.id);
-        });
+        this.socket = this.props.screenProps.socket;
 
         this.socket.on('consultar_vehiculo', (res) => {
             // console.log(res);

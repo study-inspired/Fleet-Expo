@@ -10,6 +10,17 @@ export default class Alerts extends Component {
     /**
      * Checar las variables ya que estas son las que insertaran datos ya que no se escriben bien
      */
+    static navigationOptions = {
+        title: 'Alertas presentadas',
+        headerTitleStyle: {
+            flex: 1,
+            textAlign: "center",
+            fontFamily: 'aller-bd',
+            fontWeight: '200',
+            fontSize: 18,
+        },
+        headerRight: <View></View>
+    }
 
     constructor(props) {
         super(props);
@@ -27,18 +38,6 @@ export default class Alerts extends Component {
             fecha_inicial: '',
             fecha_final: ''
         }
-    }
-
-    static navigationOptions = {
-        title: 'Alertas presentadas',
-        headerTitleStyle: {
-            flex: 1,
-            textAlign: "center",
-            fontFamily: 'aller-bd',
-            fontWeight: '200',
-            fontSize: 18,
-        },
-        headerRight: <View></View>
     }
 
     async componentDidMount() {
@@ -143,9 +142,6 @@ export default class Alerts extends Component {
             fecha_inicial: fechas[0],
             fecha_final: fechas[6]
         });
-        console.log(fechas);
-        
-        // Fetch para obtener las alertas
     }
 
     render() {
