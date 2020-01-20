@@ -60,7 +60,7 @@ export default class AssignVehicle extends React.Component {
             })
 
             const data = await result.json();
-            console.log(data);
+            // console.log(data);
 
             if (data.datos.length != 0) {
                 let vehicles = data.datos.map((v) => {
@@ -109,7 +109,7 @@ export default class AssignVehicle extends React.Component {
                     }),
                 });
 
-                console.log(result);
+                // console.log(result);
 
                 const datos = await result.json();
 
@@ -258,7 +258,7 @@ export default class AssignVehicle extends React.Component {
                         </View>
                     </View>
                 </Overlay>
-                <View elevation={2} style={{ height: 140, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View elevation={2} style={{ height: 140, backgroundColor: '#fff' }}>
                     <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginTop: 75, textAlign: "center", marginHorizontal: 16 }}>Elige el vehículo que deseas agregar a la geocerca y selecciona el tipo de alerta asignada</Text>
                     <Button
                         type='clear'
@@ -267,11 +267,13 @@ export default class AssignVehicle extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{ 
+                            flex: 1,
                             position: 'absolute',
-                            flexDirection: 'column',
                             right: 0
+                        }}
+                        buttonStyle={{
+                            flexDirection: 'column',
                         }}
                         iconContainerStyle={{
                             flex: 1,

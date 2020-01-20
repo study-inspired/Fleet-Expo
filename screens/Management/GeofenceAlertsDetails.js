@@ -38,7 +38,7 @@ export default class GeofenceAlertsDetails extends Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -49,12 +49,13 @@ export default class GeofenceAlertsDetails extends Component {
                     }),
                 })
 
-                const data = await result.json();
+                const { datos, msg } = await response.json();
 
-                console.log(data);
-
-                if (data.datos.length != 0) {
-                    let drivers = data.datos.map((d) => {
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intenete de nuevo más tarde.');
+                    console.error(msg);
+                } else if (datos.length != 0) {
+                    let alerts = datos.map((d) => {
                         return [
                             d.tipo_alerta,
                             d.hora,
@@ -80,19 +81,18 @@ export default class GeofenceAlertsDetails extends Component {
                     });
                     this.setState({
                         hasAlerts: true,
-                        data: drivers,
+                        data: alerts,
                         isLoading: false
                     });
-
                 } else {
-                    Alert.alert('Info', 'No hay conductores!');
+                    Alert.alert('Info', 'No hay datos.!');
                     this.setState({
                         isLoading: false
                     });
                 }
 
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.')
+                Alert.alert('Error', 'Servicio no disponible, intenete de nuevo más tarde.');
                 console.error(error);
                 this.setState({
                     isLoading: false

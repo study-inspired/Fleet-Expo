@@ -11,7 +11,7 @@ import {
     View,
     Text,
     Image,
-    TouchableOpacity,
+    TouchableNativeFeedback,
     StatusBar,
     Alert,
     RefreshControl
@@ -60,7 +60,7 @@ export default class VehiclesView extends React.Component {
             const data = await result.json();
 
             // console.log(niv_unidad, data.data[0].sp_estado_all_documentos_vehiculos_general);
-            
+
             return (data.data[0].sp_estado_all_documentos_vehiculos_general != 0) ? true : false;
 
         } catch (error) {
@@ -89,7 +89,7 @@ export default class VehiclesView extends React.Component {
                 // console.log(data);
 
                 if (data.datos.length != 0) {
-                    let vehicles = data.datos.map( async (v) => {
+                    let vehicles = data.datos.map(async (v) => {
                         let problema = await this._getEstadoDocumentosVehiculoGeneral(`${v.niv}`)
                         return {
                             id: v.id_unidad,
@@ -266,12 +266,11 @@ export default class VehiclesView extends React.Component {
                                 {!this.state.isLoading && this.state.hasVehicles &&
                                     this.state.vehicles.map((v, i) => {
                                         return (
-                                            <Card key={i}>
-                                                <TouchableOpacity
-                                                    /*key={i}*/
-                                                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                                                    onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle', { problema: true, niv: v.niv, id_unidad: v.id }) : null }}
-                                                >
+                                            <TouchableNativeFeedback
+                                                key={i}
+                                                onPress={() => { v.problema ? this.props.navigation.navigate('AddVehicle', { problema: true, niv: v.niv, id_unidad: v.id }) : null }}
+                                            >
+                                                <Card wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                     <View
                                                         style={{
                                                             flex: 1,
@@ -324,8 +323,8 @@ export default class VehiclesView extends React.Component {
                                                         title="Eliminar"
                                                         onPress={() => this._eliminarVehiculo(v.id)}
                                                     />
-                                                </TouchableOpacity>
-                                            </Card>
+                                                </Card>
+                                            </TouchableNativeFeedback>
                                         );
                                     })
                                 }

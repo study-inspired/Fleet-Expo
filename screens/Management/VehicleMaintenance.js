@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
 import { Button, Card, Icon, Overlay } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 
@@ -221,8 +221,8 @@ export default class VehicleMaintenance extends Component {
             </Card>
           </View>
         </Overlay>
-        <ScrollView>
-        <View style={{ flexDirection: 'column' }}>
+        
+        <View style={{ flex: 1, flexDirection: 'column' }}>
           <View>
             <Button
               type='clear'
@@ -263,7 +263,6 @@ export default class VehicleMaintenance extends Component {
           </View>
 
           <View style={{ alignSelf: 'center', height: 200, marginBottom: 15 }}>
-
             <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
               <Row data={state.tableHead} widthArr={[190, 125]} style={styles.head} textStyle={[{ fontFamily: 'aller-bd' }, styles.text]} />
             </Table>
@@ -278,8 +277,8 @@ export default class VehicleMaintenance extends Component {
             }
           </View>
 
-          <View>
-            <TouchableOpacity
+          <View style={{ position:'absolute', bottom: 0, left: 0, right: 0 }}>
+            <TouchableNativeFeedback
               onPress={() => this.setState({ registroServicio: true })} >
               <Card
                 wrapperStyle={styles.touchableOpacity} >
@@ -290,9 +289,9 @@ export default class VehicleMaintenance extends Component {
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Registrar servicio</Text>
                 </View>
               </Card>
-            </TouchableOpacity>
+            </TouchableNativeFeedback>
 
-            <TouchableOpacity
+            <TouchableNativeFeedback
                 onPress={() => this.props.navigation.navigate('ServicesConsultation', { vehicle: state.vehicle })} >
               <Card
                 wrapperStyle={styles.touchableOpacity} >
@@ -306,9 +305,9 @@ export default class VehicleMaintenance extends Component {
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Consultar servicios</Text>
                 </View>
               </Card>
-            </TouchableOpacity>
+            </TouchableNativeFeedback>
 
-            <TouchableOpacity
+            <TouchableNativeFeedback
               onPress={() => { this.props.navigation.navigate('Alerts', { vehicle: state.vehicle }) }} >
               <Card
                 wrapperStyle={styles.touchableOpacity} >
@@ -322,10 +321,10 @@ export default class VehicleMaintenance extends Component {
                   <Text style={[styles.textoBold, { marginBottom: 1 }]}>Alertas</Text>
                 </View>
               </Card>
-            </TouchableOpacity>
+            </TouchableNativeFeedback>
+            <View style={{ height: 15 }}/>
           </View>
         </View>
-       </ScrollView>
       </SafeAreaView>
     );
 

@@ -92,7 +92,7 @@ export default class SelectVehicle extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
-                    <Text style={[styles.textoBold, { marginVertical: 25, flex: 5 }]}>{this.state.text}</Text>
+                    <Text style={[styles.textoBold, { marginVertical: 25 }]}>{this.state.text}</Text>
                     <Button
                         type='clear'
                         icon={{
@@ -100,9 +100,12 @@ export default class SelectVehicle extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{ 
+                            flex: 1,
                             position: 'absolute',
+                            right: 5
+                        }}
+                        buttonStyle={{
                             flexDirection: 'column',
                         }}
                         iconContainerStyle={{
@@ -212,8 +215,9 @@ const styles = StyleSheet.create({
     },
     subHeader: {
         height: 70,
+        backgroundColor: '#fff',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginLeft: 16
+        paddingLeft: 16
     }
 });

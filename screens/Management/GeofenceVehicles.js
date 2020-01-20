@@ -310,7 +310,7 @@ export default class GeofenceVehicles extends React.Component {
                         </View>
                     </View>
                 </Overlay>
-                <View elevation={2} style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View elevation={2} style={{ backgroundColor: '#fff' ,height: 70 }}>
                     <Button
                         type='clear'
                         icon={{
@@ -318,11 +318,14 @@ export default class GeofenceVehicles extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{ 
+                            flex: 1,
                             position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0
+                            right: 0,
+                            borderRadius: 16
+                        }}
+                        buttonStyle={{
+                            flexDirection: 'column'
                         }}
                         iconContainerStyle={{
                             flex: 1,

@@ -4,27 +4,33 @@ import {
     View,
     Text,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 } from 'react-native';
 import { Button, Slider, Overlay, Icon, Input } from 'react-native-elements'
-import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Circle, Polygon, Marker } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
-export default class TraceRadius extends React.Component {
-    state = {
-        isLoading: true,
-        setNombre: false,
-        registrado: false,
-        nombre: '',
-        location: null,
-        LatLng: null,
-        radio: 5000,
+export default class TraceGeofence extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            setNombre: false,
+            registrado: false,
+            nombre: '',
+            location: null,
+            LatLng: null,
+            radio: 5000,
+            markers: [],
+            id_tipo_geocerca: this.props.navigation.getParam('id_tipo_geocerca', null)
+        }
     }
 
-    static navigationOptions = {
-        title: 'Trazar en modo radio',
+    static navigationOptions = ({ navigation }) => ({
+        title: `Trazado modo ${navigation.getParam('id_tipo_geocerca', null) == 0 ? 'radio' : 'polígono'}`,
         headerTitleStyle: {
             flex: 1,
             textAlign: "center",
@@ -33,38 +39,91 @@ export default class TraceRadius extends React.Component {
             fontSize: 18,
         },
         headerRight: <View></View>
-    }
+    })
 
     async componentDidMount() {
-        const state = await NetInfo.fetch();
-        if (!state.isConnected) {
-            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
-        } else {
+        if (await this._verificarConexion()) {
             let { status } = await Permissions.askAsync(Permissions.LOCATION);
             if (status !== 'granted') {
                 Alert.alert('Atención', 'Es necesario acceder a la ubicación del dispositivo.')
             }
 
-            let location = await Location.getCurrentPositionAsync({});
+            let { coords } = await Location.getCurrentPositionAsync({});
 
             this.setState({
-                location: location.coords,
+                location: coords,
                 LatLng: {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
                 },
                 isLoading: false
             });
         }
     }
 
-    async registerRadius() {
+    _addMarker(coordinate) {
+        let newMarkers = this.state.markers
+        newMarkers.push({ LatLng: coordinate })
+        this.setState({ markers: newMarkers })
+        //console.log(this.state.markers)
+    }
+
+    _updateMarker(index, coordinate) {
+        let newMarkers = this.state.markers
+        newMarkers[index] = { LatLng: coordinate }
+        this.setState({ markers: newMarkers })
+    }
+
+    async _verificarConexion() {
+        const { isConnected } = await NetInfo.fetch();
+        if (!isConnected) {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    async _verificarNombre() {
         if (this.state.nombre.length = !0) {
             try {
-                let mm = [[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio/1000]];
-                console.log(JSON.stringify(mm));
-                
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        p_id_usuario: 2
+                    })
+                });
+
+                const { datos } = await response.json();
+
+                return datos.length != 0 ? !datos.some(geocerca => geocerca.nombre == this.state.nombre) : true;
+            } catch (error) {
+                Alert.alert('Error', 'Servivio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            }
+        } else {
+            Alert.alert('Campo requerido!', 'Escribe el nombre de la geocerca.');
+            return false;
+        }
+    }
+
+    async _registrarGeocerca() {
+        if (await this._verificarNombre()) {
+            try {
+                let coordenadas;
+                if (this.state.id_tipo_geocerca == 0) {
+                    coorenadas = JSON.stringify([[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio / 1000]]);
+                } else {
+                    let markers = this.state.markers.map(m => { return ([m.LatLng.latitude, m.LatLng.longitude]) });
+                    coordenadas = JSON.stringify([...markers, markers[0]]);
+                }
+                // console.log(coordenadas);
+
+                const response = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -72,20 +131,20 @@ export default class TraceRadius extends React.Component {
                     },
                     body: JSON.stringify({
                         p_nombre: this.state.nombre,
-                        p_coordenadas: mm,
-                        p_id_tipo_geocerca: 0,
+                        p_coordenadas: coordenadas,
+                        p_id_tipo_geocerca: this.state.id_tipo_geocerca,
                         p_id_usuario: 2
                     })
                 })
 
-                const data = await result.json();
-                console.log(data);
+                const result = await response.json();
+                // console.log(result);
 
-                if (data.msg) {
+                if (result.msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(data.msg);
+                    console.error(result.msg);
                 } else {
-                    if (data.datos[0].sp_registrar_geocerca.includes('1')) {
+                    if (result.datos[0].sp_registrar_geocerca.includes('1')) {
                         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     } else {
                         this.setState({
@@ -99,9 +158,10 @@ export default class TraceRadius extends React.Component {
                 console.error(error);
             }
         } else {
-            Alert.alert('Campo requerido!', 'Escribe el nombre de la geocerca.');
+            Alert.alert('Verifique el nombre', 'Ya existe una geocerca registrada con el nombre proporcionado.');
         }
     }
+
 
     render() {
         return (
@@ -147,7 +207,7 @@ export default class TraceRadius extends React.Component {
                                     title='Siguiente'
                                     titleStyle={{ fontFamily: 'aller-lt' }}
                                     buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                    onPress={this.registerRadius.bind(this)}
+                                    onPress={this._registrarGeocerca.bind(this)}
                                 />
                             </View>
                         </View>
@@ -197,8 +257,13 @@ export default class TraceRadius extends React.Component {
                         </View>
                     </View>
                 </Overlay>
-                <View style={{ height: 110, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.texto1}>Indica un punto central e incrementa el radio de acuerdo al área a abarcar</Text>
+                <View elevation={2} style={{ backgroundColor: '#fff', height: 110 }}>
+                    {
+                        this.state.id_tipo_geocerca == 0 ?
+                            <Text style={[styles.texto1, { marginHorizontal: 32 }]}>Indica un punto central e incrementa el radio de acuerdo al área a abarcar</Text>
+                            :
+                            <Text style={[styles.texto1, { marginHorizontal: Dimensions.get('window').width > 360 ? 16 : 2, }]}>Indica diferentes puntos en el mapa hasta completar el polígono y definir el área deseada</Text>
+                    }
                     <Button
                         type='clear'
                         icon={{
@@ -206,11 +271,13 @@ export default class TraceRadius extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{
+                            flex: 1,
                             position: 'absolute',
-                            flexDirection: 'column',
                             right: 0
+                        }}
+                        buttonStyle={{
+                            flexDirection: 'column',
                         }}
                         iconContainerStyle={{
                             flex: 1,
@@ -224,47 +291,74 @@ export default class TraceRadius extends React.Component {
                         title="Ayuda"
                     />
                 </View>
-                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
                 {
-                    !this.state.isLoading &&
-                    <MapView
-                        provider={PROVIDER_GOOGLE}
-                        initialRegion={{
-                            latitude: this.state.location.latitude,
-                            longitude: this.state.location.longitude,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                        style={styles.mapView}
-                        onPress={e => this.setState({ LatLng: e.nativeEvent.coordinate })}
-                    >
-                        {
-                            this.state.LatLng &&
-                            <MapView.Marker
-                                coordinate={this.state.LatLng}
-                                title='Centro'
-                            />
-                        }
+                    this.state.isLoading ?
+                        <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={styles.mapView} />
+                        :
+                        <MapView
+                            provider={PROVIDER_GOOGLE}
+                            initialRegion={{
+                                latitude: this.state.location.latitude,
+                                longitude: this.state.location.longitude,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            }}
+                            style={styles.mapView}
+                            onPress={e => this.state.id_tipo_geocerca == 0 ? this.setState({ LatLng: e.nativeEvent.coordinate }) : this._addMarker(e.nativeEvent.coordinate)}
+                        >
+                            {
+                                this.state.LatLng && this.state.id_tipo_geocerca == 0 &&
+                                <Marker
+                                    coordinate={this.state.LatLng}
+                                    title='Centro'
+                                />
+                            }
 
-                        {
-                            this.state.LatLng &&
-                            <Circle
-                                center={this.state.LatLng}
-                                radius={this.state.radio}
-                                strokeWidth={2}
-                            />
-                        }
-                    </MapView>
+                            {
+                                this.state.LatLng && this.state.id_tipo_geocerca == 0 &&
+                                <Circle
+                                    center={this.state.LatLng}
+                                    radius={this.state.radio}
+                                    strokeWidth={2}
+                                />
+                            }
+
+                            {
+                                this.state.id_tipo_geocerca == 1 &&
+                                this.state.markers.map((m, i) => (
+                                    <Marker key={i}
+                                        draggable
+                                        coordinate={m.LatLng}
+                                        title={`Punto: ${i + 1}`}
+                                        onDragEnd={e => this._updateMarker(i, e.nativeEvent.coordinate)}
+                                    />
+                                ))
+                            }
+
+                            {
+                                this.state.id_tipo_geocerca == 1 && this.state.markers.length > 2 &&
+                                <Polygon
+                                    coordinates={this.state.markers.map(m => {
+                                        return m.LatLng
+                                    })}
+                                    strokeWidth={2}
+                                />
+                            }
+                        </MapView>
                 }
 
-                <View style={{ felx: 1, bottom: 10 }}>
-                    <Slider
-                        value={this.state.radio}
-                        onValueChange={radio => this.setState({ radio })}
-                        minimumValue={1000}
-                        maximumValue={20000}
-                        style={styles.slider}
-                    />
+                <View elevation={4} style={{ felx: 1, paddingBottom:10, backgroundColor: '#fff' }}>
+                    {
+                        this.state.id_tipo_geocerca == 0 &&
+                        <Slider
+                            value={this.state.radio}
+                            onValueChange={radio => this.setState({ radio })}
+                            minimumValue={1000}
+                            maximumValue={20000}
+                            style={styles.slider}
+                            thumbStyle={{ backgroundColor: '#ff8834' }}
+                        />
+                    }
                     <Button
                         title='Registrar geocerca'
                         icon={{ name: 'check-circle', color: 'white' }}
@@ -277,13 +371,12 @@ export default class TraceRadius extends React.Component {
                         icon={{ name: 'replay', color: 'white' }}
                         buttonStyle={{ marginHorizontal: 15, marginVertical: 5, backgroundColor: '#ff8834' }}
                         titleStyle={{ fontFamily: 'aller-lt' }}
-                        onPress={() => this.setState({ LatLng: null, radio: 1000 })}
+                        onPress={() => this.state.id_tipo_geocerca == 0 ? this.setState({ LatLng: null, radio: 5000 }) : this.setState({ markers: [] })}
                     />
                 </View>
             </View>
         );
     }
-
 }
 
 const styles = StyleSheet.create({
@@ -300,14 +393,12 @@ const styles = StyleSheet.create({
         paddingBottom: 76,
     },
     mapView: {
-        flex: 1,
-        marginBottom: 15
+        flex: 1
     },
     texto1: {
         fontSize: 16,
         fontFamily: 'aller-lt',
         textAlign: 'center',
-        marginHorizontal: 32,
         marginTop: 65
     },
     slider: {

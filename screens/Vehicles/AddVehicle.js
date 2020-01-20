@@ -273,6 +273,52 @@ export default class AddVehicle extends React.Component {
 
     //Verificar si existe el niv
 
+    _verificarDatos() {
+        let campos = `${this.state.modelo == '' ? 'modelo, ' : ''}${this.state.marca == '' ? 'marca, ' : ''}${this.state.kilometraje == '' ? 'kilometraje, ' : ''}${this.state.placa == '' ? 'placas, ' : ''}${this.state.serie == '' ? 'NIV o Serie, ' : ''}${this.state.tipo_vehiculo == '' ? 'Tipo de vehículo, ' : ''}`;        
+        let faltantes = campos.match(/,/g);        
+        if (faltantes != null) {
+            let el_los = `${faltantes.length != 1 ? 'los campos' : 'el campo' }`;
+            Alert.alert('Atención', `Debes llenar ${el_los} ${campos.replace(/, $/g, '')} antes de continuar.`);
+        } else {
+            null
+        }
+    }
+
+    async _verificarNIV() {
+        if (this.state.serie == '') {
+            Alert.alert('Atención', 'El NIV o serie no puede estar en blanco.');
+            return false;
+        } else if (this.state.serie.length != 17) {
+            Alert.alert('Atención', 'El NIV o serie introducido no es correcto.');
+            return false;
+        } else {
+            const response = await fetch('http://35.203.42.33:3006/webservice/buscar_niv', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    niv_unidad: this.state.serie
+                })
+            });
+            const result = await response.json();
+            console.log(result);
+            
+        }
+    }
+
+    async _verificarConexion() {
+        this._verificarDatos()
+        const { isConnected } = await NetInfo.fetch();
+        if (!isConnected) {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     render() {
         return (
             this.state.isLoading ?
@@ -424,7 +470,7 @@ export default class AddVehicle extends React.Component {
                                 </Picker>
 
                                 <TouchableOpacity
-                                    onPress={() => (this.state.poliza.estado || !this.state.poliza.cargado) ? this.verificarNIV('AddPolicy') : null}
+                                    onPress={() => (this.state.poliza.estado || !this.state.poliza.cargado) ? this._verificarDatos() : null}
                                     style={{
                                         height: 30,
                                         flexDirection: 'row',

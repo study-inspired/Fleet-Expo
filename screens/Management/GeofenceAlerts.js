@@ -29,7 +29,10 @@ export default class GeofenceAlerts extends Component {
             hasAlerts: false,
             tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa', ''],
             widthArr: [40, 40, 145, 95, 40],
-            data: []
+            data: [<Text style={{ fontFamily: 'aller-lt' }}>No se encontrarón alertas.</Text>],
+            id_propietario: this.props.navigation.getParam('id_propietario', 0),
+            mes: this.props.navigation.getParam('mes', 0),
+            id_geocerca: this.props.navigation.getParam('id_geocerca', 0),
         }
     }
 
@@ -37,52 +40,63 @@ export default class GeofenceAlerts extends Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_genera', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_genera', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_propietario: '2'
+                        in_id_propietario: this.state.id_propietario,
+                        in_mes: this.state.mes,
+                        in_id_geocerca: this.state.id_geocerca
                     }),
-                })
+                });
 
-                const data = await result.json();
-                console.log(data);
+                console.log({
+                    in_id_propietario: this.state.id_propietario,
+                    in_mes: this.state.mes,
+                    in_id_geocerca: this.state.id_geocerca
+                });
                 
 
-                if (data.datos.length != 0) {
+                const { datos, msg } = await response.json();
+                
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+                    console.error(msg);
+                } else if (datos.length != 0) {
+                    console.log(datos);
+                    
                     this.setState({
                         hasAlerts: true, 
-                        data: data.datos.map(val => {
+                        data: datos.map(val => {
                             return [
-                                val.entradas,
-                                val.salidas,
-                                <View style={styles.view1}>
-                                    <Text style={{ fontFamily: 'aller-lt' }}>{`${val.marca} - ${val.modelo}`}</Text>
-                                    <View style={{ width: 16, height: 16, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                <Text style={{ fontFamily: 'aller-lt', textAlign: 'center' }}>{val.entradas}</Text>,
+                                <Text style={{ fontFamily: 'aller-lt', textAlign: 'center' }}>{val.salidas}</Text>,
+                                <View style={[styles.view1, { justifyContent: 'space-between', margin: 2 }]}>
+                                    <Text style={{ marginLeft: 5, fontFamily: 'aller-lt' }}>{`${val.marca}\n${val.modelo}`}</Text>
+                                    <View style={{ width: 16, height: 16, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }} />
                                 </View>,
                                 val.placa,
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: {id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa}  })}
+                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: {id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa}, id_geocerca: this.state.id_geocerca, id_propietario: this.state.id_propietario, mes: this.state.mes  })}
                                 >
-                                    <Icon type='material' name='remove-red-eye' size={18} />
+                                    <Icon type='material' name='remove-red-eye' size={24} />
                                 </TouchableOpacity>
                             ];
                         }),
                         isLoading: false
                     });
-                    
                 } else {
-                    Alert.alert('Info', 'No hay conductores!');
+                    // Alert.alert('Info', 'No hay datos.');
                     this.setState({
-                        isLoading: false
+                        isLoading: false,
+                        widthArr: [360]
                     });
                 }
-
             } catch (error) {
-                Alert.alert('Error', 'Hubo un error.')
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
                 console.error(error);
                 this.setState({
                     isLoading: false
@@ -111,13 +125,12 @@ export default class GeofenceAlerts extends Component {
 
     render() {
         const state = this.state;
-
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ height: 120, flexDirection: 'row', alignContent: 'center' }}>
                     <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
                         <Icon type='font-awesome' name="map-signs" size={52} containerStyle={{ flex: 1, marginTop: 20 }} />
-                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginVertical: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
+                        <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginTop: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
                     </View>
                     <Button
                         type='clear'

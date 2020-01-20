@@ -38,7 +38,8 @@ export default class GeofenceActions extends React.Component {
         isLoading: true,
         hasRecords: false,
         geofences: [],
-        month: new Date().getMonth()
+        mes: new Date().getMonth() + 1,
+        id_propietario: 2
     }
 
 
@@ -53,7 +54,9 @@ export default class GeofenceActions extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_id_usuario: 2,
+                        p_id_usuario: this.state.id_propietario,
+                        // in_id_propietario: this.state.id_propietario,
+                        // in_mes: this.state.mes,
                     }),
                 })
 
@@ -64,7 +67,7 @@ export default class GeofenceActions extends React.Component {
                     this.setState({ isLoading: false });
                 } else {
                     if (datos.datos.length != 0) {
-                        this.setState({ geofences: datos.datos.map(g => { return { nombre: g.nombre, entradas: 0, salidas: 0 } }), hasRecords: true, isLoading: false });
+                        this.setState({ geofences: datos.datos.map(g => { return { id_geocerca: g.id_geocercas, nombre: g.nombre, entradas: 0, salidas: 0 } }), hasRecords: true, isLoading: false });
                         //console.log(this.state.geofences);
                     } else {
                         Alert.alert('Info', 'No hay geocercas registradas.');
@@ -99,28 +102,30 @@ export default class GeofenceActions extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View elevation={2} style={{ height: 95, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 16 }}>
-                    <View style={{ flexDirection: "column", justifyContent: "center", marginTop: 25 }}>
-                        <Text style={{ fontFamily: 'aller-lt', fontSize: 15 }}>Selecciona el mes a consultar</Text>
-                        <Picker
-                            mode='dropdown'
-                            selectedValue={this.state.month}
-                            style={{ height: 40, width: 150 }}
-                            onValueChange={(value) => this.setState({ month: value })}
-                        >
-                            <Picker.Item label="Enero" value={0} />
-                            <Picker.Item label="Febrero" value={1} />
-                            <Picker.Item label="Marzo" value={2} />
-                            <Picker.Item label="Abril" value={3} />
-                            <Picker.Item label="Mayo" value={4} />
-                            <Picker.Item label="Junio" value={5} />
-                            <Picker.Item label="Julio" value={6} />
-                            <Picker.Item label="Agosto" value={7} />
-                            <Picker.Item label="Septiembre" value={7} />
-                            <Picker.Item label="Octubre" value={9} />
-                            <Picker.Item label="Noviembre" value={10} />
-                            <Picker.Item label="Diciembre" value={11} />
-                        </Picker>
+                <View elevation={2} style={{ backgroundColor: '#fff', height: 95 }}>
+                    <View style={{ flexDirection: "column", justifyContent: "center", alignItems: 'center' }}>
+                        <Text style={{ fontFamily: 'aller-lt', fontSize: 15, marginBottom: 5, marginTop: 15 }}>Selecciona el mes a consultar</Text>
+                        <View style={{ borderColor: '#cacaca', borderWidth: 1, borderRadius: 5, width: 160 }}>
+                            <Picker
+                                mode='dropdown'
+                                selectedValue={this.state.mes}
+                                style={{ height: 40, width: 160 }}
+                                onValueChange={(value) => this.setState({ mes: value })}
+                            >
+                                <Picker.Item label="Enero" value={1} />
+                                <Picker.Item label="Febrero" value={2} />
+                                <Picker.Item label="Marzo" value={3} />
+                                <Picker.Item label="Abril" value={4} />
+                                <Picker.Item label="Mayo" value={5} />
+                                <Picker.Item label="Junio" value={6} />
+                                <Picker.Item label="Julio" value={7} />
+                                <Picker.Item label="Agosto" value={8} />
+                                <Picker.Item label="Septiembre" value={9} />
+                                <Picker.Item label="Octubre" value={10} />
+                                <Picker.Item label="Noviembre" value={11} />
+                                <Picker.Item label="Diciembre" value={12} />
+                            </Picker>
+                        </View>
                     </View>
 
                     <Button
@@ -130,11 +135,14 @@ export default class GeofenceActions extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{ 
+                            flex: 1,
                             position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0
+                            top: 0,
+                            right: 0, 
+                        }}
+                        buttonStyle={{
+                            flexDirection: 'column'
                         }}
                         iconContainerStyle={{
                             flex: 1,
@@ -163,7 +171,7 @@ export default class GeofenceActions extends React.Component {
                                             return (
                                                 <TouchableOpacity
                                                     key={i}
-                                                    onPress={() => this.props.navigation.navigate('GeofenceAlerts', { id_geocerca: a.id_geocerca, nombre: a.nombre })}
+                                                    onPress={() => this.props.navigation.navigate('GeofenceAlerts', { id_geocerca: a.id_geocerca, nombre: a.nombre, id_propietario: this.state.id_propietario, mes: this.state.mes })}
                                                 >
                                                     <Card wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                         <View

@@ -92,7 +92,7 @@ export default class RegisteredGeofences extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 16 }}>
+                <View elevation={2} style={{ backgroundColor: '#fff', height: 70}}>
                     <Button
                         type='clear'
                         icon={{
@@ -100,11 +100,13 @@ export default class RegisteredGeofences extends React.Component {
                             size: 32,
                             color: '#ff8834'
                         }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
+                        containerStyle={{ 
+                            flex: 1,
                             position: 'absolute',
+                            right: 0,
+                        }}
+                        buttonStyle={{
                             flexDirection: 'column',
-                            right: 0
                         }}
                         iconContainerStyle={{
                             flex: 1,

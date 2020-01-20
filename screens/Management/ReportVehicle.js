@@ -25,10 +25,10 @@ export default class ReportVehicle extends Component {
     state = {
         refreshing: false,
         isLoading: true,
-        hasAlerts: true,
+        hasAlerts: false,
         hasTravels: false,
-        viajes: [{fecha: '00-00-0000', hora: '00:00:00', origen: 'A', destino: 'B'}],
-        alertas: [],
+        viajes: [{ fecha: '', hora: '', origen: 'No se encontrarón viajes', destino: '' }],
+        alertas: [{ fecha: '', hora: '', concepto: 'No se encontrarón alertas', coordenadas: null }],
         vehicle: this.props.navigation.getParam('vehicle', {}),
         visible: false,
         markedDates: null,
@@ -39,7 +39,7 @@ export default class ReportVehicle extends Component {
 
     async componentDidMount() {
         this.getWeek(new Date());
-        setTimeout( async () => {
+        setTimeout(async () => {
             await this.obtenerViajes();
             await this.obtenerAlertas();
             this.setState({
@@ -63,19 +63,19 @@ export default class ReportVehicle extends Component {
                 })
             });
             const data = await result.json();
-            console.log(data);
+            // console.log(data);
             if (data.datos.length != 0) {
                 this.setState({
-                    viajes: data.datos.map( viaje => { return {
-                        fecha: viaje.fecha,
-                        hora: viaje.hora,
-                        origen: viaje.origen,
-                        destino: viaje.destino
-                    }}),
+                    viajes: data.datos.map(viaje => {
+                        return {
+                            fecha: viaje.fecha_hora.substring(0, 10),
+                            hora: viaje.fecha_hora.substring(11, 19),
+                            origen: viaje.origen_geocoder,
+                            destino: viaje.destino_geocoder
+                        }
+                    }),
                     hasTravels: true
                 });
-            } else {
-                Alert.alert('Info', 'No se encontrarón viajes registrados.');
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error al obtener los viajes.');
@@ -121,8 +121,6 @@ export default class ReportVehicle extends Component {
                     alertas: alerts,
                     hasAlerts: true
                 });
-            } else {
-                Alert.alert('Info', 'No hay alertas registradas.');
             }
         } catch (error) {
             Alert.alert('Error', 'Hubo un error al obtener alertas.');
@@ -179,7 +177,7 @@ export default class ReportVehicle extends Component {
     }
 
     render() {
-        const { vehicle, viajes } = this.state
+        const { vehicle } = this.state
         return (
             <ScrollView
                 refreshControl={this._refreshControl()}
@@ -249,8 +247,6 @@ export default class ReportVehicle extends Component {
                         </View>
                     </View>
 
-                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    
                     <View style={{ margin: 4 }} >
                         <View style={styles.view1}>
                             <Icon type='ionicon' name='ios-send' size={16} />
@@ -270,57 +266,73 @@ export default class ReportVehicle extends Component {
                         </View>
 
                         <Card wrapperStyle={{ flexDirection: 'row', justifyContent: 'space-between', padding: 0 }} containerStyle={{ marginBottom: 2 }}>
-                            <Text style={styles.textoBold}>Origen</Text>
-                            <Text style={styles.textoBold}>Destino</Text>
+                            <Text style={[styles.textoBold, { marginBottom: 0 }]}>Origen</Text>
+                            <Text style={[styles.textoBold, { marginBottom: 0 }]}>Destino</Text>
                         </Card>
                         {
-                            !this.state.isLoading && /*this.state.hasTravels &&*/
-                            this.state.viajes.map((viaje, k) => {
-                                return (
-                                    <Card key={k} wrapperStyle={{ flexDirection: 'column' }} containerStyle={{ marginVertical: 1 }}>
-                                        <View style={{ flexDirection: 'row', marginBottom: 2 }}>
-                                            <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{viaje.fecha}   {viaje.hora}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', flex: 1 }}>
-                                            <Text style={{ fontFamily: 'aller-lt', flex: 1 }}>{viaje.origen}</Text>
-                                            <Text style={{ fontFamily: 'aller-lt', flex: 1, textAlign: 'right' }}>{viaje.destino}</Text>
-                                        </View>
-                                    </Card>
-                                );
-                            })
+                            this.state.isLoading ?
+                                <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />
+                                :
+                                this.state.viajes.map((viaje, k) => {
+                                    return (
+                                        <Card key={k} containerStyle={{ marginVertical: 1 }}>
+                                            <View style={{ flexDirection: 'column' }} >
+                                                {
+                                                    this.state.hasTravels &&
+                                                    <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                                        <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{viaje.fecha}   {viaje.hora}</Text>
+                                                    </View>
+                                                }
+                                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                    <Text style={{ fontFamily: 'aller-lt', flex: 1 }}>{viaje.origen}</Text>
+                                                    <Text style={{ fontFamily: 'aller-lt', flex: 1, textAlign: 'right' }}>{viaje.destino}</Text>
+                                                </View>
+                                            </View>
+                                        </Card>
+                                    );
+                                })
                         }
 
                         <Card wrapperStyle={{ flexDirection: 'row', justifyContent: 'space-between' }} containerStyle={{ marginBottom: 2 }}>
-                            <Text style={styles.textoBold}>Alerta</Text>
-                            <Text style={styles.textoBold}>Ubic.</Text>
+                            <Text style={[styles.textoBold, { marginBottom: 0 }]}>Alerta</Text>
+                            <Text style={[styles.textoBold, { marginBottom: 0 }]}>Ubic.</Text>
                         </Card>
 
                         {
-                            !this.state.isLoading && this.state.hasAlerts &&
-                            this.state.alertas.map((alerta, k) => {
-                                return (
-                                    <Card key={k} wrapperStyle={{ flexDirection: 'row' }} containerStyle={{ marginVertical: 1 }}>
-                                        <View style={{ flexDirection: 'column', flex: 2 }}>
-                                            <View style={{ flexDirection: 'row', marginBottom: 2 }}>
-                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{alerta.fecha}   {alerta.hora}</Text>
+                            this.state.isLoading ?
+                                <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />
+                                :
+                                this.state.alertas.map((alerta, k) => {
+                                    return (
+                                        <Card key={k} containerStyle={{ marginVertical: 1 }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={{ flexDirection: 'column', flex: 2 }}>
+                                                    {
+                                                        this.state.hasAlerts &&
+                                                        <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                                            <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{alerta.fecha}   {alerta.hora}</Text>
+                                                        </View>
+                                                    }
+                                                    <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
+                                                </View>
+                                                {
+                                                    this.state.hasAlerts &&
+                                                    <TouchableOpacity
+                                                        onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', { coordenadas: alerta.coordenadas, concepto: alerta.concepto })}
+                                                    >
+                                                        <Icon
+                                                            type='material-community'
+                                                            name='map-marker'
+                                                            size={24}
+                                                            color='#ffbb00'
+                                                            containerStyle={{ marginRight: 5, marginTop: 3 }}
+                                                        />
+                                                    </TouchableOpacity>
+                                                }
                                             </View>
-                                            <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
-                                        </View>
-                                        <TouchableOpacity
-                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', { coordenadas: alerta.coordenadas, concepto: alerta.concepto })}
-                                        >
-                                            <Icon
-                                                type='material-community'
-                                                name='map-marker'
-                                                size={24}
-                                                color='#ffbb00'
-                                                containerStyle={{ marginRight: 5, marginTop: 3 }}
-                                            />
-                                        </TouchableOpacity>
-
-                                    </Card>
-                                );
-                            })
+                                        </Card>
+                                    );
+                                })
                         }
                     </View>
                 </View>

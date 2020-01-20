@@ -66,7 +66,7 @@ export default class RegisterGeofence extends React.Component {
                             <TouchableOpacity
                                 /*key={i}*/
                                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}
-                                onPress={() => { this.props.navigation.navigate('TraceRadius') }}
+                                onPress={() => this.props.navigation.navigate('TraceGeofence', { id_tipo_geocerca: 0 }) }
                             >
                                 <View
                                     style={{
@@ -90,7 +90,7 @@ export default class RegisterGeofence extends React.Component {
                             <TouchableOpacity
                                 /*key={i}*/
                                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}
-                                onPress={() => this.props.navigation.navigate('TracePoligon')}
+                                onPress={() => this.props.navigation.navigate('TraceGeofence', { id_tipo_geocerca: 1 })}
                             >
                                 <View
                                     style={{

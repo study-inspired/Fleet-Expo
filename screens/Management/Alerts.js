@@ -28,9 +28,7 @@ export default class Alerts extends Component {
             refreshing: false,
             isLoading: true,
             hasAlerts: false,
-            tableHead: ['Fecha', 'Hora', 'Concepto de alerta'],
-            widthArr: [95, 70, 160],
-            alerts: [],
+            alerts: [{ fecha: '', hora: '', concepto: 'No se encontrarón alertas', coordenadas: null }],
             vehicle: this.props.navigation.getParam('vehicle', {}),
             visible: false,
             markedDates: null,
@@ -72,13 +70,14 @@ export default class Alerts extends Component {
                             coordenadas: {latitude: parseFloat(d.ubicacion.split(',')[0]), longitude: parseFloat(d.ubicacion.split(',')[1])}
                         }
                     });
+                    // console.log(alerts);
+                    
                     this.setState({
                         alerts: alerts,
                         hasAlerts: true,
                         isLoading: false
                     });
                 } else {
-                    Alert.alert('Información', 'No hay alertas registradas.');
                     this.setState({
                         isLoading: false
                     });
@@ -227,29 +226,37 @@ export default class Alerts extends Component {
                     refreshControl={this._refreshControl()}
                 >
                     <View style={{ flex: 1 }} >
-
-                        {state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} />}
-                        {!state.isLoading && state.hasAlerts &&
+                        {
+                            state.isLoading ? 
+                            <ActivityIndicator size="large" color="#ff8834" animating={state.isLoading} style={{ flex: 1 }} /> :
                             state.alerts.map((alerta, k) => {
                                 return (
-                                    <Card key={k} wrapperStyle={{ flexDirection: 'row' }} containerStyle={{marginVertical: 1}}>
-                                        <View style={{flexDirection: 'column', flex: 2}}>
-                                            <View style={{ flexDirection: 'row', marginBottom: 2 }}>
-                                                <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{alerta.fecha}   {alerta.hora}</Text>
+                                    <Card key={k} containerStyle={{marginVertical: 1}}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <View style={{flexDirection: 'column', flex: 2}}>
+                                                {
+                                                    state.hasAlerts &&     
+                                                    <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                                        <Text style={{ fontFamily: 'aller-lt', fontSize: 10 }}>{alerta.fecha}   {alerta.hora}</Text>
+                                                    </View>
+                                                }
+                                                <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
                                             </View>
-                                            <Text style={{ fontFamily: 'aller-lt' }}>{alerta.concepto}</Text>
+                                            {
+                                                state.hasAlerts && 
+                                                <TouchableOpacity 
+                                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {coordenadas: alerta.coordenadas, concepto: alerta.concepto})}
+                                                >
+                                                    <Icon
+                                                        type='material-community'
+                                                        name='map-marker'
+                                                        size={24}
+                                                        color='#ffbb00'
+                                                        containerStyle={{ marginRight: 5, marginTop: 3 }}
+                                                    />
+                                                </TouchableOpacity>
+                                            }
                                         </View>
-                                        <TouchableOpacity 
-                                            onPress={() => this.props.navigation.navigate('GeofenceAlertsDetailsMap', {coordenadas: alerta.coordenadas, concepto: alerta.concepto})}
-                                        >
-                                            <Icon
-                                                type='material-community'
-                                                name='map-marker'
-                                                size={24}
-                                                color='#ffbb00'
-                                                containerStyle={{ marginRight: 5, marginTop: 3 }}
-                                            />
-                                        </TouchableOpacity>
                                     </Card>
                                 );
                             })

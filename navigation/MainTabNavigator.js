@@ -57,8 +57,8 @@ import ServiceConsultation from '../screens/Management/ServiceConsultation';
 import RegisterMaintenanceM from '../screens/Management/RegisterMaintenanceM';
 import RegisterMaintenanceN from '../screens/Management/RegisterMaintenanceN';
 import ServicesConsultation from '../screens/Management/ServicesConsultation';
-import TraceRadius from '../screens/Management/TraceRadius';
-import TracePoligon from '../screens/Management/TracePoligon';
+import TraceGeofence from '../screens/Management/TraceGeofence';
+// import TracePoligon from '../screens/Management/TracePoligon';
 import RegisterGeofence from '../screens/Management/RegisterGeofence';
 import InfoDriver from '../screens/Drivers/InfoDriver';
 
@@ -207,8 +207,8 @@ const ManagementStack = createStackNavigator(
     RegisterMaintenanceM: RegisterMaintenanceM,
     RegisterMaintenanceN: RegisterMaintenanceN,
     RegisterGeofence: RegisterGeofence,
-    TraceRadius: TraceRadius,
-    TracePoligon: TracePoligon,
+    TraceGeofence: TraceGeofence,
+    // TracePoligon: TracePoligon,
     GeofenceAlerts: GeofenceAlerts,
     GeofenceAlertsDetails:GeofenceAlertsDetails,
     GeofenceAlertsDetailsMap:GeofenceAlertsDetailsMap
