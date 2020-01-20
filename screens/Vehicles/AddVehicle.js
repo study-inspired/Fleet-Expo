@@ -271,6 +271,8 @@ export default class AddVehicle extends React.Component {
         }
     }
 
+    //Verificar si existe el niv
+
     render() {
         return (
             this.state.isLoading ?
@@ -414,9 +416,11 @@ export default class AddVehicle extends React.Component {
                                     selectedValue={this.state.tipo_vehiculo}
                                     onValueChange={(tipo) => this.setState({ tipo_vehiculo: tipo })}>
                                     <Picker.Item label="Tipo" value="" />
-                                    <Picker.Item label="Auto normal" value="0" />
-                                    <Picker.Item label="Auto de lujo" value="1" />
-                                    <Picker.Item label="Camioneta" value="2" />
+                                    <Picker.Item label="Automóvil estandar" value="0" />
+                                    <Picker.Item label="Automóvil de lujo" value="1" />
+                                    <Picker.Item label="Motocicleta" value="2" />
+                                    <Picker.Item label="Camioneta" value="3" />
+                                    <Picker.Item label="Bicicleta" value="4" />
                                 </Picker>
 
                                 <TouchableOpacity
