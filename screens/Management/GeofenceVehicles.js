@@ -11,13 +11,14 @@ import {
     View,
     Text,
     Image,
-    TouchableOpacity,
+    TouchableNativeFeedback,
     Alert,
     RefreshControl
 } from 'react-native';
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
+import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
 
 export default class GeofenceVehicles extends React.Component {
 
@@ -69,7 +70,7 @@ export default class GeofenceVehicles extends React.Component {
                 })
 
                 const data = await result.json();
-                // console.log(data);
+                console.log(data);
 
                 if (data.datos.length != 0) {
                     let vehicles = data.datos.map(async v => {
@@ -109,13 +110,14 @@ export default class GeofenceVehicles extends React.Component {
                     in_id_unidad: id_unidad,
                 }),
             });
-            const data = await result.json();
+            const { datos } = await result.json();
+
             return {
                 id: id_unidad,
-                nombre: `${data.datos[0].marca} ${data.datos[0].modelo}`,
-                placas: data.datos[0].placas,
-                color: data.datos[0].color.includes('#') ? data.datos[0].color : '#a8a8a8',
-                imagen: data.datos[0].foto.replace('/var/www/html', 'http://35.203.42.33')
+                nombre: `${datos[0].marca} ${datos[0].modelo}`,
+                placas: datos[0].placas,
+                color: datos[0].color.includes('#') ? datos[0].color : '#a8a8a8',
+                imagen: datos[0].foto.replace('/var/www/html', 'http://35.203.42.33')
             };
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -180,7 +182,7 @@ export default class GeofenceVehicles extends React.Component {
     }
     //Termina el refresh  
 
-    _eliminarVehiculo() {
+    _eliminarVehiculo(id) {
         Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de ésta geocerca', [
             {
                 text: 'Cancelar',
@@ -189,13 +191,75 @@ export default class GeofenceVehicles extends React.Component {
             },
             {
                 text: 'Aceptar',
-                onPress: () => this._eliminarVehiculoWS()
+                onPress: () => this._eliminarVehiculoWS(id)
             },
         ], { cancelable: false });
     }
 
-    _eliminarVehiculoWS() {
-        console.log('Aceptar eliminar vehículo.');
+    async _eliminarVehiculoWS(id) {
+        try {
+            const response = await fetch('http://35.203.42.33:3006/webservice/desvincular_unidad_geocerca', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_unidad: id,
+                    p_id_geocercas: this.state.id_geocerca,
+                    p_id_propietario: this.state.id_propietario
+                })
+            })
+            const { datos, msg } = await response.json();
+
+            const { sp_desvincular_unidad_geocerca } = datos[0];
+
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+                console.log(msg);
+            } else if (sp_desvincular_unidad_geocerca) {
+                Alert.alert('Información', 'Se desvinculó el vehículo de la geocerca exitosamente.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+            console.log(error);
+        }
+    }
+
+    async _obteberTiposAlerta(vehiculo) {
+        try {
+            const response = await fetch('http://35.203.42.33:3006/webservice/valida_entrada_salida_unidad', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_unidad: vehiculo.id,
+                    p_id_geocercas: this.state.id_geocerca,
+                    p_id_propietario: this.state.id_propietario
+                })
+            });
+
+            const { datos, msg } = await response.json();
+
+            const { alertaentrada, alertasalida } = datos[0];
+
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+                console.log(msg);
+            } else if (datos) {
+                this.setState({
+                    entrada: alertaentrada == 1,
+                    salida: alertasalida == 1,
+                    vehiculo: vehiculo,
+                    seleccionado: true
+                });
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+            console.log(error);
+        }
     }
 
     render() {
@@ -310,34 +374,20 @@ export default class GeofenceVehicles extends React.Component {
                         </View>
                     </View>
                 </Overlay>
-                <View elevation={2} style={{ backgroundColor: '#fff' ,height: 70 }}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ 
-                            flex: 1,
-                            position: 'absolute',
-                            right: 0,
-                            borderRadius: 16
-                        }}
-                        buttonStyle={{
-                            flexDirection: 'column'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                <View elevation={2} style={{ backgroundColor: '#fff', height: 70 }}>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?
@@ -376,28 +426,32 @@ export default class GeofenceVehicles extends React.Component {
                                                         </View>
                                                         <Text style={{ fontFamily: 'aller-lt', fontSize: 12, marginBottom: 10 }}>{v.placas}</Text>
                                                     </View>
-                                                    <View style={{ flexDirection: 'column' }}>
-                                                        <TouchableOpacity
-                                                            onPress={() => this.setState({ vehiculo: v, seleccionado: true })}
-                                                            style={{ position: 'absolute', bottom: 3, right: 0 }}
-                                                        >
-                                                            <Icon
-                                                                type='font-awesome'
-                                                                name='edit'
-                                                                size={30}
+                                                    {/* <View style={{ flexDirection: 'column', backgroundColor: '#cacaca'}}>
+                                                        
+                                                        
+                                                    </View> */}
+                                                    <TouchableNativeFeedback
+                                                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                                                        onPress={async () => await this._obteberTiposAlerta(v)}
+                                                    >
+                                                        <View style={{ position: 'absolute', top: -5, right: -5 }}>
+                                                            <MaterialCommunityIcons
+                                                                name='square-edit-outline'
+                                                                size={32}
                                                             />
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity
-                                                            onPress={() => this._eliminarVehiculo(v.id)}
-                                                            style={{ position: 'absolute', top: 5, right: 2 }}
-                                                        >
-                                                            <Icon
-                                                                type='material'
+                                                        </View>
+                                                    </TouchableNativeFeedback>
+                                                    <TouchableNativeFeedback
+                                                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                                                        onPress={() => this._eliminarVehiculo(v.id)}
+                                                    >
+                                                        <View style={{ position: 'absolute', bottom: -5, right: -5 }}>
+                                                            <MaterialIcons
                                                                 name='delete'
                                                                 size={32}
                                                             />
-                                                        </TouchableOpacity>
-                                                    </View>
+                                                        </View>
+                                                    </TouchableNativeFeedback>
                                                 </View>
                                             </Card>
                                         );

@@ -9,13 +9,15 @@ import {
     View,
     Text,
     Picker,
-    Alert
+    Alert,
+    TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Icon } from 'react-native-elements'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class LocateVehicle extends React.Component {
 
@@ -117,29 +119,19 @@ export default class LocateVehicle extends React.Component {
             <View style={{ flex: 1 }}>
                 <View style={styles.subHeader}>
                     <Text style={[styles.textoBold, { marginVertical: 25, flex: 5 }]}>Seleccione el vehículo a consultar</Text>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <Picker
                     style={{

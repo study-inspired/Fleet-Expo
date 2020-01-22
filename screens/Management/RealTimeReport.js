@@ -11,7 +11,7 @@ import {
     Image,
     StyleSheet,
     Dimensions,
-    Alert
+    Alert,
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'

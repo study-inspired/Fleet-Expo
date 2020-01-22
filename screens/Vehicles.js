@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 
 import { Button, colors, Card } from 'react-native-elements'
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, AntDesign, Ionicons } from "@expo/vector-icons";
 import NetInfo from '@react-native-community/netinfo'
 
 export default class VehiclesView extends React.Component {
@@ -197,61 +197,38 @@ export default class VehiclesView extends React.Component {
         ], { cancelable: false })
     }
 
-
-
     render() {
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "add-circle",
-                            size: 32,
-                            color: colors.primary
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'center',
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1
-                        }}
-                        title="Agregar vehículo"
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#cacaca', true)}
                         onPress={() => this.addVehicle()}
-                    />
+                    >
+                        <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                            <AntDesign
+                                name={'pluscircle'}
+                                size={32}
+                                color={colors.primary}
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 16, color: colors.primary }}>Agregar vehículo</Text>
+                        </View>
+                    </TouchableNativeFeedback>
 
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            right: 0,
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1,
-                            fontSize: 12
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?
@@ -299,30 +276,18 @@ export default class VehiclesView extends React.Component {
                                                         <Text style={styles.texto600, { fontSize: 12 }}>{v.vigencia}</Text>
                                                     </View>
                                                     <FontAwesome name={v.problema ? 'warning' : 'check-circle'} size={18} color={v.problema ? '#ebcc1c' : '#20d447'} style={styles.listo} />
-                                                    <Button
-                                                        type='clear'
-                                                        icon={{
-                                                            name: "delete",
-                                                            size: 24,
-                                                            color: '#ff8834'
-                                                        }}
-                                                        buttonStyle={{
-                                                            position: 'absolute',
-                                                            flexDirection: 'column',
-                                                            justifyContent: 'center',
-                                                            right: -15,
-                                                        }}
-                                                        iconContainerStyle={{
-                                                            flex: 1,
-                                                        }}
-                                                        titleStyle={{
-                                                            fontFamily: 'aller-lt',
-                                                            flex: 1,
-                                                            fontSize: 12
-                                                        }}
-                                                        title="Eliminar"
+                                                    <TouchableNativeFeedback
+                                                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
                                                         onPress={() => this._eliminarVehiculo(v.id)}
-                                                    />
+                                                    >
+                                                        <View style={styles.deleteButton}>
+                                                            <MaterialIcons
+                                                                name='delete'
+                                                                size={24}
+                                                            />
+                                                            <Text style={{ fontSize: 12, marginLeft: 2, fontFamily: 'aller-bd' }} >Eliminar</Text>
+                                                        </View>
+                                                    </TouchableNativeFeedback>
                                                 </Card>
                                             </TouchableNativeFeedback>
                                         );
@@ -342,9 +307,7 @@ const styles = StyleSheet.create({
     },
     sectionContainer: {
         backgroundColor: '#fff',
-        paddingTop: 24,
-        paddingHorizontal: 24,
-        paddingBottom: 76
+        paddingVertical: 24,
     },
     button: {
         backgroundColor: '#ff8834',
@@ -374,5 +337,12 @@ const styles = StyleSheet.create({
     imagen: {
         width: 70,
         height: 70,
+    },
+    deleteButton: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: -5,
+        right: -8
     }
 });

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, Picker } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, Picker, TouchableNativeFeedback } from 'react-native';
 import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class RegisterMaintenanceN extends Component {
     static navigationOptions = {
@@ -54,12 +55,12 @@ export default class RegisterMaintenanceN extends Component {
                         motivo: this.state.motivo,
                         posicion: this.state.posicion,
                         id_unidad: this.state.vehicle.id,
-                        llantera : this.state.llanterataller                                        
+                        llantera: this.state.llanterataller
                     })
                 });
-                
+
                 const data = await result.json();
-                
+
                 if (data.msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(data.msg);
@@ -71,7 +72,7 @@ export default class RegisterMaintenanceN extends Component {
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
-                
+
                 this.props.navigation.goBack();
             }
         }
@@ -130,30 +131,19 @@ export default class RegisterMaintenanceN extends Component {
                     </View>
                 </Overlay>
                 <View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0,
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-bd',
-                            fontSize: 12,
-                            bottom: 0,
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                     <View>
                         <Image
                             style={{ width: 150, height: 150, alignSelf: 'center' }}
@@ -198,16 +188,16 @@ export default class RegisterMaintenanceN extends Component {
 
                         <View style={styles.views}>
                             <Text style={styles.texto}>Motivo</Text>
-                            <Picker 
+                            <Picker
                                 selectedValue={this.state.motivo}
-                                style={styles.input} 
+                                style={styles.input}
                                 onValueChange={
-                                (itemValue) => {
-                                    this.setState({
-                                        motivo: itemValue
-                                    })
-                                }
-                            }>
+                                    (itemValue) => {
+                                        this.setState({
+                                            motivo: itemValue
+                                        })
+                                    }
+                                }>
                                 <Picker.Item label="Pochadura" value={1} />
                                 <Picker.Item label="Desgaste" value={2} />
                             </Picker>

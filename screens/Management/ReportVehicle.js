@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, RefreshControl, ScrollView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Table, Row, Rows } from 'react-native-table-component';
+import { StyleSheet, Text, View, Image, RefreshControl, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
 import { Icon, Button, Card, Overlay } from 'react-native-elements';
 import { Calendar } from 'react-native-calendars';
+import { Ionicons } from '@expo/vector-icons';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
@@ -209,30 +209,19 @@ export default class ReportVehicle extends Component {
 
                 <View style={{ flex: 1 }}>
                     <View>
-                        <Button
-                            type='clear'
-                            icon={{
-                                name: "help",
-                                size: 32,
-                                color: '#ff8834'
-                            }}
-                            containerStyle={{ flex: 1 }}
-                            buttonStyle={{
-                                position: 'absolute',
-                                flexDirection: 'column',
-                                right: 0,
-                            }}
-                            iconContainerStyle={{
-                                flex: 1,
-                            }}
-                            titleStyle={{
-                                flex: 1,
-                                fontFamily: 'aller-lt',
-                                fontSize: 12,
-                                bottom: 0,
-                            }}
-                            title="Ayuda"
-                        />
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                            onPress={() => alert('Ayuda')}
+                        >
+                            <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                                <Ionicons
+                                    name={'ios-help-circle'}
+                                    size={24}
+                                    color='#ff8834'
+                                />
+                                <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                            </View>
+                        </TouchableNativeFeedback>
                         <View>
                             <Image
                                 style={styles.imagen}

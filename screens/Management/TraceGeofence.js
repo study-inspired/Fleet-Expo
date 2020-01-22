@@ -5,13 +5,15 @@ import {
     Text,
     Alert,
     ActivityIndicator,
-    Dimensions
+    Dimensions,
+    TouchableNativeFeedback
 } from 'react-native';
 import { Button, Slider, Overlay, Icon, Input } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Circle, Polygon, Marker } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class TraceGeofence extends React.Component {
     constructor(props) {
@@ -264,32 +266,19 @@ export default class TraceGeofence extends React.Component {
                             :
                             <Text style={[styles.texto1, { marginHorizontal: Dimensions.get('window').width > 360 ? 16 : 2, }]}>Indica diferentes puntos en el mapa hasta completar el polígono y definir el área deseada</Text>
                     }
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{
-                            flex: 1,
-                            position: 'absolute',
-                            right: 0
-                        }}
-                        buttonStyle={{
-                            flexDirection: 'column',
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?

@@ -5,11 +5,11 @@
 
 import React from 'react';
 import {
-    Image,
     View,
     Text,
     Alert,
     ActivityIndicator,
+    TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Input, Slider, Overlay, Icon } from 'react-native-elements'
@@ -17,6 +17,7 @@ import MapView, { PROVIDER_GOOGLE, Circle } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class AddDriver extends React.Component {
     static navigationOptions = {
@@ -26,14 +27,21 @@ export default class AddDriver extends React.Component {
             textAlign: "center",
             flex: 1
         },
-        headerRight: <Button
-            type='clear'
-            icon={{
-                name: "help",
-                size: 32,
-                color: '#ff8834'
-            }}
-        />,
+        headerRight: (
+            <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                onPress={() => alert('Ayuda')}
+            >
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginRight: 15 }}>
+                    <Ionicons
+                        name={'ios-help-circle'}
+                        size={32}
+                        color='#ff8834'
+                    />
+                    {/* <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text> */}
+                </View>
+            </TouchableNativeFeedback>
+        )
     }
 
     constructor(props) {
@@ -140,7 +148,7 @@ export default class AddDriver extends React.Component {
                     });
                 } else {
                     // console.log(datos.datos);
-                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.state.id_propietario});
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.state.id_propietario });
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');

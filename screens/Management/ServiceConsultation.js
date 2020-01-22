@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, ActivityIndicator, Alert} from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, ActivityIndicator, Alert, TouchableNativeFeedback } from 'react-native';
 import { Table, Rows } from 'react-native-table-component';
-import { Button } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class ServiceConsultation extends Component {
     static navigationOptions = ({ navigation }) => {
@@ -101,30 +101,19 @@ export default class ServiceConsultation extends Component {
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0,
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0,
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                     <View>
                         <Image
                             style={{ width: 150, height: 150, alignSelf: 'center' }}
@@ -133,14 +122,14 @@ export default class ServiceConsultation extends Component {
                         />
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={[styles.textoBold, {marginTop: 4}]}>{vehicle.nombre}</Text>
+                        <Text style={[styles.textoBold, { marginTop: 4 }]}>{vehicle.nombre}</Text>
                         <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={[styles.textoNormal, {marginTop: 4}]}>- {vehicle.placas}</Text>
+                        <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {vehicle.placas}</Text>
                     </View>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
-                {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    { !this.state.isLoading && this.state.hasInfo &&
+                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                    {!this.state.isLoading && this.state.hasInfo &&
                         <View style={{ margin: 4, alignSelf: 'center' }} >
                             <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
                                 <Rows data={this.state.tableData} widthArr={this.state.widthArr} textStyle={styles.text} />
@@ -154,7 +143,7 @@ export default class ServiceConsultation extends Component {
 }
 
 const styles = StyleSheet.create({
-    text: { margin: 6, fontSize: 14,  },
+    text: { margin: 6, fontSize: 14, },
     row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
     textoBold: {
         fontFamily: 'aller-bd',

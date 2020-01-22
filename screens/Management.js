@@ -10,10 +10,12 @@ import {
     View,
     Text,
     TouchableOpacity,
+    TouchableNativeFeedback,
     StatusBar
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class Management extends React.Component {
     static navigationOptions = {
@@ -35,36 +37,24 @@ export default class Management extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
-                <View elevation={2} style={{ height: 70, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf:'flex-end'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                <View elevation={2} style={{ height: 70 }}>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <View style={{ marginBottom: 15 }}>
                     <Card>
                         <TouchableOpacity
-                            /*key={i}*/
                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}
                             onPress={() => { this.props.navigation.navigate('GPRSFunctions') }}
                         >
@@ -88,7 +78,6 @@ export default class Management extends React.Component {
                     </Card>
                     <Card>
                         <TouchableOpacity
-                            /*key={i}*/
                             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}
                             onPress={ () => this.props.navigation.navigate('SelectVehicle',{ title:'Mantenimiento de vehículos', nextScreen: 'VehicleMaintenance', text: 'Selecciona el vehiculo a consultar' }) }
                         >

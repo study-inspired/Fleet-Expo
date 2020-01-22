@@ -14,11 +14,13 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Alert,
-  StatusBar
+  StatusBar,
+  TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Icon, Divider, Badge } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default class InfoDriver extends React.Component {
 
@@ -58,7 +60,7 @@ export default class InfoDriver extends React.Component {
   async componentDidMount() {
     this.socket.on('respuesta_invitacion', (res) => {
       console.log('Respuesta invitación:', res);
-      if (this.resibido == 0) {        
+      if (this.resibido == 0) {
         this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);
         this.resibido++;
       }
@@ -213,8 +215,9 @@ export default class InfoDriver extends React.Component {
       this.state.isLoading ? <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} /> :
         <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
           <View elevation={4} style={{ flexDirection: 'column' }}>
-            <View style={{ paddingTop: 10, flexDirection: "row" }}>
-              <Button
+            <View style={{ paddingTop: 10, flexDirection: "row", justifyContent: 'center' }}>
+
+              {/* <Button
                 type='clear'
                 icon={{
                   name: "arrow-back",
@@ -224,25 +227,36 @@ export default class InfoDriver extends React.Component {
                 containerStyle={{ flex: 1 }}
                 buttonStyle={styles.backButton}
                 onPress={() => this.props.navigation.goBack()}
-              />
+              /> */}
+              <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('#cacaca', true)}
+                onPress={() => this.props.navigation.goBack()}
+              >
+                <View style={{ position: 'absolute', top: 12, left: 15 }}>
+                  <MaterialIcons
+                    name={'arrow-back'}
+                    size={24}
+                  />
+                </View>
+              </TouchableNativeFeedback>
               <Image
                 style={styles.imagen}
                 resizeMode="cover"
                 source={{ uri: this.state.conductor.fotografia }}
               />
-              <Button
-                type='clear'
-                icon={{
-                  name: "help",
-                  size: 32,
-                  color: '#ff8834'
-                }}
-                containerStyle={{ flex: 1 }}
-                buttonStyle={styles.helpButton}
-                iconContainerStyle={{ flex: 1 }}
-                titleStyle={styles.helpButtonTitle}
-                title="Ayuda"
-              />
+              <TouchableNativeFeedback
+                background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                onPress={() => alert('Ayuda')}
+              >
+                <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                  <Ionicons
+                    name={'ios-help-circle'}
+                    size={24}
+                    color='#ff8834'
+                  />
+                  <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                </View>
+              </TouchableNativeFeedback>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
               <Text style={[styles.textoBold, { flex: 1, textAlign: 'left', fontSize: 18 }]}>{`${this.state.conductor.nombre} ${this.state.conductor.apellido}`}</Text>

@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
+import { 
+    StyleSheet, 
+    View, 
+    SafeAreaView, 
+    ScrollView, 
+    Alert, 
+    ActivityIndicator, 
+    RefreshControl, 
+    TouchableOpacity,
+    TouchableNativeFeedback,
+    Text 
+} from 'react-native';
 import { Icon, Button, Card, Overlay } from 'react-native-elements';
 import { Calendar } from 'react-native-calendars';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default class Alerts extends Component {
@@ -174,29 +185,19 @@ export default class Alerts extends Component {
 
                 <View style={{ height: 70, flexDirection: 'row', alignContent: 'center' }}>
                     <Icon type='font-awesome' name="warning" size={52} containerStyle={{ flex: 1, marginTop: 8, alignSelf: 'center' }} />
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
 
                 <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>

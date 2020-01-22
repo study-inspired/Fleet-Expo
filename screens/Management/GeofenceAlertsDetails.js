@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 import NetInfo from '@react-native-community/netinfo';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class GeofenceAlertsDetails extends Component {
 
@@ -134,29 +135,19 @@ export default class GeofenceAlertsDetails extends Component {
                             <Text style={[{ fontFamily: 'aller-lt', fontSize: 16 }]}>- {state.vehicle.placas}</Text>
                         </View>
                     </View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <ScrollView
                     refreshControl={this._refreshControl()}

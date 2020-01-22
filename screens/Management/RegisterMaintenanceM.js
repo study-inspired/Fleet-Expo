@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, TouchableNativeFeedback } from 'react-native';
 import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class RegisterMaintenanceM extends Component {
     static navigationOptions = ({ navigation }) => {
@@ -67,9 +68,9 @@ export default class RegisterMaintenanceM extends Component {
                         id_unidad: this.state.vehicle.id,
                     })
                 });
-    
+
                 const data = await result.json();
-    
+
                 if (data.msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(data.msg);
@@ -79,7 +80,7 @@ export default class RegisterMaintenanceM extends Component {
             } catch (error) {
                 Alert.alert('Error', 'Ha ocurrido un error.');
                 console.error(error);
-                
+
                 this.props.navigation.goBack();
             }
         }
@@ -135,30 +136,19 @@ export default class RegisterMaintenanceM extends Component {
                     </View>
                 </Overlay>
                 <View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0,
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-bd',
-                            fontSize: 12,
-                            bottom: 0,
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                     <View>
                         <Image
                             style={{ width: 150, height: 150, alignSelf: 'center' }}
@@ -281,15 +271,15 @@ export default class RegisterMaintenanceM extends Component {
 }
 
 const styles = StyleSheet.create({
-    input: { 
-        height: 30, 
-        fontFamily: 'aller-lt', 
-        fontSize: 14, 
-        borderColor: 'gray', 
-        borderWidth: 1, 
-        padding: 1, 
-        width: 165, 
-        alignSelf: 'stretch' 
+    input: {
+        height: 30,
+        fontFamily: 'aller-lt',
+        fontSize: 14,
+        borderColor: 'gray',
+        borderWidth: 1,
+        padding: 1,
+        width: 165,
+        alignSelf: 'stretch'
     },
     texto: { fontFamily: 'aller-bd', fontSize: 14, paddingRight: 10, alignSelf: 'baseline', marginTop: 5 },
     container: { flex: 1, padding: 20, paddingTop: 30, backgroundColor: '#fff' },

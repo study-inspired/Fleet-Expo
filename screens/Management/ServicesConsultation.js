@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl  } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl, TouchableNativeFeedback } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
-import { Button, Icon } from 'react-native-elements'
+import { Icon } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default class ServicesConsultation extends Component {
@@ -44,13 +45,13 @@ export default class ServicesConsultation extends Component {
             if (data.datos.length != 0) {
                 this.setState({
                     hasInfo: true,
-                    tableData: data.datos.map( servicio => {
+                    tableData: data.datos.map(servicio => {
                         return [
                             servicio.fecha_serv.slice(0, 10).split('-').reverse().join('/'),
                             servicio.tipo.replace('a', 'á'),
                             <TouchableOpacity
                                 onPress={() => this.props.navigation.navigate('ServiceConsultation', { vehicle: this.state.vehicle, id_servicio: servicio.id_servicios, tipo: servicio.tipo })}>
-                                <Icon type='material' name='remove-red-eye' size={18} />
+                                <Icon type='material' name='remove-red-eye' size={24} />
                             </TouchableOpacity>
                         ]
                     }),
@@ -96,56 +97,45 @@ export default class ServicesConsultation extends Component {
                 <ScrollView
                     refreshControl={this._refreshControl()}
                 >
-                <View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0,
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0,
-                        }}
-                        title="Ayuda"
-                    />
                     <View>
-                        <Image
-                            style={{ width: 150, height: 150, alignSelf: 'center' }}
-                            resizeMode="cover"
-                            source={{ uri: vehicle.imagen }}
-                        />
-                    </View>
-                    <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-                        <Text style={[styles.textoBold, {marginTop: 4}]}>{vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-                        <Text style={[styles.textoNormal, {marginTop: 4}]}>- {vehicle.placas}</Text>
-                    </View>
-                </View>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    { !this.state.isLoading && this.state.hasInfo &&
-                        <View style={{ margin: 4, alignSelf: 'center' }} >
-                            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                                <Row data={this.state.tableHead} widthArr={this.state.widthArr} style={styles.head} textStyle={[{fontFamily: 'aller-bd'},styles.text]} />
-                                <Rows data={this.state.tableData} widthArr={this.state.widthArr} textStyle={[{fontFamily: 'aller-lt'}, styles.text]} />
-                            </Table>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                            onPress={() => alert('Ayuda')}
+                        >
+                            <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                                <Ionicons
+                                    name={'ios-help-circle'}
+                                    size={24}
+                                    color='#ff8834'
+                                />
+                                <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                        <View>
+                            <Image
+                                style={{ width: 150, height: 150, alignSelf: 'center' }}
+                                resizeMode="cover"
+                                source={{ uri: vehicle.imagen }}
+                            />
                         </View>
-                    }
+                        <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
+                            <Text style={[styles.textoBold, { marginTop: 4 }]}>{vehicle.nombre}</Text>
+                            <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {vehicle.placas}</Text>
+                        </View>
+                    </View>
+                    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        {!this.state.isLoading && this.state.hasInfo &&
+                            <View style={{ margin: 4, alignSelf: 'center' }} >
+                                <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                                    <Row data={this.state.tableHead} widthArr={this.state.widthArr} style={styles.head} textStyle={[{ fontFamily: 'aller-bd' }, styles.text]} />
+                                    <Rows data={this.state.tableData} widthArr={this.state.widthArr} textStyle={[{ fontFamily: 'aller-lt' }, styles.text]} />
+                                </Table>
+                            </View>
+                        }
+                    </ScrollView>
                 </ScrollView>
-               </ScrollView>
             </SafeAreaView>
         );
     }

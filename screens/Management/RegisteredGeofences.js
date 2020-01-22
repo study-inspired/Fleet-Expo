@@ -12,11 +12,13 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Alert,
-    RefreshControl
+    RefreshControl,
+    TouchableNativeFeedback
 } from 'react-native';
 
-import { Button, Card, Icon } from 'react-native-elements';
+import { Card, Icon } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default class RegisteredGeofences extends React.Component {
@@ -89,36 +91,51 @@ export default class RegisteredGeofences extends React.Component {
         }
     }
 
+    async _eliminarGeocerca(id) {
+        try {
+            const response = await fetch('http://35.203.42.33:3006/webservice/elimimar_geocercas', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_geocercas: id,
+                })
+            })
+            const { datos } = await response.json();
+
+            const { sp_elimimar_geocercas, msg } = datos[0];
+
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+                console.log(msg);
+            } else if (sp_elimimar_geocercas) {
+                Alert.alert('Información', 'Se eliminó la geocerca exitosamente.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+            console.log(error);
+        }
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View elevation={2} style={{ backgroundColor: '#fff', height: 70}}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ 
-                            flex: 1,
-                            position: 'absolute',
-                            right: 0,
-                        }}
-                        buttonStyle={{
-                            flexDirection: 'column',
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                <View elevation={2} style={{ backgroundColor: '#fff', height: 70 }}>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?

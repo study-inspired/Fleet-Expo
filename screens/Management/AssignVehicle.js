@@ -13,10 +13,12 @@ import {
     Image,
     TouchableOpacity,
     Alert,
-    RefreshControl
+    RefreshControl,
+    TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class AssignVehicle extends React.Component {
 
@@ -260,32 +262,19 @@ export default class AssignVehicle extends React.Component {
                 </Overlay>
                 <View elevation={2} style={{ height: 140, backgroundColor: '#fff' }}>
                     <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginTop: 75, textAlign: "center", marginHorizontal: 16 }}>Elige el vehículo que deseas agregar a la geocerca y selecciona el tipo de alerta asignada</Text>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ 
-                            flex: 1,
-                            position: 'absolute',
-                            right: 0
-                        }}
-                        buttonStyle={{
-                            flexDirection: 'column',
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?

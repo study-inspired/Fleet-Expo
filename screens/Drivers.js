@@ -16,10 +16,12 @@ import {
     ActivityIndicator,
     RefreshControl,
     TouchableOpacity,
+    TouchableNativeFeedback,
     TextInput
 } from 'react-native';
 import { Button, colors, Card, Icon, Overlay } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 export default class Drivers extends React.Component {
     static navigationOptions = {
@@ -76,7 +78,7 @@ export default class Drivers extends React.Component {
                             fotografia: fotografia
                         }
                     })
-                    Promise.all(drivers).then( completed => {
+                    Promise.all(drivers).then(completed => {
                         this.setState({
                             hasDrivers: true,
                             drivers: completed,
@@ -295,7 +297,7 @@ export default class Drivers extends React.Component {
                 </Overlay>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
-                    <Button
+                    {/* <Button
                         type='clear'
                         icon={{
                             name: "add-circle",
@@ -318,9 +320,23 @@ export default class Drivers extends React.Component {
                         }}
                         title="Agregar conductor"
                         onPress={() => { this.props.navigation.navigate('AddDriver', { id_propietario: 2 }) }}
-                    />
+                    /> */}
 
-                    <Button
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#cacaca', true)}
+                        onPress={() => this.props.navigation.navigate('AddDriver', { id_propietario: 2 })}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                            <AntDesign
+                                name={'pluscircle'}
+                                size={32}
+                                color={colors.primary}
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 16, color: colors.primary }}>Agregar vehículo</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+
+                    {/* <Button
                         type='clear'
                         icon={{
                             name: "help",
@@ -343,7 +359,20 @@ export default class Drivers extends React.Component {
                             fontSize: 12
                         }}
                         title="Ayuda"
-                    />
+                    /> */}
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?
@@ -411,15 +440,18 @@ export default class Drivers extends React.Component {
                                                         size={18}
                                                     />
 
-                                                    <TouchableOpacity style={{ position: 'absolute', top: -7, right: -3 }}
-                                                        onPress={() => { this.setState({ comenting: true, id_chofer: d.id_chofer }); }}
+                                                    <TouchableNativeFeedback
+                                                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                                                        onPress={() => this.setState({ comenting: true, id_chofer: d.id_chofer })}
                                                     >
-                                                        <Icon
-                                                            type='font-awesome'
-                                                            name='commenting'
-                                                            size={24}
-                                                        />
-                                                    </TouchableOpacity>
+                                                        <View style={{ position: 'absolute', top: -7, right: -3 }} >
+                                                            <Icon
+                                                                type='font-awesome'
+                                                                name='commenting'
+                                                                size={24}
+                                                            />
+                                                        </View>
+                                                    </TouchableNativeFeedback>
                                                 </View>
                                             </Card>
                                         );
@@ -442,8 +474,6 @@ const styles = StyleSheet.create({
     },
     sectionContainer: {
         backgroundColor: '#fff',
-        paddingTop: 24,
-        paddingHorizontal: 24,
-        paddingBottom: 76,
+        paddingVertical: 24,
     }
 });

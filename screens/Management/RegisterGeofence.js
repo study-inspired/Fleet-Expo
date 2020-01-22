@@ -9,10 +9,12 @@ import {
     ScrollView,
     View,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    TouchableNativeFeedback
 } from 'react-native';
 
-import { Button, Card, Icon } from 'react-native-elements'
+import { Card, Icon } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class RegisterGeofence extends React.Component {
 
@@ -29,36 +31,22 @@ export default class RegisterGeofence extends React.Component {
     }
 
     render() {
-
         return (
-
             <View style={{ flex: 1 }}>
                 <View style={styles.subHeader}>
-
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right:0
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
                     <View style={{ marginBottom: 15 }}>
@@ -134,8 +122,5 @@ const styles = StyleSheet.create({
     },
     subHeader: { 
         height: 70, 
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginLeft: 16 
     }
 });

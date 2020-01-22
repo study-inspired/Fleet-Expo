@@ -11,11 +11,13 @@ import {
     Text,
     Image,
     TouchableOpacity,
+    TouchableNativeFeedback,
     ActivityIndicator,
     Alert
 } from 'react-native';
 
-import { Button, Card } from 'react-native-elements'
+import { Card } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class SelectVehicle extends React.Component {
 
@@ -93,32 +95,19 @@ export default class SelectVehicle extends React.Component {
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
                     <Text style={[styles.textoBold, { marginVertical: 25 }]}>{this.state.text}</Text>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ 
-                            flex: 1,
-                            position: 'absolute',
-                            right: 5
-                        }}
-                        buttonStyle={{
-                            flexDirection: 'column',
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 {
                     this.state.isLoading ?

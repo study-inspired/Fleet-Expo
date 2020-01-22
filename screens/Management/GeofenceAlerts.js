@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+import { StyleSheet, View, SafeAreaView, ScrollView, Alert, ActivityIndicator, RefreshControl, Text, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 import NetInfo from '@react-native-community/netinfo';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class GeofenceAlerts extends Component {
 
@@ -58,18 +59,18 @@ export default class GeofenceAlerts extends Component {
                     in_mes: this.state.mes,
                     in_id_geocerca: this.state.id_geocerca
                 });
-                
+
 
                 const { datos, msg } = await response.json();
-                
+
                 if (msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
                     console.error(msg);
                 } else if (datos.length != 0) {
                     console.log(datos);
-                    
+
                     this.setState({
-                        hasAlerts: true, 
+                        hasAlerts: true,
                         data: datos.map(val => {
                             return [
                                 <Text style={{ fontFamily: 'aller-lt', textAlign: 'center' }}>{val.entradas}</Text>,
@@ -80,7 +81,7 @@ export default class GeofenceAlerts extends Component {
                                 </View>,
                                 val.placa,
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: {id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa}, id_geocerca: this.state.id_geocerca, id_propietario: this.state.id_propietario, mes: this.state.mes  })}
+                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: { id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa }, id_geocerca: this.state.id_geocerca, id_propietario: this.state.id_propietario, mes: this.state.mes })}
                                 >
                                     <Icon type='material' name='remove-red-eye' size={24} />
                                 </TouchableOpacity>
@@ -132,29 +133,19 @@ export default class GeofenceAlerts extends Component {
                         <Icon type='font-awesome' name="map-signs" size={52} containerStyle={{ flex: 1, marginTop: 20 }} />
                         <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginTop: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
                     </View>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            right: 0
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <ScrollView
                     refreshControl={this._refreshControl()}

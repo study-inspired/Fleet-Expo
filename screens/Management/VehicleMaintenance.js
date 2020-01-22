@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
 import { Button, Card, Icon, Overlay } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
+import { Ionicons } from '@expo/vector-icons';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
@@ -42,12 +43,12 @@ export default class VehicleMaintenance extends Component {
           p_id_unidad: this.state.vehicle.id
         }),
       });
-      
+
       const data = await result.json();
       if (data.datos.length != 0) {
         const datos = await data.datos[0];
-        
-        let newData = Object.keys(datos).map( key => {
+
+        let newData = Object.keys(datos).map(key => {
           let elemento = [];
           if (key == 'funcionamiento_motor') {
             elemento.push('Funcionamiento del motor');
@@ -173,7 +174,7 @@ export default class VehicleMaintenance extends Component {
       // this.props.navigation.goBack();
       this.setState({
         isLoading: false
-    });
+      });
     }
   }
 
@@ -181,13 +182,13 @@ export default class VehicleMaintenance extends Component {
     const state = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
-       
+
         <Overlay
           overlayStyle={{ width: 350 }}
           isVisible={this.state.registroServicio}
           windowBackgroundColor="rgba(0, 0, 0, .4)"
           height="auto"
-          onBackdropPress = {() => this.setState({ registroServicio: false }) }
+          onBackdropPress={() => this.setState({ registroServicio: false })}
         >
           <View style={{ marginBottom: 15 }}>
             <Card>
@@ -221,33 +222,22 @@ export default class VehicleMaintenance extends Component {
             </Card>
           </View>
         </Overlay>
-        
+
         <View style={{ flex: 1, flexDirection: 'column' }}>
           <View>
-            <Button
-              type='clear'
-              icon={{
-                name: "help",
-                size: 32,
-                color: '#ff8834'
-              }}
-              containerStyle={{ flex: 1 }}
-              buttonStyle={{
-                position: 'absolute',
-                flexDirection: 'column',
-                right: 0,
-              }}
-              iconContainerStyle={{
-                flex: 1,
-              }}
-              titleStyle={{
-                flex: 1,
-                fontFamily: 'aller-lt',
-                fontSize: 12,
-                bottom: 0,
-              }}
-              title="Ayuda"
-            />
+            <TouchableNativeFeedback
+              background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+              onPress={() => alert('Ayuda')}
+            >
+              <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                <Ionicons
+                  name={'ios-help-circle'}
+                  size={24}
+                  color='#ff8834'
+                />
+                <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+              </View>
+            </TouchableNativeFeedback>
             <View>
               <Image
                 style={{ width: 150, height: 150, alignSelf: 'center' }}
@@ -256,9 +246,9 @@ export default class VehicleMaintenance extends Component {
               />
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
-              <Text style={[styles.textoBold, {marginTop: 4}]}>{state.vehicle.nombre}</Text>
+              <Text style={[styles.textoBold, { marginTop: 4 }]}>{state.vehicle.nombre}</Text>
               <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
-              <Text style={[styles.textoNormal, {marginTop: 4}]}>- {state.vehicle.placas}</Text>
+              <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {state.vehicle.placas}</Text>
             </View>
           </View>
 
@@ -277,7 +267,7 @@ export default class VehicleMaintenance extends Component {
             }
           </View>
 
-          <View style={{ position:'absolute', bottom: 0, left: 0, right: 0 }}>
+          <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
             <TouchableNativeFeedback
               onPress={() => this.setState({ registroServicio: true })} >
               <Card
@@ -292,7 +282,7 @@ export default class VehicleMaintenance extends Component {
             </TouchableNativeFeedback>
 
             <TouchableNativeFeedback
-                onPress={() => this.props.navigation.navigate('ServicesConsultation', { vehicle: state.vehicle })} >
+              onPress={() => this.props.navigation.navigate('ServicesConsultation', { vehicle: state.vehicle })} >
               <Card
                 wrapperStyle={styles.touchableOpacity} >
                 <View style={{
@@ -322,7 +312,7 @@ export default class VehicleMaintenance extends Component {
                 </View>
               </Card>
             </TouchableNativeFeedback>
-            <View style={{ height: 15 }}/>
+            <View style={{ height: 15 }} />
           </View>
         </View>
       </SafeAreaView>
