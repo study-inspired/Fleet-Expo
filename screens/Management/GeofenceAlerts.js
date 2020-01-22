@@ -18,7 +18,7 @@ export default class GeofenceAlerts extends Component {
             fontFamily: 'aller-bd',
             fontWeight: '200',
             fontSize: 18,
-            marginLeft: -10
+            marginLeft: -30
         }
     }
 
@@ -54,11 +54,11 @@ export default class GeofenceAlerts extends Component {
                     }),
                 });
 
-                console.log({
-                    in_id_propietario: this.state.id_propietario,
-                    in_mes: this.state.mes,
-                    in_id_geocerca: this.state.id_geocerca
-                });
+                // console.log({
+                //     in_id_propietario: this.state.id_propietario,
+                //     in_mes: this.state.mes,
+                //     in_id_geocerca: this.state.id_geocerca
+                // });
 
 
                 const { datos, msg } = await response.json();
@@ -67,8 +67,7 @@ export default class GeofenceAlerts extends Component {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
                     console.error(msg);
                 } else if (datos.length != 0) {
-                    console.log(datos);
-
+                    // console.log(datos);
                     this.setState({
                         hasAlerts: true,
                         data: datos.map(val => {
@@ -81,7 +80,7 @@ export default class GeofenceAlerts extends Component {
                                 </View>,
                                 val.placa,
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: { id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa }, id_geocerca: this.state.id_geocerca, id_propietario: this.state.id_propietario, mes: this.state.mes })}
+                                    onPress={() => this.props.navigation.navigate('GeofenceAlertsDetails', { vehicle: { id: val.id_unidad, nombre: `${val.marca} - ${val.modelo}`, color: val.color, placas: val.placa }, id_geocerca: this.state.id_geocerca, mes: this.state.mes })} // id_propietario: this.state.id_propietario, 
                                 >
                                     <Icon type='material' name='remove-red-eye' size={24} />
                                 </TouchableOpacity>

@@ -89,22 +89,26 @@ export default class TraceGeofence extends React.Component {
     async _verificarNombre() {
         if (this.state.nombre.length = !0) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas1', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        p_id_usuario: 2
+                        in_propietario: 2
                     })
                 });
 
-                const { datos } = await response.json();
-
-                return datos.length != 0 ? !datos.some(geocerca => geocerca.nombre == this.state.nombre) : true;
+                const { datos, msg } = await response.json();
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(msg);
+                } else {
+                    return datos.length != 0 ? !datos.some(geocerca => geocerca.nombre == this.state.nombre) : true;
+                }
             } catch (error) {
-                Alert.alert('Error', 'Servivio no disponible, intente de nuevo más tarde.');
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
             }
         } else {
@@ -139,6 +143,13 @@ export default class TraceGeofence extends React.Component {
                     })
                 })
 
+                // console.log({
+                //     p_nombre: this.state.nombre,
+                //     p_coordenadas: coordenadas,
+                //     p_id_tipo_geocerca: this.state.id_tipo_geocerca,
+                //     p_id_usuario: 2
+                // });
+
                 const result = await response.json();
                 // console.log(result);
 
@@ -171,6 +182,7 @@ export default class TraceGeofence extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 350 }}
                     isVisible={this.state.setNombre}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                     onBackdropPress={() => this.setState({ setNombre: false, nombre: '' })}
@@ -218,6 +230,7 @@ export default class TraceGeofence extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.registrado}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                 >

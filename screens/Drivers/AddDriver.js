@@ -232,6 +232,7 @@ export default class AddDriver extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.invitacionEnviada}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                 >

@@ -57,7 +57,7 @@ export default class GeofenceVehicles extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_geocercas', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_geocercas', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -67,13 +67,17 @@ export default class GeofenceVehicles extends React.Component {
                         p_id_geocercas: this.state.id_geocerca,
                         p_id_propietario: this.state.id_propietario,
                     }),
-                })
+                });
 
-                const data = await result.json();
-                console.log(data);
+                const { datos, msg } = await response.json();
+                // console.log(data);
 
-                if (data.datos.length != 0) {
-                    let vehicles = data.datos.map(async v => {
+                if(msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    this.props.navigation.goBack();
+                    console.error(msg);
+                } else if (datos.length != 0) {
+                    let vehicles = datos.map(async v => {
                         let unidad = await this._datosUnidad(v.id_unidad);
                         return unidad;
                     });
@@ -85,7 +89,7 @@ export default class GeofenceVehicles extends React.Component {
                         });
                     });
                 } else {
-                    Alert.alert('Información', 'No hay vehiculos asignados a esta geocerca.');
+                    Alert.alert('Información', `No hay vehículos asignados a la geocerca ${this.props.navigation.getParam('nombre_geocerca', '')}.`);
                     this.props.navigation.goBack();
                 }
             } catch (error) {
@@ -150,7 +154,6 @@ export default class GeofenceVehicles extends React.Component {
                 if (msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(msg);
-                    this.props.navigation.goBack();
                 } else if (datos) {
                     this.setState({
                         seleccionado: false,
@@ -269,6 +272,7 @@ export default class GeofenceVehicles extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 350 }}
                     isVisible={this.state.seleccionado}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                     onBackdropPress={() => this.setState({ vehiculo: {}, seleccionado: false, entrada: false, salida: false })}
@@ -335,6 +339,7 @@ export default class GeofenceVehicles extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.asignacionRealizada}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                     onBackdropPress={() => this.setState({ vehiculo: {}, seleccionado: false, asignacionRealizada: false, entrada: false, salida: false })}

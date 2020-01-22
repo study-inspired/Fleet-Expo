@@ -48,7 +48,7 @@ export default class GeofenceActions extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -56,23 +56,38 @@ export default class GeofenceActions extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_usuario: this.state.id_propietario,
-                        // in_id_propietario: this.state.id_propietario,
-                        // in_mes: this.state.mes,
+                        in_mes: this.state.mes,
                     }),
                 })
 
-                const datos = await result.json();
+                const { datos, msg } = await response.json();
 
-                if (datos.msg) {
-                    Alert.alert('Hubo un error', datos.msg);
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     this.setState({ isLoading: false });
+                    console.error(msg);
                 } else {
-                    if (datos.datos.length != 0) {
-                        this.setState({ geofences: datos.datos.map(g => { return { id_geocerca: g.id_geocercas, nombre: g.nombre, entradas: 0, salidas: 0 } }), hasRecords: true, isLoading: false });
+                    if (datos.length != 0) {
+                        this.setState({
+                            geofences: datos.map(g => {
+                                return {
+                                    id_geocerca: g.id_geocercas, 
+                                    nombre: g.nombre, 
+                                    entradas: g.entradas, 
+                                    salidas: g.salidas
+                                }
+                            }),
+                            hasRecords: true,
+                            isLoading: false
+                        });
                         //console.log(this.state.geofences);
                     } else {
-                        Alert.alert('Info', 'No hay geocercas registradas.');
-                        this.setState({ isLoading: false });
+                        Alert.alert('Info', 'No hay alertas registradas en éste mes.');
+                        this.setState({
+                            geofences: [],
+                            hasRecords: false,
+                            isLoading: false
+                        });
                     }
                 }
             } catch (error) {
@@ -111,7 +126,10 @@ export default class GeofenceActions extends React.Component {
                                 mode='dropdown'
                                 selectedValue={this.state.mes}
                                 style={{ height: 40, width: 160 }}
-                                onValueChange={(value) => this.setState({ mes: value })}
+                                onValueChange={async (value) => {
+                                    this.setState({ mes: value });
+                                    await this.componentDidMount()
+                                }}
                             >
                                 <Picker.Item label="Enero" value={1} />
                                 <Picker.Item label="Febrero" value={2} />
@@ -146,7 +164,7 @@ export default class GeofenceActions extends React.Component {
                 <View style={{ flex: 1 }}>
                     {
                         this.state.isLoading ?
-                            <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }}/>
+                            <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />
                             :
                             <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}
                                 refreshControl={this._refreshControl()}

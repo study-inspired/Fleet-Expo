@@ -179,14 +179,15 @@ export default class VehiclesView extends React.Component {
                                 }),
                             })
 
-                            const data = await result.json();
+                            const { datos, msg} = await result.json();
                             // console.log(data);
-
-                            if (data.datos.length != 0) {
+                            if (msg) {
+                                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                                console.error(msg);
+                            } else if (datos.length != 0) {
                                 Alert.alert('Operación exitosa', 'Se ha eliminado el vehículo correctamente.');
                                 this._refreshListView();
                             }
-
                         } catch (error) {
                             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                             console.error(error);

@@ -156,6 +156,7 @@ export default class AssignVehicle extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 350 }}
                     isVisible={this.state.seleccionado}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                 >
@@ -221,6 +222,7 @@ export default class AssignVehicle extends React.Component {
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.asignacionRealizada}
+                    animationType='fade'
                     windowBackgroundColor="rgba(0, 0, 0, .4)"
                     height="auto"
                 >

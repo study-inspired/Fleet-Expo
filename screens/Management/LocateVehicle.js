@@ -8,16 +8,18 @@ import {
     StyleSheet,
     View,
     Text,
-    Picker,
     Alert,
-    TouchableNativeFeedback
+    TouchableNativeFeedback,
+    TouchableOpacity
 } from 'react-native';
 
-import { Button, Icon } from 'react-native-elements'
+import { Icon, Overlay, Divider } from 'react-native-elements'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+
+import Layout from '../../constants/Layout';
 
 export default class LocateVehicle extends React.Component {
 
@@ -41,7 +43,8 @@ export default class LocateVehicle extends React.Component {
             vehicles: [],
             latitude: 0,
             longitude: 0,
-            disponible: false
+            disponible: false,
+            selectVehicle: false
         }
 
         this.socket = this.props.screenProps.socket;
@@ -117,8 +120,76 @@ export default class LocateVehicle extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={styles.subHeader}>
-                    <Text style={[styles.textoBold, { marginVertical: 25, flex: 5 }]}>Seleccione el vehículo a consultar</Text>
+                <Overlay
+                    overlayStyle={{ width: Layout.window.width - 30, height: 'auto' }}
+                    animationType="fade"
+                    isVisible={this.state.selectVehicle}
+                    windowBackgroundColor="rgba(0, 0, 0, .4)"
+                    onBackdropPress={() => this.setState({ selectVehicle: false })}
+                >
+                    <View style={{ marginTop: 5 }}>
+                        <Text style={[styles.textoRegular16, { textAlign: 'center' }]}>Seleccionar vehículo</Text>
+                        <Divider style={{ backgroundColor: 'blue', marginTop: 15, marginBottom: 10 }} />
+                        {
+                            this.state.hasVehicles && this.state.vehicles.map(v => {
+                                return (
+                                    <TouchableNativeFeedback
+                                        key={v.id}
+                                        onPress={() => { 
+                                            this.setState({ vehiculo: v, selectVehicle: false });
+                                            this._localizarUnidad(v.id);
+                                        }}
+                                    >
+                                        <View style={{
+                                            height: 30,
+                                            flexDirection: 'row',
+                                            justifyContent: 'center',
+                                            marginVertical: 4,
+                                            alignItems: 'center',
+                                            backgroundColor: this.state.vehiculo.id == v.id ? '#ff8834' : '#fff',
+                                            borderRadius: 5
+                                        }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={[styles.textoRegular16, { color: this.state.vehiculo.id == v.id ? '#fff' : '#000' }]}>{v.nombre} -</Text>
+                                                <View style={{ width: 16, height: 16, marginTop: 3, marginLeft: 5, marginRight: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                <Text style={[styles.textoRegular16, { color: this.state.vehiculo.id == v.id ? '#fff' : '#000' }]}>- {v.placas}</Text>
+                                            </View>
+                                        </View>
+                                    </TouchableNativeFeedback>
+                                )
+                            })
+                        }
+                    </View>
+                </Overlay>
+                <View elevation={2} style={styles.subHeader}>
+                    <Text style={[styles.textoBold, { textAlign: 'center', marginTop: 30 }]}>Seleccione el vehículo a consultar</Text>
+                    <TouchableOpacity
+                        onPress={() => { this.state.problema ? null : this.setState({ selectVehicle: true }) }}
+                        style={{
+                            height: 40,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginVertical: 3,
+                            alignItems: 'center',
+                            width: 320,
+                            borderColor: '#cacaca',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }}
+                    >
+                        {/* <Text style={[styles.textoRegular16, { flex: 3, marginLeft: 10 }]}>Vehículo</Text> */}
+                        <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+                            <Text style={styles.textoRegular16}>{this.state.vehiculo.nombre} -</Text>
+                            <View style={{ width: 16, height: 16, marginTop: 3, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehiculo.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            <Text style={styles.textoRegular16}>- {this.state.vehiculo.placas}</Text>
+                        </View>
+                        <View style={styles.viewTouchable}>
+                            {/* <Text style={styles.textoRegular16}>vehículo</Text> */}
+                            <View style={styles.touchableRightIcon}>
+                                <FontAwesome name="chevron-down" size={18} color='black' />
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('#ff8834', true)}
                         onPress={() => alert('Ayuda')}
@@ -133,7 +204,7 @@ export default class LocateVehicle extends React.Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
-                <Picker
+                {/* <Picker
                     style={{
                         height: 40,
                         marginVertical: 5,
@@ -155,7 +226,7 @@ export default class LocateVehicle extends React.Component {
                             )
                         })
                     }
-                </Picker>
+                </Picker> */}
                 {
                     (this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible) ?
                         <ActivityIndicator size="large" color="#ff8834" animating={(this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible)} style={{ flex: 1 }} />
@@ -209,13 +280,41 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     subHeader: {
-        height: 70,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginLeft: 16
+        height: 120,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff'
     },
     textoBold: {
         fontFamily: 'aller-bd',
         fontSize: 16
     },
+    viewTouchable: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginHorizontal: 30,
+    },
+    textoRegular16: {
+        fontFamily: 'aller-lt',
+        fontSize: 16
+    },
+    touchableRightIcon: {
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10
+    },
+    viewTouchable: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
+    picker: {
+
+    }
 });

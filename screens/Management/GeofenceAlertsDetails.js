@@ -18,7 +18,7 @@ export default class GeofenceAlertsDetails extends Component {
             fontFamily: 'aller-bd',
             fontWeight: '200',
             fontSize: 18,
-            marginLeft: -10
+            marginLeft: -30
         }
     }
 
@@ -31,7 +31,9 @@ export default class GeofenceAlertsDetails extends Component {
             tableHead: ['Tipo', 'Hora', 'Fecha', 'Ubicación'],
             widthArr: [70, 90, 105, 100],
             vehicle: this.props.navigation.getParam('vehicle', {}),
-            data: []
+            data: [],
+            id_geocerca: this.props.navigation.getParam('id_geocerca', 0),
+            mes: this.props.navigation.getParam('mes', 0)
         }
     }
 
@@ -39,14 +41,16 @@ export default class GeofenceAlertsDetails extends Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_historial', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/entradas_salidas_detalle', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_vehiculo: this.state.vehicle.id
+                        in_id_unidad: this.state.vehicle.id,
+                        in_id_geocerca: this.state.id_geocerca,
+                        in_mes: this.state.mes 
                     }),
                 })
 
@@ -57,24 +61,28 @@ export default class GeofenceAlertsDetails extends Component {
                     console.error(msg);
                 } else if (datos.length != 0) {
                     let alerts = datos.map((d) => {
+                        let tipo = d.descripcion_alerta.charAt(0).toUpperCase()+d.descripcion_alerta.slice(1, d.descripcion_alerta.length);
+                        let hora = d.fecha_hora.slice(11, 19);
+                        let fecha = d.fecha_hora.slice(0, 10).split('-').reverse().join('/');
+                        let coordenadas = d.coordenadas.split(',');
                         return [
-                            d.tipo_alerta,
-                            d.hora,
-                            d.fecha.slice(0, 10).split('-').reverse().join('/'),
+                            tipo,
+                            hora,
+                            fecha,
                             <TouchableOpacity
                                 onPress={() => {
                                     this.props.navigation.navigate('GeofenceAlertsDetailsMap', { 
-                                        tipo: d.tipo_alerta,
-                                        hora: d.hora,
-                                        fecha: d.fecha.slice(0, 10).split('-').reverse().join('/'),
-                                        coordenadas: {latitude: parseFloat(d.coordenadas.split(',')[0]), longitude: parseFloat(d.coordenadas.split(',')[1])} 
+                                        tipo: tipo,
+                                        hora: hora,
+                                        fecha: fecha,
+                                        coordenadas: {latitude: +coordenadas[0], longitude: +coordenadas[1]} 
                                     })
                                 }}
                             >
                                 <Icon
                                     type='material-community'
                                     name='map-marker'
-                                    size={18}
+                                    size={24}
                                     color='#ffbb00'
                                 />
                             </TouchableOpacity>

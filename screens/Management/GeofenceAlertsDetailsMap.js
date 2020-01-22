@@ -17,7 +17,7 @@ export default class GeofenceAlertsDetailsMap extends Component {
             fontFamily: 'aller-bd',
             fontWeight: '200',
             fontSize: 18,
-            marginLeft: -10
+            marginLeft: -30
         }
     }
 
@@ -64,10 +64,10 @@ export default class GeofenceAlertsDetailsMap extends Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ height: 120, flexDirection: 'row', alignContent: 'center' }}>
+                <View elevation={2} style={{ height: 125, flexDirection: 'row', alignContent: 'center', backgroundColor: '#fff' }}>
                     {
                         this.state.concepto == '' ?
-                            <View style={{ flex: 1 }}>
+                            <View style={{ flex: 1, marginTop: 10 }}>
                                 <View style={{ flex: 1, flexDirection: 'column', alignContent: 'center', justifyContent: "center", alignSelf: 'center' }}>
                                     <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 18, marginVertical: 5, textAlign: "center" }}>Acción en Geocerca </Text>
                                     <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginVertical: 5, textAlign: "center" }}>Tipo: {this.state.tipo} </Text>
