@@ -130,7 +130,7 @@ export default class GeofenceVehicles extends React.Component {
             Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
         } else {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/asignar_unidad_geocerca', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/actualizar_entrada_salida_unidad', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -138,25 +138,26 @@ export default class GeofenceVehicles extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_unidad: this.state.vehiculo.id,
-                        p_id_geocercas: this.state.id_geocerca
+                        p_id_geocercas: this.state.id_geocerca,
+                        p_id_propietario: this.state.id_propietario,
+                        p_alertaentrada: this.state.entrada ? 1 : 0,
+                        p_alertasalida: this.state.salida ? 1 : 0
                     }),
                 });
 
-                // console.log(result);
+                const { datos, msg } = await result.json();
 
-                const datos = await result.json();
-                if (datos) {
-                    if (datos.msg) {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        console.error(datos.msg);
-                        this.props.navigation.goBack();
-                    } else if (datos.datos) {
-                        this.setState({
-                            seleccionado: false,
-                            asignacionRealizada: true
-                        });
-                    }
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(msg);
+                    this.props.navigation.goBack();
+                } else if (datos) {
+                    this.setState({
+                        seleccionado: false,
+                        asignacionRealizada: true
+                    });
                 }
+
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -363,7 +364,7 @@ export default class GeofenceVehicles extends React.Component {
                         </View>
                         <View>
                             <View>
-                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Vehículo asignado a geocerca exitosamente!</Text>
+                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Las alertas se actualizarón exitosamente.</Text>
                             </View>
                             <Button
                                 title='Siguiente'
