@@ -162,6 +162,35 @@ export default class Drivers extends React.Component {
         }
     }
 
+    async _vincularVehiculo(id_propietario, id_chofer) {
+        try {
+            const response = await fetch('http://35.203.42.33:3006/webservice/validar_chofer', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_id_chofer: id_chofer
+                }),
+            });
+
+            const { datos, msg } = await response.json();
+
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(msg);
+            } else if (datos.length != 0) {
+                Alert.alert('Información', datos[0].respuesta);
+            } else {
+                this.props.navigation.navigate('LinkVehicle', { id_propietario: id_propietario, id_chofer: id_chofer });
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+        }
+    }
+
     async desvincularVehiculo(unidad, chofer) {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
@@ -177,21 +206,17 @@ export default class Drivers extends React.Component {
                         p_id_propietario: 2,
                         p_id_chofer1: chofer
                     }),
-                })
+                });
 
-                const datos = await result.json();
-                if (datos) {
-                    if (datos.msg) {
-                        Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        console.error(datos.msg);
-                    } else if (datos.datos) {
-                        console.log(datos);
+                const { datos, msg } = await result.json();
 
-                        Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
-                    }
-                    this.props.navigation.goBack();
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(msg);
+                } else if (datos) {
+                    console.log(datos);
+                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
                 }
-
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -297,31 +322,6 @@ export default class Drivers extends React.Component {
                 </Overlay>
                 <StatusBar backgroundColor="#ff8834" barStyle="light-content" />
                 <View elevation={2} style={styles.sectionContainer}>
-                    {/* <Button
-                        type='clear'
-                        icon={{
-                            name: "add-circle",
-                            size: 32,
-                            color: colors.primary
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'center',
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1,
-                            fontSize: 16
-                        }}
-                        title="Agregar conductor"
-                        onPress={() => { this.props.navigation.navigate('AddDriver', { id_propietario: 2 }) }}
-                    /> */}
-
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('#cacaca', true)}
                         onPress={() => this.props.navigation.navigate('AddDriver', { id_propietario: 2 })}
@@ -332,39 +332,14 @@ export default class Drivers extends React.Component {
                                 size={32}
                                 color={colors.primary}
                             />
-                            <Text style={{ fontFamily: 'aller-bd', fontSize: 16, color: colors.primary }}>Agregar vehículo</Text>
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 16, color: colors.primary }}>Agregar conductor</Text>
                         </View>
                     </TouchableNativeFeedback>
-
-                    {/* <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            right: 0,
-                            top: -10
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            fontFamily: 'aller-lt',
-                            flex: 1,
-                            fontSize: 12
-                        }}
-                        title="Ayuda"
-                    /> */}
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('#ff8834', true)}
                         onPress={() => alert('Ayuda')}
                     >
-                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
                             <Ionicons
                                 name={'ios-help-circle'}
                                 size={24}
@@ -429,7 +404,7 @@ export default class Drivers extends React.Component {
                                                                 backgroundColor: '#ff8834'
                                                             }}
                                                             titleStyle={{ fontFamily: 'aller-lt' }}
-                                                            onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this.props.navigation.navigate('LinkVehicle', { id_propietario: d.id_propietario, id_chofer: d.id_chofer }) }}
+                                                            onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this._vincularVehiculo(d.id_propietario, d.id_chofer) }}
                                                         />
                                                     </View>
 

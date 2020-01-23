@@ -66,6 +66,7 @@ export default class AddDriver extends React.Component {
         }
 
         this.socket = this.props.screenProps.socket;
+        this.socket.off('obtenerCondutoresCercanos');
     }
 
     onPress(nombre) {
@@ -74,22 +75,6 @@ export default class AddDriver extends React.Component {
     }
 
     consultarConductoresCercanos(lat, lon) {
-        this.socket.on('obtenerCondutoresCercanos', (res) => {
-            this.setState({
-                conductores: res.map(info => {
-                    return {
-                        latitude: info.latitud,
-                        longitude: info.longitud,
-                        id_conductor: info.datos_chofer.idChofer,
-                        nombre_conductor: info.datos_chofer.nombreChofer,
-                        id_socket: info.id_socket
-                    }
-                }),
-                hasDrivers: true
-            });
-            // console.log(this.state.conductores);
-        });
-
         this.socket.emit('consultarCondutoresCercanos', {
             socket_id: this.socket.id,
             radio: this.state.radio / 1000,
@@ -118,6 +103,26 @@ export default class AddDriver extends React.Component {
                     longitude: location.coords.longitude
                 },
                 isLoading: false
+            });
+
+            this.socket.on('obtenerCondutoresCercanos', (res) => {
+                if (res.length != 0) {
+                    this.setState({
+                        conductores: res.map(info => {
+                            return {
+                                latitude: info.latitud,
+                                longitude: info.longitud,
+                                id_conductor: info.datos_chofer.idChofer,
+                                nombre_conductor: info.datos_chofer.nombreChofer,
+                                id_socket: info.id_socket
+                            }
+                        }),
+                        hasDrivers: true
+                    });
+                    // console.log(this.state.conductores);
+                } else {
+                    Alert.alert('Información', 'No se encontrarón conductores disponibles en el radio establecido.')
+                }
             });
         }
     }
@@ -161,74 +166,9 @@ export default class AddDriver extends React.Component {
         }
     }
 
-    // async invitarConductor() {
-    //     const state = await NetInfo.fetch();
-    //     if (state.isConnected) {
-    //         const result = await fetch('http://34.95.33.177:3006/webservice/interfaz55/invitar_conductor', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify({
-    //                 id_operador: 1
-    //             })
-    //         });
-
-    //         const datos = await result.json();
-
-    //         // console.log(datos.datos[0]);
-
-
-    //         if (datos.datos[0].sp_invitar_conductor == 'operación exitosa!') {
-    //             this.setState({ mensaje: 'La invitación ha sido enviada, espera la respuesta del conductor' });
-    //         } else {
-    //             this.setState({ mensaje: 'Error al enviar la invitación al conductor, intente de nuevo más tarde.' });
-    //         }
-
-    //         this.setState({ verConductor: false, invitacionEnviada: true });
-    //     } else {
-    //         Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
-    //     }
-    // }
-
     render() {
         return (
             <View style={{ flex: 1, flexDirection: 'column', marginHorizontal: 15 }}>
-                {/* <Overlay
-                    overlayStyle={{ width: 300 }}
-                    isVisible={this.state.verConductor}
-                    windowBackgroundColor="rgba(0, 0, 0, .4)"
-                    height="auto"
-                >
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ justifyContent: 'center', flex: 1 }}>
-                            <Image
-                                style={{
-                                    borderRadius: 46,
-                                    width: 92,
-                                    height: 92,
-                                    marginLeft: 5
-                                }}
-                                resizeMode="cover"
-                                source={{ uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg' }}
-                            />
-                        </View>
-                        <View style={{ flex: 2 }}>
-                            <View>
-                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>{this.state.conductor.nombre}</Text>
-                                <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt' }}>32 Años</Text>
-                                <Text style={{ textAlign: 'center', fontFamily: 'aller-lt' }}>{this.state.conductor.num_telefono}</Text>
-                            </View>
-                            <Button
-                                title='Invitar'
-                                buttonStyle={{ marginVertical: 10, marginHorizontal: 13, backgroundColor: '#ff8834' }}
-                                titleStyle={{ fontFamily: 'aller-lt' }}
-                                onPress={() => { this.invitarConductor() }}
-                            />
-                        </View>
-                    </View>
-                </Overlay> */}
                 <Overlay
                     overlayStyle={{ width: 300 }}
                     isVisible={this.state.invitacionEnviada}
@@ -365,7 +305,10 @@ export default class AddDriver extends React.Component {
                     </View>
                     <Slider
                         value={this.state.radio}
-                        onValueChange={radio => this.setState({ radio })}
+                        onValueChange={ radio => {
+                            this.setState({ radio });
+                            // this.consultarConductoresCercanos(this.state.marker.latitude, this.state.marker.longitude);
+                        }}
                         minimumValue={5000}
                         maximumValue={20000}
                     />

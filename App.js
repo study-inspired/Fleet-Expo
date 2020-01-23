@@ -8,7 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import AppNavigator from './navigation/AppNavigator';
 
-import io from 'socket.io-client/dist/socket.io';
+import io from 'socket.io-client';
 
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';

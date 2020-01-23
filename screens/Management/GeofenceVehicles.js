@@ -187,7 +187,7 @@ export default class GeofenceVehicles extends React.Component {
     //Termina el refresh  
 
     _eliminarVehiculo(id) {
-        Alert.alert('Atención', 'Esta seguro que desea eliminar el vehículo de ésta geocerca', [
+        Alert.alert('Atención', '¿Esta seguro que desea eliminar el vehículo de ésta geocerca?', [
             {
                 text: 'Cancelar',
                 onPress: () => console.log('Cancelar eliminar vehículo.'),

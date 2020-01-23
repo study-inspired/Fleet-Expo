@@ -49,26 +49,27 @@ export default class LocateVehicle extends React.Component {
 
         this.socket = this.props.screenProps.socket;
 
-        this.socket.on('consultar_vehiculo', (res) => {
-            // console.log(res);
-            if (res.mensaje) {
-                Alert.alert('Información', 'El vehículo seleccionado no está disponible.');
-                this.setState({
-                    disponible: false
-                });
-            } else {
-                this.setState({
-                    latitud: res.latitud,
-                    longitud: res.longitud,
-                    disponible: true,
-                    isLoading: false
-                });
-            }
-        });
+        this.socket.off('consultar_vehiculo');
     }
 
     async componentDidMount() {
         try {
+            this.socket.on('consultar_vehiculo', (res) => {
+                // console.log(res);
+                if (res.mensaje) {
+                    Alert.alert('Información', 'El vehículo seleccionado no está disponible.');
+                    this.setState({
+                        disponible: false
+                    });
+                } else {
+                    this.setState({
+                        latitud: res.latitud,
+                        longitud: res.longitud,
+                        disponible: true,
+                        isLoading: false
+                    });
+                }
+            });
             const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
                 method: 'POST',
                 headers: {
@@ -204,29 +205,6 @@ export default class LocateVehicle extends React.Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
-                {/* <Picker
-                    style={{
-                        height: 40,
-                        marginVertical: 5,
-                        marginLeft: 7
-                    }}
-                    selectedValue={this.state.vehiculo}
-                    onValueChange={(vehiculo) => {
-                        if (vehiculo != 0) {
-                            this.setState({ vehiculo: vehiculo });
-                            this._localizarUnidad(vehiculo);
-                        }
-                    }}
-                >
-                    <Picker.Item label="Vehículo..." value={0} />
-                    {
-                        this.state.vehicles.map(v => {
-                            return (
-                                <Picker.Item label={`${v.nombre} - ${v.placas}`} value={v.id} key={v.id} />
-                            )
-                        })
-                    }
-                </Picker> */}
                 {
                     (this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible) ?
                         <ActivityIndicator size="large" color="#ff8834" animating={(this.state.isLoading || this.state.vehiculo == 0 || !this.state.disponible)} style={{ flex: 1 }} />

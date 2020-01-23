@@ -46,7 +46,7 @@ export default class InfoDriver extends React.Component {
     }
 
     this.socket = this.props.screenProps.socket;
-    this.resibido = 0;
+    this.socket.off('respuesta_invitacion');
   }
 
   // enviarNotificacionLocal = async (title, body) => {
@@ -60,10 +60,7 @@ export default class InfoDriver extends React.Component {
   async componentDidMount() {
     this.socket.on('respuesta_invitacion', (res) => {
       console.log('Respuesta invitación:', res);
-      if (this.resibido == 0) {
-        this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);
-        this.resibido++;
-      }
+      this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);    
     });
 
     await this.comentarios();
