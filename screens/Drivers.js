@@ -72,12 +72,14 @@ export default class Drivers extends React.Component {
                         return {
                             id_propietario: d.id_propietario,
                             id_chofer: d.id_chofer1,
+                            id_cup: d.id_cup,
                             nombre: nombre,
                             unidad: unidad,
                             fotografia: fotografia
                         }
-                    })
+                    });
                     Promise.all(drivers).then(completed => {
+                        // console.log(completed);
                         this.setState({
                             hasDrivers: true,
                             drivers: completed,
@@ -183,7 +185,7 @@ export default class Drivers extends React.Component {
             } else if (datos.length != 0) {
                 Alert.alert('Información', datos[0].respuesta);
             } else {
-                this.props.navigation.navigate('LinkVehicle', { id_propietario: id_propietario, id_chofer: id_chofer, onBack: this.componentDidMount.bind(this) });
+                this.props.navigation.navigate('LinkVehicle', { id_propietario: id_propietario, id_chofer: id_chofer, onBack: this._refreshListView.bind(this) });
             }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -191,7 +193,7 @@ export default class Drivers extends React.Component {
         }
     }
 
-    async desvincularVehiculo(unidad, chofer) {
+    async _desvincularVehiculo(unidad, chofer) {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
@@ -216,8 +218,7 @@ export default class Drivers extends React.Component {
                 } else if (datos) {
                     console.log(datos);
                     Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.');
-                    this.componentDidMount();
-                }
+                    this._refreshListView();                }
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
@@ -279,6 +280,35 @@ export default class Drivers extends React.Component {
         this.setState({ refreshing: false }) //Stop Rendering Spinner
     }
     //Termina el refresh  
+
+    async _desvincularConductor(id_cup) {
+        // console.log(id_cup);
+        try {
+            const response = await fetch('http://35.203.42.33:3006/webservice/desvincular_chofer', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    p_id_cup: id_cup
+                })
+            });
+
+            const { datos, msg } = await response.json();
+
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
+                console.error(msg);
+            } else if (datos.length != 0) {
+                Alert.alert('Información', 'El conductor se ha desvinculado exitosamente.');
+                this._refreshListView();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
+            console.error(error);
+        }
+    }
 
     render() {
         return (!this.state.loading &&
@@ -410,7 +440,7 @@ export default class Drivers extends React.Component {
                                                                     backgroundColor: '#ff8834'
                                                                 }}
                                                                 titleStyle={{ fontFamily: 'aller-lt', fontSize: 12 }}
-                                                                onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this._vincularVehiculo(d.id_propietario, d.id_chofer) }}
+                                                                onPress={() => { (d.unidad != null) ? this._desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this._vincularVehiculo(d.id_propietario, d.id_chofer) }}
                                                             />
                                                             <Button
                                                                 title='Desvincular chofer'
@@ -420,7 +450,7 @@ export default class Drivers extends React.Component {
                                                                     backgroundColor: '#ff8834'
                                                                 }}
                                                                 titleStyle={{ fontFamily: 'aller-lt', fontSize: 12 }}
-                                                                onPress={() => { console.log('Desvincular conductor') }}
+                                                                onPress={() => { this._desvincularConductor(d.id_cup) }}
                                                             />
                                                         </View>
                                                     </View>
