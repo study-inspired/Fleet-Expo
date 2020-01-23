@@ -2,16 +2,16 @@ import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { Platform } from 'react-native';
 
-import Vehicles from '../screens/Vehicles'
-import AddVehicle from '../screens/Vehicles/AddVehicle'
-import AddPolicy from '../screens/Vehicles/AddPolicy'
-import AddBill from '../screens/Vehicles/AddBill'
-import AddHologram from '../screens/Vehicles/AddHologram'
-import AddCard from '../screens/Vehicles/AddCard'
-import AddTAG from '../screens/Vehicles/AddTAG'
-import AddPhoto from '../screens/Vehicles/AddPhoto'
-import DataSent from '../screens/Vehicles/DataSent'
-import AttachedPicture from '../screens/Vehicles/AttachedPicture'
+import Vehicles from '../screens/Vehicles';
+import AddVehicle from '../screens/Vehicles/AddVehicle';
+import AddPolicy from '../screens/Vehicles/AddPolicy';
+import AddBill from '../screens/Vehicles/AddBill';
+import AddHologram from '../screens/Vehicles/AddHologram';
+import AddCard from '../screens/Vehicles/AddCard';
+import AddTAG from '../screens/Vehicles/AddTAG';
+import AddPhoto from '../screens/Vehicles/AddPhoto';
+import DataSent from '../screens/Vehicles/DataSent';
+import AttachedPicture from '../screens/Vehicles/AttachedPicture';
 
 import Colors from "../constants/Colors";
 import { FontAwesome } from '@expo/vector-icons';

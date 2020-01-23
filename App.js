@@ -2,7 +2,7 @@ import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Alert, YellowBox } from 'react-native';
+import { StatusBar, StyleSheet, View, Alert, YellowBox } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -56,6 +56,7 @@ export default function App(props) {
     );
   } else {
     // enviarNotificacionLocal('Listo', 'Se inicio la aplicación');
+    enviarNotificacionLocalAprobar('Listo', 'Se inicio la aplicación');
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#ff8834" barStyle="dark-content-content" />
@@ -106,6 +107,36 @@ const enviarNotificacionLocal = async (title, body) => {
   });
   // console.log(notificationId); // can be saved in AsyncStorage or send to server
 };
+
+const enviarNotificacionLocalAprobar = async (title, body) => {
+  await Notifications.presentLocalNotificationAsync({
+    title: title,
+    body: body,
+    data: {
+      id_propietario: 2,
+      id_chofer: 3,
+      respuesta: true
+    },
+    android: {
+      sound: true,
+    },
+    ios: {
+      sound: true,
+    },
+    categoryId: 'aprove',
+  });
+  // console.log(notificacion); // can be saved in AsyncStorage or send to server
+};
+
+Notifications.addListener( notification => {
+  // console.log(notification);
+  const { actionId } = notification;
+  if (actionId != null) {
+    if (actionId == 'aprove') {
+      console.log('Notificación aprobada.')
+    }
+  }
+});
 
 async function loadResourcesAsync() {
   await Promise.all([

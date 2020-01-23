@@ -373,9 +373,11 @@ export default class Drivers extends React.Component {
                                                         <Image
                                                             style={{
                                                                 borderRadius: 38,
-                                                                width: 76,
-                                                                height: 76,
-                                                                marginLeft: 5
+                                                                width: 65,
+                                                                height: 65,
+                                                                marginLeft: -8,
+                                                                borderColor: '#cacaca',
+                                                                borderWidth: 1,
                                                             }}
                                                             resizeMode="cover"
                                                             source={{ uri: d.fotografia }}
@@ -390,23 +392,37 @@ export default class Drivers extends React.Component {
                                                         }}>
                                                         <Text style={{ fontFamily: 'aller-bd', fontSize: 16, marginBottom: 5 }}>{d.nombre}</Text>
                                                         {
-                                                            (d.unidad != null) &&
+                                                            (d.unidad != null) ?
                                                             <View style={{ flexDirection: 'row' }}>
                                                                 <Text style={{ fontFamily: 'aller-lt', fontSize: 12 }}>{`${d.unidad.marca} ${d.unidad.modelo}`}</Text>
                                                                 <View style={{ width: 16, height: 16, marginHorizontal: 5, backgroundColor: d.unidad.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                                 <Text style={{ fontSize: 12, marginBottom: 10, fontFamily: 'aller-lt' }}>{d.unidad.placas}</Text>
                                                             </View>
+                                                            :
+                                                            <View style={{ marginVertical: 10 }}></View>
                                                         }
-                                                        <Button
-                                                            title={(d.unidad != null) ? 'Desvincular auto' : 'Vincular auto'}
-                                                            buttonStyle={{
-                                                                width: 140,
-                                                                marginLeft: 5,
-                                                                backgroundColor: '#ff8834'
-                                                            }}
-                                                            titleStyle={{ fontFamily: 'aller-lt' }}
-                                                            onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this._vincularVehiculo(d.id_propietario, d.id_chofer) }}
-                                                        />
+                                                        <View style={{ flexDirection: 'row' }} >
+                                                            <Button
+                                                                title={(d.unidad != null) ? 'Desvincular auto' : 'Vincular auto'}
+                                                                buttonStyle={{
+                                                                    width: 120,
+                                                                    marginLeft: 5,
+                                                                    backgroundColor: '#ff8834'
+                                                                }}
+                                                                titleStyle={{ fontFamily: 'aller-lt', fontSize: 12 }}
+                                                                onPress={() => { (d.unidad != null) ? this.desvincularVehiculo(d.unidad.id_unidad, d.id_chofer) : this._vincularVehiculo(d.id_propietario, d.id_chofer) }}
+                                                            />
+                                                            <Button
+                                                                title='Desvincular chofer'
+                                                                buttonStyle={{
+                                                                    width: 120,
+                                                                    marginLeft: 5,
+                                                                    backgroundColor: '#ff8834'
+                                                                }}
+                                                                titleStyle={{ fontFamily: 'aller-lt', fontSize: 12 }}
+                                                                onPress={() => { console.log('Desvincular conductor') }}
+                                                            />
+                                                        </View>
                                                     </View>
 
                                                     <Icon
