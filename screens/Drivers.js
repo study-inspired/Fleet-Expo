@@ -15,7 +15,6 @@ import {
     Alert,
     ActivityIndicator,
     RefreshControl,
-    TouchableOpacity,
     TouchableNativeFeedback,
     TextInput
 } from 'react-native';
@@ -43,7 +42,7 @@ export default class Drivers extends React.Component {
         refreshing: false,
         isLoading: true,
         hasDrivers: false,
-        drivers: {},
+        drivers: [],
         comenting: false,
         comentario: '',
         id_chofer: 0
@@ -86,7 +85,7 @@ export default class Drivers extends React.Component {
                         });
                     });
                 } else {
-                    Alert.alert('Info', 'No hay conductores!');
+                    Alert.alert('Información', 'No se encontrarón conductores.');
                     this.setState({
                         isLoading: false
                     });
@@ -96,6 +95,7 @@ export default class Drivers extends React.Component {
                 Alert.alert('Error', 'Hubo un error.')
                 console.error(error);
                 this.setState({
+                    drivers: [],
                     isLoading: false
                 });
             }
@@ -183,7 +183,7 @@ export default class Drivers extends React.Component {
             } else if (datos.length != 0) {
                 Alert.alert('Información', datos[0].respuesta);
             } else {
-                this.props.navigation.navigate('LinkVehicle', { id_propietario: id_propietario, id_chofer: id_chofer });
+                this.props.navigation.navigate('LinkVehicle', { id_propietario: id_propietario, id_chofer: id_chofer, onBack: this.componentDidMount.bind(this) });
             }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -215,7 +215,8 @@ export default class Drivers extends React.Component {
                     console.error(msg);
                 } else if (datos) {
                     console.log(datos);
-                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.')
+                    Alert.alert('Operación exitosa!', 'Se desvinculó el vehículo correctamente.');
+                    this.componentDidMount();
                 }
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');

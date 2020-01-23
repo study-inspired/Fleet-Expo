@@ -103,17 +103,18 @@ export default class LinkVehicle extends React.Component {
                         p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
                         p_id_chofer1: this.props.navigation.getParam('id_chofer', 0)
                     }),
-                })
+                });
 
-                const datos = await result.json();
-                if (datos) {
-                    if (datos.msg) {
-                        Alert.alert('Hubo un error', datos.msg);
-                    } else if (datos.datos) {
-                        Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
-                    }
-                    this.props.navigation.goBack();
+                const { datos, msg } = await result.json();
+
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(msg);
+                } else if (datos) {
+                    Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
+                    this.props.navigation.state.params.onBack();
                 }
+                    this.props.navigation.goBack();
             } catch (error) {
                 Alert.alert('Error', 'Hubo un error.')
                 console.error(error);
