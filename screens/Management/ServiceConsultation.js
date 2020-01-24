@@ -44,7 +44,7 @@ export default class ServiceConsultation extends Component {
 
             const data = await result.json();
             if (data.datos.length != 0) {
-                console.log(data.datos);
+                // console.log(data.datos);
                 let obj = data.datos[0];
                 if (this.state.tipo == 'Neumatico') {
                     obj['Fecha servicio'] = obj.fecha_serv.slice(0, 10).split('-').reverse().join('/');

@@ -59,13 +59,13 @@ export default class RegisterMaintenanceN extends Component {
                     })
                 });
 
-                const data = await result.json();
+                const { msg } = await result.json();
 
-                if (data.msg) {
+                if (msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(data.msg);
+                    console.error(msg);
                 } else {
-                    console.log(data);
+                    // console.log(data);
                     this.setState({ registro: true });
                 }
 
@@ -76,7 +76,6 @@ export default class RegisterMaintenanceN extends Component {
                 this.props.navigation.goBack();
             }
         }
-
     }
 
     setDate(date) {
@@ -85,17 +84,7 @@ export default class RegisterMaintenanceN extends Component {
                 fecha: date.toLocaleDateString(),
                 showDatePicker: false
             })
-        } /*else if (this.state.opcion == 'prog') {
-            this.setState({
-                fecha_prog: date.toLocaleDateString(),
-                showDatePicker: false
-            })
-        } else {
-            this.setState({
-                fecha_garantia: date.toLocaleDateString(),
-                showDatePicker: false
-            })
-        }*/
+        }
     }
 
     render() {

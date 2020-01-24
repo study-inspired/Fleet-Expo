@@ -20,7 +20,7 @@ import {
     TouchableNativeFeedback
 } from 'react-native';
 
-import { Button, Card } from 'react-native-elements'
+import { Card } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
 import { Ionicons } from '@expo/vector-icons';
 
@@ -44,15 +44,14 @@ export default class LinkVehicle extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_propietario1', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carlos@gmail.com',
-                        p_pass: '123456',
+                        p_id_propietario: 2
                     }),
                 })
 

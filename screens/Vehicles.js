@@ -17,7 +17,7 @@ import {
     RefreshControl
 } from 'react-native';
 
-import { Button, colors, Card } from 'react-native-elements'
+import { colors, Card } from 'react-native-elements'
 import { FontAwesome, MaterialIcons, AntDesign, Ionicons } from "@expo/vector-icons";
 import NetInfo from '@react-native-community/netinfo'
 
@@ -37,11 +37,14 @@ export default class VehiclesView extends React.Component {
         },
     }
 
-    state = {
-        refreshing: false,
-        isLoading: true,
-        hasVehicles: false,
-        vehicles: {}
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false,
+            isLoading: true,
+            hasVehicles: false,
+            vehicles: {}
+        }
     }
 
     async _getEstadoDocumentosVehiculoGeneral(niv_unidad) {
@@ -82,6 +85,7 @@ export default class VehiclesView extends React.Component {
                     body: JSON.stringify({
                         p_correo: 'carlos@gmail.com',
                         p_pass: '123456',
+                        p_id_propietario: 2,
                     }),
                 })
 
@@ -117,7 +121,6 @@ export default class VehiclesView extends React.Component {
                         isLoading: false
                     });
                 }
-
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 this.setState({
@@ -195,7 +198,7 @@ export default class VehiclesView extends React.Component {
                     }
                 }
             },
-        ], { cancelable: false })
+        ], { cancelable: false });
     }
 
     render() {
@@ -269,7 +272,7 @@ export default class VehiclesView extends React.Component {
                                                         }}>
                                                         <View style={{ flexDirection: 'row' }}>
                                                             <Text style={styles.texto700}>{v.nombre}</Text>
-                                                            <View style={{ width: 16, height: 16, marginTop: 4, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                            <View style={{ width: 16, height: 16, marginTop: 3, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
                                                         </View>
 
                                                         <Text style={styles.texto600}>{v.placas}</Text>

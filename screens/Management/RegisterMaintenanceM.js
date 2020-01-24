@@ -27,8 +27,6 @@ export default class RegisterMaintenanceM extends Component {
         registro: false,
         showDatePicker: false,
         fecha_servicio: 'Seleccionar',
-        fecha_prog: 'Seleccionar',
-        fecha_garantia: 'Seleccionar',
         opcion: undefined,
         descripcion: '',
         costo: '',
@@ -40,8 +38,6 @@ export default class RegisterMaintenanceM extends Component {
     async registroMecanico() {
         if (
             this.state.fecha_servicio == 'Seleccionar' ||
-            this.state.fecha_prog == 'Seleccionar' ||
-            this.state.fecha_servicio == 'Seleccionar' ||
             this.state.descripcion == '' ||
             this.state.costo == '' ||
             this.state.kilometraje == '' ||
@@ -50,7 +46,7 @@ export default class RegisterMaintenanceM extends Component {
             Alert.alert('Info', 'Llena todos los campos.');
         } else {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/registrar_servicio_mecanico', {
+                const response = await fetch('http://35.203.42.33:3006/webservice/interfaz126/registrar_servicio_mecanico', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -58,22 +54,22 @@ export default class RegisterMaintenanceM extends Component {
                     },
                     body: JSON.stringify({
                         fecha_servicio: this.state.fecha_servicio.replace(/[/]/g, '-'),
-                        fecha_prog: this.state.fecha_prog.replace(/[/]/g, '-'),
                         descripcion: this.state.descripcion,
                         costo: this.state.costo,
                         kilometraje: this.state.kilometraje,
                         mecanico: this.state.mecanico,
-                        fecha_garantia: this.state.fecha_garantia.replace(/[/]/g, '-'),
                         estatus: 0,
                         id_unidad: this.state.vehicle.id,
                     })
                 });
 
-                const data = await result.json();
+                // console.log(result);                
 
-                if (data.msg) {
+                const { msg } = await response.json();
+
+                if (msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(data.msg);
+                    console.error(msg);
                 } else {
                     this.setState({ registro: true });
                 }
@@ -90,16 +86,6 @@ export default class RegisterMaintenanceM extends Component {
         if (this.state.opcion == 'servicio') {
             this.setState({
                 fecha_servicio: date.toLocaleDateString(),
-                showDatePicker: false
-            })
-        } else if (this.state.opcion == 'prog') {
-            this.setState({
-                fecha_prog: date.toLocaleDateString(),
-                showDatePicker: false
-            })
-        } else {
-            this.setState({
-                fecha_garantia: date.toLocaleDateString(),
                 showDatePicker: false
             })
         }
@@ -182,7 +168,7 @@ export default class RegisterMaintenanceM extends Component {
                             />
                         </View>
 
-                        <View style={styles.views}>
+                        {/* <View style={styles.views}>
                             <Text style={styles.texto}>Fecha programada</Text>
                             <Button title={this.state.fecha_prog}
                                 titleStyle={{ fontFamily: 'aller-lt', paddingRight: 5, marginBottom: 1 }}
@@ -195,7 +181,7 @@ export default class RegisterMaintenanceM extends Component {
                                 }}
                                 onPress={() => this.setState({ opcion: 'prog', showDatePicker: true })}
                             />
-                        </View>
+                        </View> */}
 
                         <View style={styles.views}>
                             <Text style={styles.texto}>Descripción</Text>
@@ -231,7 +217,7 @@ export default class RegisterMaintenanceM extends Component {
                             />
                         </View>
 
-                        <View style={styles.views}>
+                        {/* <View style={styles.views}>
                             <Text style={styles.texto}>Fecha garantía</Text>
                             <Button title={this.state.fecha_garantia}
                                 titleStyle={{ fontFamily: 'aller-lt', paddingRight: 5, marginBottom: 1 }}
@@ -244,7 +230,7 @@ export default class RegisterMaintenanceM extends Component {
                                 }}
                                 onPress={() => this.setState({ opcion: 'garantia', showDatePicker: true })}
                             />
-                        </View>
+                        </View> */}
 
                         <Button
                             title='Registrar'

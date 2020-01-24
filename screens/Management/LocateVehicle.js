@@ -57,14 +57,14 @@ export default class LocateVehicle extends React.Component {
             this.socket.on('consultar_vehiculo', (res) => {
                 // console.log(res);
                 if (res.mensaje) {
-                    Alert.alert('Información', 'El vehículo seleccionado no está disponible.');
+                    Alert.alert('Información', 'No ha sido posible establecer conexión con el vehículo para rastrearlo.');
                     this.setState({
                         disponible: false
                     });
                 } else {
                     this.setState({
-                        latitud: res.latitud,
-                        longitud: res.longitud,
+                        latitude: res.latitud,
+                        longitude: res.longitud,
                         disponible: true,
                         isLoading: false
                     });

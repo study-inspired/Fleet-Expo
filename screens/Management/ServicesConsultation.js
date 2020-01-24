@@ -43,6 +43,8 @@ export default class ServicesConsultation extends Component {
 
             const data = await result.json();
             if (data.datos.length != 0) {
+                console.log(data.datos);
+                
                 this.setState({
                     hasInfo: true,
                     tableData: data.datos.map(servicio => {

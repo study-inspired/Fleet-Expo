@@ -199,7 +199,7 @@ export default class InfoDriver extends React.Component {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
         console.error(data.msg);
       } else {
-        Alert.alert('Información', 'La invitación fué enviada con exito.');
+        Alert.alert('Información', 'La invitación ha sido enviada, espera la respuesta del conductor.');
       }
     } catch (error) {
       Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');

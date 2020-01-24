@@ -197,7 +197,7 @@ export default class AddVehicle extends React.Component {
                 this.state.marca != '' &&
                 this.state.kilometraje != '' &&
                 this.state.placa != '' &&
-                this.state.serie != '' &&
+                (this.state.serie != '' && this.state.tipo_vehiculo != 4) &&
                 this.state.tipo_vehiculo != '' &&
                 this.state.poliza.cargado &&
                 this.state.factura.cargado &&
@@ -256,29 +256,17 @@ export default class AddVehicle extends React.Component {
     }
 
     verificarNIV(nextScreen) {
-        if (this.state.serie != '' && this.state.serie.length == 17) {
+        if ((this.state.tipo_vehiculo != 4 && this.state.serie != '') && this.state.serie.length == 17) {
             this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this), id_usuario: 2, niv: this.state.serie })
         } else {
             Alert.alert('Atención', 'Debes llenar los datos anteriores antes de seleccionar los documentos o fotografías.');
         }
     }
 
-    verificarEscrituraNiv() {
-        if (this.state.serie == '') {
-            Alert.alert('Atención', 'El NIV o serie no puede estar en blanco.');
-            return false;
-        } else if (this.state.serie.length != 17) {
-            Alert.alert('Atención', 'El NIV o serie introducido no es correcto.');
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     //Verificar si existe el niv
 
     async _verificarDatos(nextScreen) {
-        let campos = `${this.state.modelo == '' ? 'modelo, ' : ''}${this.state.marca == '' ? 'marca, ' : ''}${this.state.kilometraje == '' ? 'kilometraje, ' : ''}${this.state.placa == '' ? 'placas, ' : ''}${this.state.serie == '' ? 'NIV o Serie, ' : ''}${this.state.tipo_vehiculo == '' ? 'tipo de vehículo, ' : ''}`;
+        let campos = `${this.state.modelo == '' ? 'modelo, ' : ''}${this.state.marca == '' ? 'marca, ' : ''}${this.state.kilometraje == '' ? 'kilometraje, ' : ''}${this.state.placa == '' ? 'placas, ' : ''}${this.state.tipo_vehiculo != 4 && this.state.serie == '' ? 'NIV o Serie, ' : ''}${this.state.tipo_vehiculo == '' ? 'tipo de vehículo, ' : ''}`;
         let faltantes = campos.match(/,/g);
         if (faltantes != null) {
             let el_los = `${faltantes.length != 1 ? 'los campos' : 'el campo'}`;
@@ -493,37 +481,44 @@ export default class AddVehicle extends React.Component {
                                         editable={!this.state.problema}
                                         onChangeText={text => this.setState({ modelo: text })}
                                     />
-                                    <Input
-                                        title="Kilometraje"
-                                        placeholder="Kilometraje"
-                                        inputStyle={styles.textoRegular16}
-                                        keyboardType='numeric'
-                                        value={this.state.kilometraje}
-                                        editable={!this.state.problema}
-                                        onChangeText={text => this.setState({ kilometraje: text })}
-                                    />
+                                    {
+                                        this.state.tipo_vehiculo != 4 &&
+                                        <Input
+                                            title="Kilometraje"
+                                            placeholder="Kilometraje"
+                                            inputStyle={styles.textoRegular16}
+                                            keyboardType='numeric'
+                                            value={this.state.kilometraje}
+                                            editable={!this.state.problema}
+                                            onChangeText={text => this.setState({ kilometraje: text })}
+                                        />
+                                    }
                                 </View>
-                                <View style={{ flex: 1, flexDirection: 'column' }}>
-                                    <Input
-                                        title="NIV o Serie"
-                                        placeholder="NIV o Serie"
-                                        inputStyle={styles.textoRegular16}
-                                        value={this.state.serie}
-                                        autoCapitalize='characters'
-                                        maxLength={17}
-                                        editable={!this.state.problema}
-                                        onChangeText={text => this.setState({ serie: text.toUpperCase() })}
-                                        onEndEditing={() => this._verificarNIV()}
-                                    />
-                                    <Input
-                                        title="Placa"
-                                        placeholder="Placa"
-                                        inputStyle={styles.textoRegular16}
-                                        value={this.state.placa}
-                                        editable={!this.state.problema}
-                                        onChangeText={text => this.setState({ placa: text })}
-                                    />
-                                </View>
+                                {
+                                    this.state.tipo_vehiculo != 4 &&
+                                    <View style={{ flex: 1, flexDirection: 'column' }}>
+                                        <Input
+                                            title='NIV o Serie'
+                                            placeholder='NIV o Serie'
+                                            inputStyle={styles.textoRegular16}
+                                            value={this.state.serie}
+                                            autoCapitalize='characters'
+                                            maxLength={17}
+                                            editable={!this.state.problema}
+                                            onChangeText={text => this.setState({ serie: text.toUpperCase() })}
+                                            onEndEditing={() => this._verificarNIV()}
+                                        />
+                                        <Input
+                                            title="Placa"
+                                            placeholder="Placa"
+                                            inputStyle={styles.textoRegular16}
+                                            value={this.state.placa}
+                                            editable={!this.state.problema}
+                                            onChangeText={text => this.setState({ placa: text })}
+                                        />
+
+                                    </View>
+                                }
                             </View>
                             <View style={{ marginHorizontal: 10 }}>
                                 <TouchableOpacity
