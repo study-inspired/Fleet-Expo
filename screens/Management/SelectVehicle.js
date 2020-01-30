@@ -18,6 +18,7 @@ import {
 
 import { Card } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class SelectVehicle extends React.Component {
 
@@ -48,7 +49,7 @@ export default class SelectVehicle extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz60/obtener_unidades_propietario`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -70,7 +71,7 @@ export default class SelectVehicle extends React.Component {
                         nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
                         color: v.color.includes('#') ? v.color : '#a8a8a8',
-                        imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33')
+                        imagen: v.foto.replace('/var/www/html', Globals.server)
                     }
                 })
                 this.setState({

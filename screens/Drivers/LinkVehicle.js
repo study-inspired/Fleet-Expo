@@ -23,6 +23,7 @@ import {
 import { Card } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class LinkVehicle extends React.Component {
     static navigationOptions = {
@@ -44,7 +45,7 @@ export default class LinkVehicle extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_propietario1', {
+                const result = await fetch(`${Globals.server}:3006/webservice/obtener_unidades_propietario1`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -56,7 +57,7 @@ export default class LinkVehicle extends React.Component {
                 })
 
                 const data = await result.json();
-                console.log(data);
+                // console.log(data);
 
                 if (data.datos.length != 0) {
                     let vehicles = data.datos.map((v) => {
@@ -65,7 +66,7 @@ export default class LinkVehicle extends React.Component {
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
-                            imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33')
+                            imagen: v.foto.replace('/var/www/html', Globals.server)
                         }
                     })
                     this.setState({
@@ -91,7 +92,7 @@ export default class LinkVehicle extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz57/vincular_vehiculo', {
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz57/vincular_vehiculo`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

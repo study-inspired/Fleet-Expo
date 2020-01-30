@@ -17,6 +17,7 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import NetInfo from '@react-native-community/netinfo'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Globals from '../../constants/Globals';
 
 export default class AddPhoto extends React.Component {
     static navigationOptions = {
@@ -219,7 +220,7 @@ export default class AddPhoto extends React.Component {
                                 <Image
                                     resizeMode='cover'
                                     style={styles.image}
-                                    source={{ uri: `http://35.203.42.33${this.state.izquierda.replace('/var/www/html', '')}` }}
+                                    source={{ uri: `${Globals.server}${this.state.izquierda.replace('/var/www/html', '')}` }}
                                 /> :
                                 <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Lado izquierdo</Text>
                             }
@@ -235,7 +236,7 @@ export default class AddPhoto extends React.Component {
                                     <Image
                                         resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: `http://35.203.42.33${this.state.trasera.replace('/var/www/html', '')}` }}
+                                        source={{ uri: `${Globals.server}${this.state.trasera.replace('/var/www/html', '')}` }}
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Trasera</Text>
                                 }
@@ -250,7 +251,7 @@ export default class AddPhoto extends React.Component {
                                     <Image
                                         resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: `http://35.203.42.33${this.state.perfil.replace('/var/www/html', '')}` }}
+                                        source={{ uri: `${Globals.server}${this.state.perfil.replace('/var/www/html', '')}` }}
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Perfil</Text>
                                 }
@@ -265,7 +266,7 @@ export default class AddPhoto extends React.Component {
                                     <Image
                                         resizeMode='cover'
                                         style={styles.image}
-                                        source={{ uri: `http://35.203.42.33${this.state.delantera.replace('/var/www/html', '')}` }} //Url de la imagen desde el servidor
+                                        source={{ uri: `${Globals.server}${this.state.delantera.replace('/var/www/html', '')}` }} //Url de la imagen desde el servidor
                                     /> :
                                     <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>Delantera</Text>
                                 }
@@ -281,7 +282,7 @@ export default class AddPhoto extends React.Component {
                                 <Image
                                     resizeMode='cover'
                                     style={styles.image}
-                                    source={{ uri: `http://35.203.42.33${this.state.derecha.replace('/var/www/html', '')}` }}
+                                    source={{ uri: `${Globals.server}${this.state.derecha.replace('/var/www/html', '')}` }}
                                 /> :
                                 <Text style={[styles.textoNormal, { textAlign: 'center', textAlignVertical: 'center' }]}>{'Lado\nderecho'}</Text>
                             }

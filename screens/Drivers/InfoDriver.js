@@ -21,6 +21,7 @@ import {
 import { Button, Icon, Divider, Badge } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class InfoDriver extends React.Component {
 
@@ -75,7 +76,7 @@ export default class InfoDriver extends React.Component {
     const state = await NetInfo.fetch();
     if (state.isConnected) {
       try {
-        const result = await fetch(`http://35.203.42.33:3006/webservice/datos_conductor`, {
+        const result = await fetch(`${Globals.server}:3006/webservice/datos_conductor`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -105,7 +106,7 @@ export default class InfoDriver extends React.Component {
 
   async comentarios() {
     try {
-      const result = await fetch(`http://35.203.42.33:3006/webservice/comentarios_socio_a_conductor`, {
+      const result = await fetch(`${Globals.server}:3006/webservice/comentarios_socio_a_conductor`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -143,7 +144,7 @@ export default class InfoDriver extends React.Component {
 
   async logros() {
     try {
-      const result = await fetch(`http://35.203.42.33:3006/webservice/logros_conductor`, {
+      const result = await fetch(`${Globals.server}:3006/webservice/logros_conductor`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

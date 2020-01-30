@@ -13,13 +13,14 @@ import io from 'socket.io-client';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { Notifications } from 'expo';
+import Globals from './constants/Globals';
 
 console.ignoredYellowBox = ['Remote debugger'];
 YellowBox.ignoreWarnings([
   'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
 
-const socket = io.connect('http://35.203.42.33:3001/');
+const socket = io.connect(`${Globals.server}:3001/`);
 
 socket.on('connect', () => {
   console.log('Conectado: ', socket.id);

@@ -21,6 +21,7 @@ import {
 import { Button, colors, Card, Icon, Overlay } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import Globals from '../constants/Globals';
 
 export default class Drivers extends React.Component {
     static navigationOptions = {
@@ -51,8 +52,9 @@ export default class Drivers extends React.Component {
     async componentDidMount() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
-            try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario', {
+            try { 
+                console.log(`${Globals.server}:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario`);
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -64,6 +66,8 @@ export default class Drivers extends React.Component {
                 })
 
                 const data = await result.json();
+
+                // console.log(data);
 
                 if (data.datos.length != 0) {
                     let drivers = data.datos.map(async (d) => {
@@ -108,7 +112,9 @@ export default class Drivers extends React.Component {
 
     async _datosUsuario(id_usuario_chofer) {
         try {
-            const result = await fetch(`http://35.203.42.33:3006/webservice/datos_conductor`, {
+            console.log(`${Globals.server}:3006/webservice/datos_conductor`);
+            
+            const result = await fetch(`${Globals.server}:3006/webservice/datos_conductor`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -118,18 +124,20 @@ export default class Drivers extends React.Component {
                     id_usuario: id_usuario_chofer
                 }),
             })
+            console.log(result)
 
             const datos = await result.json();
 
-            if (datos.datos.length > 0) {
-                return {
-                    nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
-                    fotografia: datos.datos[0].fotografia
-                }
-            } else {
-                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                this.props.navigation.goBack();
-            }
+
+            // if (datos.datos.length > 0) {
+            //     return {
+            //         nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
+            //         fotografia: datos.datos[0].fotografia
+            //     }
+            // } else {
+            //     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            //     this.props.navigation.goBack();
+            // }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
@@ -138,7 +146,7 @@ export default class Drivers extends React.Component {
 
     async _datosUnidad(id_unidad) {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/datos_unidad', {
+            const result = await fetch(`${Globals.server}:3006/webservice/datos_unidad`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -166,7 +174,7 @@ export default class Drivers extends React.Component {
 
     async _vincularVehiculo(id_propietario, id_chofer) {
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/validar_chofer', {
+            const response = await fetch(`${Globals.server}:3006/webservice/validar_chofer`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -197,7 +205,7 @@ export default class Drivers extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz69/desvincular_vehiculo', {
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz69/desvincular_vehiculo`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -232,7 +240,7 @@ export default class Drivers extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/registrar_comentario_jefe_chofer', {
+                const result = await fetch(`${Globals.server}:3006/webservice/registrar_comentario_jefe_chofer`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -284,7 +292,7 @@ export default class Drivers extends React.Component {
     async _desvincularConductor(id_cup) {
         // console.log(id_cup);
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/desvincular_chofer', {
+            const response = await fetch(`${Globals.server}:3006/webservice/desvincular_chofer`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

@@ -16,6 +16,7 @@ import {
 
 import { Button, Card, ButtonGroup } from 'react-native-elements'
 import { Table, Row, Rows } from 'react-native-table-component';
+import Globals from '../../constants/Globals';
 
 
 
@@ -55,7 +56,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteActual() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz134/reporte_conductor_actual', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_actual`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -120,7 +121,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteSemanal() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz134/reporte_conductor_semanal', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_semanal`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -185,7 +186,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteMensual() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz134/reporte_conductor_mensual', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_mensual`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

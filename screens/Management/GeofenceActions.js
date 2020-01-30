@@ -19,6 +19,7 @@ import {
 import { Card, Icon } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class GeofenceActions extends React.Component {
 
@@ -48,7 +49,7 @@ export default class GeofenceActions extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas', {
+                const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

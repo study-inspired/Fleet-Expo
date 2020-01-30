@@ -19,6 +19,7 @@ import {
 
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class AssignVehicle extends React.Component {
 
@@ -49,7 +50,7 @@ export default class AssignVehicle extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz60/obtener_unidades_propietario`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -71,7 +72,7 @@ export default class AssignVehicle extends React.Component {
                         nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
                         color: v.color.includes('#') ? v.color : '#a8a8a8',
-                        imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33')
+                        imagen: v.foto.replace('/var/www/html', Globals.server)
                     }
                 })
                 this.setState({
@@ -96,7 +97,7 @@ export default class AssignVehicle extends React.Component {
             Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
         } else {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz126/asignar_unidad_geocerca', {
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz126/asignar_unidad_geocerca`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

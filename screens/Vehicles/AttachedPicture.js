@@ -13,6 +13,7 @@ import {
 
 import { Button } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
+import Globals from '../../constants/Globals';
 
 export default class AttachedPicture extends React.Component {
     static navigationOptions = {
@@ -56,16 +57,18 @@ export default class AttachedPicture extends React.Component {
 
                 // console.log(data);
 
-                const response = await fetch(`http://35.203.42.33:3001/${this.state.ruta}`, {
+                const response = await fetch(`${Globals.server}:3001/${this.state.ruta}`, {
                     method: 'POST',
                     body: data
                 });
-                console.log(response);
+                // console.log(response);
 
                 const result = await response.json();
-                console.log(result);
 
-                if (result.message.includes('exito')) {
+                if (!result.message) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(result);
+                }else if(result.message.includes('exito')) {
                     Alert.alert('Correcto', result.message);
                     if (this.state.numero_foto != 0) {
                         this.props.navigation.state.params.doOnBack(this.state.numero_foto, result.url);
@@ -75,7 +78,6 @@ export default class AttachedPicture extends React.Component {
                         this.props.navigation.pop(2);
                     }
                 }
-
             } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, RefreshControl, ScrollView, Alert, Activ
 import { Icon, Button, Card, Overlay } from 'react-native-elements';
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo
@@ -50,7 +51,7 @@ export default class ReportVehicle extends Component {
 
     async obtenerViajes() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/obtener_viajes_origen_destino', {
+            const result = await fetch(`${Globals.server}:3006/webservice/obtener_viajes_origen_destino`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -84,7 +85,7 @@ export default class ReportVehicle extends Component {
 
     async obtenerAlertas() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz132/mostrar_alertas_unidad`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

@@ -20,6 +20,7 @@ import {
 import { colors, Card } from 'react-native-elements'
 import { FontAwesome, MaterialIcons, AntDesign, Ionicons } from "@expo/vector-icons";
 import NetInfo from '@react-native-community/netinfo'
+import Globals from '../constants/Globals';
 
 export default class VehiclesView extends React.Component {
     static navigationOptions = {
@@ -49,7 +50,7 @@ export default class VehiclesView extends React.Component {
 
     async _getEstadoDocumentosVehiculoGeneral(niv_unidad) {
         try {
-            const result = await fetch('http://35.203.42.33:3000/EstadoDocumentosVehiculoxUsuarioGeneral', {
+            const result = await fetch(`${Globals.server}:3000/EstadoDocumentosVehiculoxUsuarioGeneral`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -60,11 +61,12 @@ export default class VehiclesView extends React.Component {
                 }),
             });
 
-            const data = await result.json();
+            const { data } = await result.json();
 
             // console.log(niv_unidad, data.data[0].sp_estado_all_documentos_vehiculos_general);
 
-            return (data.data[0].sp_estado_all_documentos_vehiculos_general != 0) ? true : false;
+            // return (data[0].sp_estado_all_documentos_vehiculos_general != 0) ? true : false;
+            return data[0].sp_estado_all_documentos_vehiculos_general != 0;
 
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -76,7 +78,7 @@ export default class VehiclesView extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz60/obtener_unidades_propietario', {
+                const response = await fetch(`http://35.203.57.92:3006/webservice/interfaz60/obtener_unidades_propietario`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -89,18 +91,21 @@ export default class VehiclesView extends React.Component {
                     }),
                 })
 
-                const data = await result.json();
+                const { datos, msg } = await response.json();
                 // console.log(data);
 
-                if (data.datos.length != 0) {
-                    let vehicles = data.datos.map(async (v) => {
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                    console.error(msg);
+                } else if (datos.length != 0) {
+                    let vehicles = datos.map(async (v) => {
                         let problema = await this._getEstadoDocumentosVehiculoGeneral(`${v.niv}`)
                         return {
                             id: v.id_unidad,
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
                             color: v.color.includes('#') ? v.color : '#a8a8a8',
-                            imagen: v.foto.replace('/var/www/html', 'http://35.203.42.33'),
+                            imagen: v.foto.replace('/var/www/html', Globals.server),
                             vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
                             problema: problema,
                             niv: v.niv
@@ -171,7 +176,7 @@ export default class VehiclesView extends React.Component {
                     const state = await NetInfo.fetch();
                     if (state.isConnected) {
                         try {
-                            const result = await fetch('http://35.203.42.33:3006/webservice/delete_vehiculo', {
+                            const result = await fetch(`${Globals.server}:3006/webservice/delete_vehiculo`, {
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',
@@ -182,7 +187,7 @@ export default class VehiclesView extends React.Component {
                                 }),
                             })
 
-                            const { datos, msg} = await result.json();
+                            const { datos, msg } = await result.json();
                             // console.log(data);
                             if (msg) {
                                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');

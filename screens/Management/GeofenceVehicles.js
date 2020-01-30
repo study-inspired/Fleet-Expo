@@ -19,6 +19,7 @@ import {
 import { Button, Card, Overlay, CheckBox, Icon } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
 import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
+import Globals from '../../constants/Globals';
 
 export default class GeofenceVehicles extends React.Component {
 
@@ -57,7 +58,7 @@ export default class GeofenceVehicles extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_geocercas', {
+                const response = await fetch(`${Globals.server}:3006/webservice/obtener_unidades_geocercas`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -104,7 +105,7 @@ export default class GeofenceVehicles extends React.Component {
 
     async _datosUnidad(id_unidad) {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/datos_unidad', {
+            const result = await fetch(`${Globals.server}:3006/webservice/datos_unidad`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -121,7 +122,7 @@ export default class GeofenceVehicles extends React.Component {
                 nombre: `${datos[0].marca} ${datos[0].modelo}`,
                 placas: datos[0].placas,
                 color: datos[0].color.includes('#') ? datos[0].color : '#a8a8a8',
-                imagen: datos[0].foto.replace('/var/www/html', 'http://35.203.42.33')
+                imagen: datos[0].foto.replace('/var/www/html', Globals.server)
             };
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -134,7 +135,7 @@ export default class GeofenceVehicles extends React.Component {
             Alert.alert('Campos requeridos!', 'Selecciona al menos un tipo de alerta.');
         } else {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/actualizar_entrada_salida_unidad', {
+                const result = await fetch(`${Globals.server}:3006/webservice/actualizar_entrada_salida_unidad`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -202,7 +203,7 @@ export default class GeofenceVehicles extends React.Component {
 
     async _eliminarVehiculoWS(id) {
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/desvincular_unidad_geocerca', {
+            const response = await fetch(`${Globals.server}:3006/webservice/desvincular_unidad_geocerca`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -232,7 +233,7 @@ export default class GeofenceVehicles extends React.Component {
 
     async _obteberTiposAlerta(vehiculo) {
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/valida_entrada_salida_unidad', {
+            const response = await fetch(`${Globals.server}:3006/webservice/valida_entrada_salida_unidad`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

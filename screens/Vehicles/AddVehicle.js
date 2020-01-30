@@ -5,6 +5,7 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import ColorPalette from 'react-native-color-palette';
 import NetInfo from '@react-native-community/netinfo';
 import Layout from '../../constants/Layout'
+import Globals from '../../constants/Globals';
 
 const colores = [
     '#000000', '#5F5F5F', '#8A8A8A', '#A8A8A8', '#DBDBDB', '#FAFAFA',
@@ -82,7 +83,7 @@ export default class AddVehicle extends React.Component {
 
     async _getEstadoDocumentosVehiculoGeneral(niv_unidad) {
         try {
-            const result = await fetch('http://35.203.42.33:3000/EstadoDocumentosVehiculoxUsuario', {
+            const result = await fetch(`${Globals.server}:3000/EstadoDocumentosVehiculoxUsuario`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -131,7 +132,7 @@ export default class AddVehicle extends React.Component {
 
     async _datosUnidad(id_unidad) {
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/datos_unidad', {
+            const response = await fetch(`${Globals.server}:3006/webservice/datos_unidad`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -207,7 +208,7 @@ export default class AddVehicle extends React.Component {
                 this.state.fotos.cargado
             ) {
                 try {
-                    const result = await fetch('http://35.203.42.33:3006/webservice/interfaz61/agregar_unidad', {
+                    const result = await fetch(`${Globals.server}:3006/webservice/interfaz61/agregar_unidad`, {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
@@ -241,7 +242,6 @@ export default class AddVehicle extends React.Component {
                         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                         //this.props.navigation.goBack();
                     }
-
                 } catch (error) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(error);
@@ -286,7 +286,7 @@ export default class AddVehicle extends React.Component {
             Alert.alert('Atención', 'El NIV o serie introducido no es correcto.');
             return false;
         } else {
-            const response = await fetch('http://35.203.42.33:3006/webservice/validar_niv', {
+            const response = await fetch(`${Globals.server}:3006/webservice/validar_niv`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

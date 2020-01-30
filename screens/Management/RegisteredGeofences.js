@@ -19,6 +19,7 @@ import {
 import { Card, Icon } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 
 export default class RegisteredGeofences extends React.Component {
@@ -58,7 +59,7 @@ export default class RegisteredGeofences extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas1', {
+                const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas1`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -105,7 +106,7 @@ export default class RegisteredGeofences extends React.Component {
 
     async _tieneVehiculos(id) {
         try {
-            const response = await fetch('http://35.203.42.33:3006/webservice/obtener_unidades_geocercas', {
+            const response = await fetch(`${Globals.server}:3006/webservice/obtener_unidades_geocercas`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -147,7 +148,7 @@ export default class RegisteredGeofences extends React.Component {
                     const state = await NetInfo.fetch();
                     if (state.isConnected) {
                         try {
-                            const response = await fetch('http://35.203.42.33:3006/webservice/elimimar_geocercas', {
+                            const response = await fetch(`${Globals.server}:3006/webservice/elimimar_geocercas`, {
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',

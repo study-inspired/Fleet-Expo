@@ -18,6 +18,7 @@ import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class AddDriver extends React.Component {
     static navigationOptions = {
@@ -131,7 +132,7 @@ export default class AddDriver extends React.Component {
         if (this.state.telefono != '') {
             const state = await NetInfo.fetch();
             if (state.isConnected) {
-                const result = await fetch('http://35.203.42.33:3006/webservice/id_usuario_geocerca', {
+                const result = await fetch(`${Globals.server}:3006/webservice/id_usuario_geocerca`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

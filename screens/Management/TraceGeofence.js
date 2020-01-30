@@ -89,7 +89,7 @@ export default class TraceGeofence extends React.Component {
     async _verificarNombre() {
         if (this.state.nombre.length = !0) {
             try {
-                const response = await fetch('http://35.203.42.33:3006/webservice/obtener_geocercas1', {
+                const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas1`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -129,7 +129,7 @@ export default class TraceGeofence extends React.Component {
                 }
                 // console.log(coordenadas);
 
-                const response = await fetch('http://35.203.42.33:3006/webservice/interfaz119/registrar_geocerca', {
+                const response = await fetch(`${Globals.server}:3006/webservice/interfaz119/registrar_geocerca`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

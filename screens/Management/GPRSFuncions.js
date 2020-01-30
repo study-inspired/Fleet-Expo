@@ -13,7 +13,7 @@ import {
     TouchableNativeFeedback
 } from 'react-native';
 
-import { Button, Card, Icon } from 'react-native-elements'
+import { Card, Icon } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons';
 
 export default class GPRSFunctions extends React.Component {

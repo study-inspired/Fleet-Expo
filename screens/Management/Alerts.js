@@ -14,6 +14,7 @@ import {
 import { Icon, Button, Card, Overlay } from 'react-native-elements';
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 
 export default class Alerts extends Component {
@@ -53,7 +54,7 @@ export default class Alerts extends Component {
         this.getWeek(new Date());
         setTimeout( async () => {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz132/mostrar_alertas_unidad', {
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz132/mostrar_alertas_unidad`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

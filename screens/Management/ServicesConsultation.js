@@ -30,7 +30,7 @@ export default class ServicesConsultation extends Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz140/obtener_servicios', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz140/obtener_servicios`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

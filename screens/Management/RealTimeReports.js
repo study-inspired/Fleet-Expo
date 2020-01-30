@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
+import Globals from '../../constants/Globals';
 
 const conductores = [
     {
@@ -62,7 +63,7 @@ export default class RealTimeReports extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch('http://35.203.42.33:3006/webservice/interfaz134/reporte_tiempo_real', {
+            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_tiempo_real`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

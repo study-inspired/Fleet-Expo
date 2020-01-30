@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, Picker, 
 import { Button, Icon, Overlay } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class RegisterMaintenanceN extends Component {
     static navigationOptions = {
@@ -42,7 +43,7 @@ export default class RegisterMaintenanceN extends Component {
         }
         else {
             try {
-                const result = await fetch('http://35.203.42.33:3006/webservice/interfaz129/registrar_servicio_neumatico', {
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz129/registrar_servicio_neumatico`, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
