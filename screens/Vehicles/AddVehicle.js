@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
 import { Input, Button, Overlay, Divider } from 'react-native-elements';
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, Entypo } from "@expo/vector-icons";
 import ColorPalette from 'react-native-color-palette';
 import NetInfo from '@react-native-community/netinfo';
 import Layout from '../../constants/Layout'
@@ -54,7 +54,8 @@ export default class AddVehicle extends React.Component {
             id_unidad: this.props.navigation.getParam('id_unidad', 0),
             isLoading: true,
             tipo_nombre: '',
-            selectType: false
+            selectType: false,
+            add: this.props.navigation.getParam('add', false)
         }
     }
 
@@ -599,10 +600,10 @@ export default class AddVehicle extends React.Component {
                                                     this.state.poliza.estado && !this.state.poliza.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.poliza.estado && this.state.poliza.cargado ?
+                                                        !this.state.poliza.estado && this.state.poliza.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
-                                                            <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
+                                                            <Entypo name="attachment" size={18} color='#ff8834' />
                                             }
                                         </View>
                                     </View>
@@ -631,7 +632,7 @@ export default class AddVehicle extends React.Component {
                                                     this.state.factura.estado && !this.state.factura.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.factura.estado && this.state.factura.cargado ?
+                                                        !this.state.factura.estado && this.state.factura.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
                                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
@@ -663,7 +664,7 @@ export default class AddVehicle extends React.Component {
                                                     this.state.holograma.estado && !this.state.holograma.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.holograma.estado && this.state.holograma.cargado ?
+                                                        !this.state.holograma.estado && this.state.holograma.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
                                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
@@ -695,7 +696,7 @@ export default class AddVehicle extends React.Component {
                                                     this.state.tarjeta.estado && !this.state.tarjeta.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.tarjeta.estado && this.state.tarjeta.cargado ?
+                                                        !this.state.tarjeta.estado && this.state.tarjeta.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
                                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
@@ -727,7 +728,7 @@ export default class AddVehicle extends React.Component {
                                                     this.state.tag.estado && !this.state.tag.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.tag.estado && this.state.tag.cargado ?
+                                                        !this.state.tag.estado && this.state.tag.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
                                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />
@@ -761,7 +762,7 @@ export default class AddVehicle extends React.Component {
                                                     this.state.fotos.estado && !this.state.fotos.cargado ?
                                                         <FontAwesome name="exclamation-circle" size={18} color='#ebcc1c' />
                                                         :
-                                                        !this.state.fotos.estado && this.state.fotos.cargado ?
+                                                        !this.state.fotos.estado && this.state.fotos.cargado && !this.state.add ?
                                                             <FontAwesome name="check-circle" size={18} color='#20d447' />
                                                             :
                                                             <FontAwesome name="file-photo-o" size={18} color='#ff8834' />

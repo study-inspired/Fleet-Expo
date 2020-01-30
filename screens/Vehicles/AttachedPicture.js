@@ -64,11 +64,12 @@ export default class AttachedPicture extends React.Component {
                 // console.log(response);
 
                 const result = await response.json();
+                // console.log(result);
 
                 if (!result.message) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     console.error(result);
-                }else if(result.message.includes('exito')) {
+                } else if(result.message.includes('exito')) {
                     Alert.alert('Correcto', result.message);
                     if (this.state.numero_foto != 0) {
                         this.props.navigation.state.params.doOnBack(this.state.numero_foto, result.url);

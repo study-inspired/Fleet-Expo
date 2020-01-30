@@ -112,7 +112,7 @@ export default class Drivers extends React.Component {
 
     async _datosUsuario(id_usuario_chofer) {
         try {
-            console.log(`${Globals.server}:3006/webservice/datos_conductor`);
+            // console.log(`${Globals.server}:3006/webservice/datos_conductor`);
             
             const result = await fetch(`${Globals.server}:3006/webservice/datos_conductor`, {
                 method: 'POST',
@@ -124,20 +124,20 @@ export default class Drivers extends React.Component {
                     id_usuario: id_usuario_chofer
                 }),
             })
-            console.log(result)
+            // console.log(result);
 
             const datos = await result.json();
+            // console.log(datos);
 
-
-            // if (datos.datos.length > 0) {
-            //     return {
-            //         nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
-            //         fotografia: datos.datos[0].fotografia
-            //     }
-            // } else {
-            //     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            //     this.props.navigation.goBack();
-            // }
+            if (datos.datos.length > 0) {
+                return {
+                    nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
+                    fotografia: datos.datos[0].fotografia
+                }
+            } else {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                this.props.navigation.goBack();
+            }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);

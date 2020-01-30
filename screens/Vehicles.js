@@ -78,7 +78,7 @@ export default class VehiclesView extends React.Component {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch(`http://35.203.57.92:3006/webservice/interfaz60/obtener_unidades_propietario`, {
+                const response = await fetch(`${Globals.server}:3006/webservice/interfaz60/obtener_unidades_propietario`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -141,7 +141,7 @@ export default class VehiclesView extends React.Component {
     async addVehicle() {
         const state = await NetInfo.fetch();
         if (state.isConnected) {
-            this.props.navigation.navigate('AddVehicle');
+            this.props.navigation.navigate('AddVehicle', { add: true });
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
