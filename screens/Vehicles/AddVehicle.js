@@ -47,7 +47,7 @@ export default class AddVehicle extends React.Component {
             kilometraje: '',
             placa: '',
             serie: this.props.navigation.getParam('niv', ''),
-            color: '#000000',
+            color: '#FFFFFF',
             tipo_vehiculo: '',
             selectColor: false,
             problema: this.props.navigation.getParam('problema', false),
@@ -187,73 +187,67 @@ export default class AddVehicle extends React.Component {
         }
     }
 
+    _checkDatosPorTipoVehiculo() {
+        if (this.state.tipo_vehiculo == 4) { // Bicicleta
+            return this.state.modelo != '';
+        } else { // Cualquiera
+            return this.state.modelo != '' && this.state.kilometraje != '' && this.state.placa != '' && this.state.serie != '' && this.state.tipo_vehiculo != '' && this.state.poliza.cargado && this.state.factura.cargado && this.state.holograma.cargado && this.state.tarjeta.cargado && this.state.tag.cargado && this.state.fotos.cargado;
+        }
+    }
+
     async enviarDatos() {
         if (this.state.problema) {
             this.props.navigation.navigate('DataSent'); // Modificar el estado de los documentos modificados.
-        }
-        // else {
-        const state = await NetInfo.fetch();
-        if (state.isConnected) {
-            if (
-                this.state.modelo != '' &&
-                this.state.marca != '' &&
-                this.state.kilometraje != '' &&
-                this.state.placa != '' &&
-                (this.state.serie != '' && this.state.tipo_vehiculo != 4) &&
-                this.state.tipo_vehiculo != '' &&
-                this.state.poliza.cargado &&
-                this.state.factura.cargado &&
-                this.state.holograma.cargado &&
-                this.state.tarjeta.cargado &&
-                this.state.tag.cargado &&
-                this.state.fotos.cargado
-            ) {
-                try {
-                    const result = await fetch(`${Globals.server}:3006/webservice/interfaz61/agregar_unidad`, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            p_modelo: this.state.modelo,
-                            p_marca: this.state.marca,
-                            p_kilometraje: this.state.kilometraje,
-                            p_placas: this.state.placa,
-                            p_descripcion: '',
-                            p_niv: this.state.serie,
-                            p_id_tipo_vehiculo: this.state.tipo_vehiculo,
-                            p_color: this.state.color,
-                            p_id_usuario_propietario: 2,
-                            in_fotografia1: this.state.fotos.rutas[0],
-                            in_fotografia2: this.state.fotos.rutas[1],
-                            in_fotografia3: this.state.fotos.rutas[2],
-                            in_fotografia4: this.state.fotos.rutas[3],
-                            in_fotografia5: this.state.fotos.rutas[4],
-                        }),
-                    })
+        } else {
+            const state = await NetInfo.fetch();
+            if (state.isConnected) {
+                if (this._checkDatosPorTipoVehiculo()) {
+                    try {
+                        const result = await fetch(`${Globals.server}:3006/webservice/interfaz61/agregar_unidad`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                p_modelo: this.state.modelo,
+                                p_marca: this.state.marca,
+                                p_kilometraje: this.state.kilometraje,
+                                p_placas: this.state.placa,
+                                p_descripcion: '',
+                                p_niv: this.state.serie,
+                                p_id_tipo_vehiculo: this.state.tipo_vehiculo,
+                                p_color: this.state.color=='#FFFFFF'?'':this.state.color,
+                                p_id_usuario_propietario: 2,
+                                in_fotografia1: this.state.fotos.rutas[0],
+                                in_fotografia2: this.state.fotos.rutas[1],
+                                in_fotografia3: this.state.fotos.rutas[2],
+                                in_fotografia4: this.state.fotos.rutas[3],
+                                in_fotografia5: this.state.fotos.rutas[4],
+                            }),
+                        })
 
-                    const datos = await result.json();
-                    console.log('Agregar unidad:');
-                    console.log(datos);
-                    if (datos.datos.length > 0) {
-                        //this.setState({ conductor: datos.datos[0] });
-                        this.props.navigation.navigate('DataSent');
-                    } else {
+                        const datos = await result.json();
+                        console.log('Agregar unidad:');
+                        console.log(datos);
+                        if (datos.datos.length > 0) {
+                            //this.setState({ conductor: datos.datos[0] });
+                            this.props.navigation.navigate('DataSent');
+                        } else {
+                            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                            //this.props.navigation.goBack();
+                        }
+                    } catch (error) {
                         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                        //this.props.navigation.goBack();
+                        console.error(error);
                     }
-                } catch (error) {
-                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                    console.error(error);
+                } else {
+                    Alert.alert('Atención', 'Debes llenar todos los campos y subir los todos documentos antes de continuar.');
                 }
             } else {
-                Alert.alert('Atención', 'Debes llenar todos los campos y subir los todos documentos antes de continuar.');
+                Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
             }
-        } else {
-            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
-        // }
     }
 
     verificarNIV(nextScreen) {
@@ -267,14 +261,22 @@ export default class AddVehicle extends React.Component {
     //Verificar si existe el niv
 
     async _verificarDatos(nextScreen) {
-        let campos = `${this.state.modelo == '' ? 'modelo, ' : ''}${this.state.marca == '' ? 'marca, ' : ''}${this.state.kilometraje == '' ? 'kilometraje, ' : ''}${this.state.placa == '' ? 'placas, ' : ''}${this.state.tipo_vehiculo != 4 && this.state.serie == '' ? 'NIV o Serie, ' : ''}${this.state.tipo_vehiculo == '' ? 'tipo de vehículo, ' : ''}`;
-        let faltantes = campos.match(/,/g);
-        if (faltantes != null) {
-            let el_los = `${faltantes.length != 1 ? 'los campos' : 'el campo'}`;
-            Alert.alert('Atención', `Debes llenar ${el_los} ${campos.replace(/, $/g, '')} antes de continuar.`);
-        } else {
-            if (await this._verificarNIV()) {
+        if (this.state.tipo_vehiculo == 4) {// Bicicleta (antes 4) se cambio a 7 por que todos son requeridos
+            if (this.state.modelo == '') {
+                Alert.alert('Atención', `Debes ingresar el campo modelo antes de continuar.`);
+            } else {
                 this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this), id_usuario: 2, niv: this.state.serie })
+            }
+        } else {
+            let campos = `${this.state.modelo == '' ? 'modelo, ' : ''}${this.state.kilometraje == '' ? 'kilometraje, ' : ''}${this.state.placa == '' ? 'placas, ' : ''}${this.state.tipo_vehiculo != 4 && this.state.serie == '' ? 'NIV o Serie, ' : ''}${this.state.tipo_vehiculo == '' ? 'tipo de vehículo, ' : ''}`; // ${this.state.marca == '' ? 'marca, ' : ''}
+            let faltantes = campos.match(/,/g);
+            if (faltantes != null) {
+                let el_los = `${faltantes.length != 1 ? 'los campos' : 'el campo'}`;
+                Alert.alert('Atención', `Debes ingresar ${el_los} ${campos.replace(/, $/g, '')} antes de continuar.`);
+            } else {
+                if (await this._verificarNIV()) {
+                    this.props.navigation.navigate(nextScreen, { doOnBack: this.onBack.bind(this), id_usuario: 2, niv: this.state.serie })
+                }
             }
         }
     }
@@ -399,6 +401,7 @@ export default class AddVehicle extends React.Component {
                                     <Text style={[styles.textoRegular16, { marginHorizontal: 5, color: this.state.tipo_vehiculo == '1' ? '#fff' : '#000', }]}>Automóvil de lujo</Text>
                                 </View>
                             </TouchableNativeFeedback>
+                            {/* Motocicleta
                             <TouchableNativeFeedback
                                 onPress={() => { this.setState({ tipo_nombre: 'Motocicleta', tipo_vehiculo: '2', selectType: false }) }}
                             >
@@ -413,7 +416,7 @@ export default class AddVehicle extends React.Component {
                                 }}>
                                     <Text style={[styles.textoRegular16, { marginHorizontal: 5, color: this.state.tipo_vehiculo == '2' ? '#fff' : '#000', }]}>Motocicleta</Text>
                                 </View>
-                            </TouchableNativeFeedback>
+                            </TouchableNativeFeedback> */}
                             <TouchableNativeFeedback
                                 onPress={() => { this.setState({ tipo_nombre: 'Camioneta', tipo_vehiculo: '3', selectType: false }) }}
                             >
@@ -429,7 +432,8 @@ export default class AddVehicle extends React.Component {
                                     <Text style={[styles.textoRegular16, { marginHorizontal: 5, color: this.state.tipo_vehiculo == '3' ? '#fff' : '#000', }]}>Camioneta</Text>
                                 </View>
                             </TouchableNativeFeedback>
-                            <TouchableNativeFeedback
+                            {/* // Bicicleta
+                             <TouchableNativeFeedback
                                 onPress={() => { this.setState({ tipo_nombre: 'Bicicleta', tipo_vehiculo: '4', selectType: false }) }}
                             >
                                 <View style={{
@@ -443,7 +447,7 @@ export default class AddVehicle extends React.Component {
                                 }}>
                                     <Text style={[styles.textoRegular16, { marginHorizontal: 5, color: this.state.tipo_vehiculo == '4' ? '#fff' : '#000', }]}>Bicicleta</Text>
                                 </View>
-                            </TouchableNativeFeedback>
+                            </TouchableNativeFeedback> */}
                         </View>
                     </Overlay>
                     <View elevation={2} style={styles.sectionContainer}>

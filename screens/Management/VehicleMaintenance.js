@@ -247,7 +247,10 @@ export default class VehicleMaintenance extends Component {
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
               <Text style={[styles.textoBold, { marginTop: 4 }]}>{state.vehicle.nombre}</Text>
-              <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+              {
+                state.vehicle.color.includes('#') &&
+                <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+              }
               <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {state.vehicle.placas}</Text>
             </View>
           </View>

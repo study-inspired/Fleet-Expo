@@ -11,12 +11,15 @@ import {
     Image,
     StyleSheet,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableNativeFeedback,
+    Alert
 } from 'react-native';
 
 import { Button, Card, ButtonGroup } from 'react-native-elements'
 import { Table, Row, Rows } from 'react-native-table-component';
 import Globals from '../../constants/Globals';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 
 
@@ -37,22 +40,13 @@ export default class ReportDriver extends React.Component {
         isLoading: true,
         hasInfo: false,
         selectedIndex: 0,
-        Actual1Head: [],
-        Actual1Data: [],
-        Actual2Head: [],
-        Actual2Data: [],
-        Actual3Head: [],
-        Actual3Data: [],
-        Actual4Head: [],
-        Actual4Data: [],
-        Actual5Head: [],
-        Actual5Data: [],
+        info: {},
         driver: this.props.navigation.getParam('driver', {})
     }
 
-    componentDidMount() {
-        this.reporteActual();
-    }
+    // componentDidMount() {
+    //     this.reporteActual();
+    // }
 
     async reporteActual() {
         try {
@@ -67,44 +61,20 @@ export default class ReportDriver extends React.Component {
                 }),
             })
 
-            const data = await result.json();
-            console.log(data);
-
-            if (data.datos.length != 0) {
+            const { datos, msg } = await result.json();
+            // console.log(datos);
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            } else if (datos.length != 0) {
                 this.setState({
-                    hasDrivers: true,
-                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
-                    Actual1Data: [
-                        data.datos[0].total,
-                        data.datos[0].pagosefectivo,
-                        data.datos[0].pagostarjeta
-                    ],
-                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
-                    Actual2Data: [
-                        data.datos[0].solatendidas,
-                        data.datos[0].solrechazadas,
-                        data.datos[0].trecompenzas
-                    ],
-                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
-                    Actual3Data: [
-                        data.datos[0].pagadosconefectivo,
-                        data.datos[0].pagadoscontarjeta,
-                    ],
-                    Actual4Head: ['Viajes', 'Horas operadas'],
-                    Actual4Data: [
-                        data.datos[0].viajes,
-                        data.datos[0].horasoperadas,
-                    ],
-                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
-                    Actual5Data: [
-                        data.datos[0].comisionplataforma,
-                        data.datos[0].gananciafinal,
-                    ],
-                    isLoading: false
+                    info: datos[0],
+                    isLoading: false,
+                    hasInfo: true,
                 });
 
             } else {
-                Alert.alert('Info', 'No hay conductores!');
+                Alert.alert('Información', 'No se encontró información.');
                 this.setState({
                     isLoading: false
                 });
@@ -124,54 +94,32 @@ export default class ReportDriver extends React.Component {
             const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_semanal`, {
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_id_propietario: this.state.driver.id_chofer1
+                    p_id_propietario: this.state.driver.id_chofer
                 }),
             })
 
-            const data = await result.json();
-            console.log(data);
+            const { datos, msg } = await result.json();
+            // console.log(datos);
 
-            if (data.datos.length != 0) {
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            } else if (datos.length != 0) {
                 this.setState({
-                    hasDrivers: true,
-                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
-                    Actual1Data: [
-                        data.datos[0].total,
-                        data.datos[0].pagosefectivo,
-                        data.datos[0].pagostarjeta
-                    ],
-                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
-                    Actual2Data: [
-                        data.datos[0].solatendidas,
-                        data.datos[0].solrechazadas,
-                        data.datos[0].trecompenzas
-                    ],
-                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
-                    Actual3Data: [
-                        data.datos[0].pagadosconefectivo,
-                        data.datos[0].pagadoscontarjeta,
-                    ],
-                    Actual4Head: ['Viajes', 'Horas operadas'],
-                    Actual4Data: [
-                        data.datos[0].viajes,
-                        data.datos[0].horasoperadas,
-                    ],
-                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
-                    Actual5Data: [
-                        data.datos[0].comisionplataforma,
-                        data.datos[0].gananciafinal,
-                    ],
-                    isLoading: false
+                    info: datos[0],
+                    isLoading: false,
+                    hasInfo: true,
                 });
 
             } else {
-                Alert.alert('Info', 'No hay datos!');
+                Alert.alert('Información', 'No hay registrada inforrmación.');
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    hasInfo: false
                 });
             }
 
@@ -189,54 +137,31 @@ export default class ReportDriver extends React.Component {
             const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_mensual`, {
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_id_propietario: this.state.driver.id_chofer1
+                    p_id_propietario: this.state.driver.id_chofer
                 }),
             })
 
-            const data = await result.json();
-            console.log(data);
-
-            if (data.datos.length != 0) {
+            const { datos, msg } = await result.json();
+            // console.log(data);
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            } else if (datos.length != 0) {
                 this.setState({
-                    hasDrivers: true,
-                    Actual1Head: ['TOTAL', 'Pagos Efectivo', 'Pagos Tarjeta'],
-                    Actual1Data: [
-                        data.datos[0].total,
-                        data.datos[0].pagosefectivo,
-                        data.datos[0].pagostarjeta
-                    ],
-                    Actual2Head: ['Sol. atendidas', 'Sol. rechazadas', 'T. recompensas'],
-                    Actual2Data: [
-                        data.datos[0].solatendidas,
-                        data.datos[0].solrechazadas,
-                        data.datos[0].trecompenzas
-                    ],
-                    Actual3Head: ['Pagados con Efectivo', 'Pagados con Tarjeta'],
-                    Actual3Data: [
-                        data.datos[0].pagadosconefectivo,
-                        data.datos[0].pagadoscontarjeta,
-                    ],
-                    Actual4Head: ['Viajes', 'Horas operadas'],
-                    Actual4Data: [
-                        data.datos[0].viajes,
-                        data.datos[0].horasoperadas,
-                    ],
-                    Actual5Head: ['Comisión plataforma', 'Ganancia Final'],
-                    Actual5Data: [
-                        data.datos[0].comisionplataforma,
-                        data.datos[0].gananciafinal,
-                    ],
-                    isLoading: false
+                    info: datos[0],
+                    isLoading: false,
+                    hasInfo: true,
                 });
 
             } else {
                 Alert.alert('Info', 'No hay datos!');
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    hasInfo: false,
                 });
             }
 
@@ -250,9 +175,13 @@ export default class ReportDriver extends React.Component {
     }
 
     updateIndex(selectedIndex) {
+        this.setState({
+            isLoading: true,
+            hasInfo: false,
+        });
         switch (selectedIndex) {
             case 0:
-                this.reporteActual();
+                // this.reporteActual();
                 break;
             case 1:
                 this.reporteSemanal();
@@ -266,97 +195,123 @@ export default class ReportDriver extends React.Component {
 
     render() {
         const buttons = ['Actual', 'Semana', 'Mes']
-        const { selectedIndex } = this.state
+        const { selectedIndex } = this.state;
 
         return (
             <View style={{ flex: 1 }}>
-                <View elevation={5} style={styles.subHeader}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'flex-end'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
+                <View elevation={2} style={styles.subHeader}>
+                    <FontAwesome
+                        name='money'
+                        size={64}
                     />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
-                <Card containerStyle={styles.card} >
-                    <View
-                        style={styles.imageContainer}>
-                        <Image
+                <View style={styles.imageContainer}>
+                    {/* <Image
                             style={styles.image}
                             resizeMode="cover"
-                            source={{ uri: this.state.driver.avatar }}
-                        />
-                        <Text style={styles.textoBold}>{this.state.driver.name}</Text>
-                    </View>
-                    <View
-                        style={{
-                            marginTop: 36
-                        }}>
-                        <ButtonGroup
-                            onPress={this.updateIndex.bind(this)}
-                            selectedIndex={selectedIndex}
-                            buttons={buttons}
-                            containerStyle={{ height: 33 }}
-                            buttonStyle={{ backgroundColor: '#ff8834' }}
-                            selectedButtonStyle={{ backgroundColor: '#ec6a2c' }}
-                            textStyle={{ fontFamily: 'aller-lt' }}
-                            selectedTextStyle={{ fontFamily: 'aller-lt' }}
-                        />
-                    </View>
-                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                    {!this.state.isLoading && this.state.hasInfo && 
-                        <View>
-                            <View style={styles.width40}>
-                                <Table borderStyle={styles.border}>
-                                    <Row data={this.state.Actual1Head} style={styles.head} textStyle={styles.text} />
-                                    <Rows data={this.state.Actual1Data} textStyle={styles.text} />
-                                </Table>
+                            source={{ uri: this.state.driver.fotografia }}
+                        /> */}
+                    <Ionicons
+                        name={'md-contact'}
+                        size={76}
+                    />
+                    <Text style={{ fontFamily: 'aller-lt', fontSize: 16, textAlign: 'center' }}>{this.state.driver.nombre}</Text>
+                </View>
+                <View style={{ marginTop: 10 }}>
+                    <ButtonGroup
+                        onPress={this.updateIndex.bind(this)}
+                        selectedIndex={selectedIndex}
+                        buttons={buttons}
+                        containerStyle={{ height: 35 }}
+                        buttonStyle={{ backgroundColor: '#ff8834' }}
+                        selectedButtonStyle={{ backgroundColor: '#ec6a2c' }}
+                        textStyle={{ fontFamily: 'aller-lt', color: '#fafafa' }}
+                        selectedTextStyle={{ fontFamily: 'aller-lt' }}
+                    />
+                </View>
+
+                {
+                    this.state.isLoading ? <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} /> :
+                    this.state.hasInfo && <View>
+                        <View style={styles.viewContainer}>
+                            <View style={styles.viewTitle}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>TOTAL</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Pagos Efectivo</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Pagos Tarjeta</Text>
                             </View>
-                            <View style={styles.width40}>
-                                <Table borderStyle={styles.border}>
-                                    <Row data={this.state.Actual2Head} style={styles.head} textStyle={styles.text} />
-                                    <Rows data={this.state.Actual2Data} textStyle={styles.text} />
-                                </Table>
-                            </View>
-                            <View style={styles.width100}>
-                                <Table borderStyle={styles.border}>
-                                    <Row data={this.state.Actual3Head} style={styles.head} textStyle={styles.text} />
-                                    <Rows data={this.state.Actual3Data} textStyle={styles.text} />
-                                </Table>
-                            </View>
-                            <View style={styles.width100}>
-                                <Table borderStyle={styles.border}>
-                                    <Row data={this.state.Actual4Head} style={styles.head} textStyle={styles.text} />
-                                    <Rows data={this.state.Actual4Data} textStyle={styles.text} />
-                                </Table>
-                            </View>
-                            <View style={styles.width100}>
-                                <Table borderStyle={styles.border}>
-                                    <Row data={this.state.Actual5Head} style={styles.head} textStyle={styles.text} />
-                                    <Rows data={this.state.Actual5Data} textStyle={styles.text} />
-                                </Table>
+                            <View style={styles.viewContent}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.total}`}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.pagosefectivo}`}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.pagostarjeta}`}</Text>
                             </View>
                         </View>
-                    }
-                </Card>
+
+                        <View style={styles.viewContainer}>
+                            <View style={styles.viewTitle}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Sol. atendidas</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Sol. rechazadas</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>T. recompensas</Text>
+                            </View>
+                            <View style={styles.viewContent}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.solatendidas}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.solrechazadas}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.trecompenzas}`}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.viewContainer}>
+                            <View style={styles.viewTitle}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Pagados con efectivo</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Pagados con tarjeta</Text>
+                            </View>
+                            <View style={styles.viewContent}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.pagadosconefectivo}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.pagadoscontarjeta}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.viewContainer}>
+                            <View style={styles.viewTitle}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Viajes</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Horas operadas</Text>
+                                {
+                                    this.state.selectedIndex != 0 && <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Comisión vehículo</Text>
+                                }
+                            </View>
+                            <View style={styles.viewContent}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.viajes}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{this.state.info.horasoperadas}</Text>
+                                {
+                                    this.state.selectedIndex != 0 && <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>null</Text>
+                                }
+                            </View>
+                        </View>
+
+                        <View style={styles.viewContainer}>
+                            <View style={styles.viewTitle}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Comisión plataforma</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Ganancia Final</Text>
+                            </View>
+                            <View style={styles.viewContent}>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.comisionplataforma}`}</Text>
+                                <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this.state.info.gananciafinal}`}</Text>
+                            </View>
+                        </View>
+                    </View>
+                }
             </View>
         )
     }
@@ -367,9 +322,10 @@ const styles = StyleSheet.create({
     head: { height: 40, backgroundColor: '#f1f8ff' },
     text: { margin: 6, fontSize: 12 },
     subHeader: {
-        height: 70,
+        backgroundColor: '#fff',
+        height: 65,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'center'
     },
     textoNormal: {
         fontFamily: 'aller-lt',
@@ -389,10 +345,9 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     imageContainer: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: 15
+        // marginBottom: 15
     },
     cardText: {
         flex: 1,
@@ -417,5 +372,32 @@ const styles = StyleSheet.create({
     border: {
         borderWidth: 2,
         borderColor: '#c8e1ff'
+    },
+    viewTitle: {
+        height: 30,
+        backgroundColor: '#cacaca',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+        // borderColor: '#000',
+        // borderWidth: 1,
+        // borderRadius: 2
+    },
+    viewContent: {
+        height: 35,
+        backgroundColor: '#eaeaea',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+        // borderColor: '#000',
+        // borderWidth: 1,
+        // borderRadius: 2
+    },
+    viewContainer: {
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 2,
+        marginHorizontal: 10,
+        marginVertical: 5
     }
 });

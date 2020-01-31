@@ -145,7 +145,10 @@ export default class RegisterMaintenanceM extends Component {
                     </View>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
                         <Text style={[styles.textoBold, { marginTop: 4 }]}>{this.state.vehicle.nombre}</Text>
-                        <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        {
+                            this.state.vehicle.color.includes('#') &&
+                            <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                        }
                         <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {this.state.vehicle.placas}</Text>
                     </View>
                 </View>

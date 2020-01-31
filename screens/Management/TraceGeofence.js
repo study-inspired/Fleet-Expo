@@ -14,6 +14,7 @@ import NetInfo from '@react-native-community/netinfo'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 export default class TraceGeofence extends React.Component {
     constructor(props) {
@@ -122,12 +123,14 @@ export default class TraceGeofence extends React.Component {
             try {
                 let coordenadas;
                 if (this.state.id_tipo_geocerca == 0) {
-                    coorenadas = JSON.stringify([[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio / 1000]]);
+                    coordenadas = JSON.stringify([[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio / 1000]]);
+                    console.log(JSON.stringify([[this.state.LatLng.latitude, this.state.LatLng.longitude], [this.state.radio / 1000]]));
+                    
                 } else {
                     let markers = this.state.markers.map(m => { return ([m.LatLng.latitude, m.LatLng.longitude]) });
                     coordenadas = JSON.stringify([...markers, markers[0]]);
                 }
-                // console.log(coordenadas);
+                console.log(coordenadas);
 
                 const response = await fetch(`${Globals.server}:3006/webservice/interfaz119/registrar_geocerca`, {
                     method: 'POST',

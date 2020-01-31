@@ -65,7 +65,7 @@ export default class LinkVehicle extends React.Component {
                             id: v.id_unidad,
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
-                            color: v.color.includes('#') ? v.color : '#a8a8a8',
+                            color: v.color,
                             imagen: v.foto.replace('/var/www/html', Globals.server)
                         }
                     })
@@ -114,7 +114,7 @@ export default class LinkVehicle extends React.Component {
                     Alert.alert('Operación exitosa!', 'Se vinculó el vehículo correctamente.');
                     this.props.navigation.state.params.onBack();
                 }
-                    this.props.navigation.goBack();
+                this.props.navigation.goBack();
             } catch (error) {
                 Alert.alert('Error', 'Hubo un error.')
                 console.error(error);
@@ -176,7 +176,10 @@ export default class LinkVehicle extends React.Component {
                                                         }}>
                                                         <View style={{ flexDirection: 'row' }}>
                                                             <Text style={[styles.texto700, { marginTop: 6 }]}>{v.nombre}</Text>
-                                                            <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                            {
+                                                                v.color.includes('#') &&
+                                                                <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                            }
                                                         </View>
                                                         <Text style={[styles.texto600, { fontSize: 12 }]}>{v.placas}</Text>
                                                     </View>

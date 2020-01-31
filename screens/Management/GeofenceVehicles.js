@@ -73,7 +73,7 @@ export default class GeofenceVehicles extends React.Component {
                 const { datos, msg } = await response.json();
                 // console.log(data);
 
-                if(msg) {
+                if (msg) {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     this.props.navigation.goBack();
                     console.error(msg);
@@ -121,7 +121,7 @@ export default class GeofenceVehicles extends React.Component {
                 id: id_unidad,
                 nombre: `${datos[0].marca} ${datos[0].modelo}`,
                 placas: datos[0].placas,
-                color: datos[0].color.includes('#') ? datos[0].color : '#a8a8a8',
+                color: datos[0].color,
                 imagen: datos[0].foto.replace('/var/www/html', Globals.server)
             };
         } catch (error) {
@@ -298,7 +298,10 @@ export default class GeofenceVehicles extends React.Component {
                             <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Has seleccionado el vehículo:</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.texto700}>{this.state.vehiculo.nombre}</Text>
-                                <View style={{ width: 16, height: 16, marginTop: 14, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehiculo.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                {
+                                    this.state.vehiculo.color.includes('#') &&
+                                    <View style={{ width: 16, height: 16, marginTop: 14, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehiculo.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                }
                                 <Text style={styles.texto600}>- {this.state.vehiculo.placas}</Text>
                             </View>
                             <Image

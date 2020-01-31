@@ -232,7 +232,10 @@ export default class ReportVehicle extends Component {
                         </View>
                         <View style={styles.view1}>
                             <Text style={styles.textoBold}>{vehicle.nombre}</Text>
-                            <View style={{ width: 16, height: 16, marginTop: -2, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            {
+                                vehicle.color.includes('#') &&
+                                <View style={{ width: 16, height: 16, marginTop: -2, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            }
                             <Text style={styles.textoNormal}>- {vehicle.placas}</Text>
                         </View>
                     </View>

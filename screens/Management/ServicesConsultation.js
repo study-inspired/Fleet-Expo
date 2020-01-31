@@ -44,7 +44,7 @@ export default class ServicesConsultation extends Component {
             const data = await result.json();
             if (data.datos.length != 0) {
                 console.log(data.datos);
-                
+
                 this.setState({
                     hasInfo: true,
                     tableData: data.datos.map(servicio => {
@@ -122,7 +122,10 @@ export default class ServicesConsultation extends Component {
                         </View>
                         <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
                             <Text style={[styles.textoBold, { marginTop: 4 }]}>{vehicle.nombre}</Text>
-                            <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            {
+                                vehicle.color.includes('#') &&
+                                <View style={{ width: 16, height: 16, marginTop: 6, marginLeft: 5, marginRight: 5, backgroundColor: vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            }
                             <Text style={[styles.textoNormal, { marginTop: 4 }]}>- {vehicle.placas}</Text>
                         </View>
                     </View>

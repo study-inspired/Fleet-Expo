@@ -140,7 +140,10 @@ export default class GeofenceAlertsDetails extends Component {
                         <Text style={{ flex: 1, fontFamily: 'aller-lt', fontSize: 16, marginTop: 20, textAlign: "center" }}>Nombre de geocerca: {this.props.navigation.getParam('nombre', 'Geocerca')}</Text>
                         <View style={{ flexDirection: 'row', alignSelf: 'center', height: 30 }}>
                             <Text style={[{ fontFamily: 'aller-lt', fontSize: 16 }]}>{state.vehicle.nombre}</Text>
-                            <View style={{ width: 16, height: 16, marginTop: 2, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            {
+                                state.vehicle.color.includes('#') &&
+                                <View style={{ width: 16, height: 16, marginTop: 2, marginLeft: 5, marginRight: 5, backgroundColor: state.vehicle.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                            }
                             <Text style={[{ fontFamily: 'aller-lt', fontSize: 16 }]}>- {state.vehicle.placas}</Text>
                         </View>
                     </View>

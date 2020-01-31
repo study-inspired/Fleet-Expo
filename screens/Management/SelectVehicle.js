@@ -70,7 +70,7 @@ export default class SelectVehicle extends React.Component {
                         id: v.id_unidad,
                         nombre: `${v.marca} ${v.modelo}`,
                         placas: v.placas,
-                        color: v.color.includes('#') ? v.color : '#a8a8a8',
+                        color: v.color,
                         imagen: v.foto.replace('/var/www/html', Globals.server)
                     }
                 })
@@ -136,7 +136,10 @@ export default class SelectVehicle extends React.Component {
                                                         style={styles.vehiculoContainer}>
                                                         <View style={{ flexDirection: 'row' }}>
                                                             <Text style={[styles.textoBold, { marginBottom: 5 }]}>{v.nombre}</Text>
-                                                            <View style={[styles.colorVehiculo, { backgroundColor: v.color }]}></View>
+                                                            {
+                                                                v.color.includes('#') &&
+                                                                <View style={[styles.colorVehiculo, { backgroundColor: v.color }]}></View>
+                                                            }
                                                         </View>
                                                         <Text style={[styles.textoNormal, { fontSize: 12, marginBottom: 10 }]}>{v.placas}</Text>
                                                     </View>

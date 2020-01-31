@@ -77,7 +77,10 @@ export default class GeofenceAlerts extends Component {
                                 <Text style={{ fontFamily: 'aller-lt', textAlign: 'center' }}>{val.salidas}</Text>,
                                 <View style={[styles.view1, { justifyContent: 'space-between', margin: 2 }]}>
                                     <Text style={{ marginLeft: 5, fontFamily: 'aller-lt' }}>{`${val.marca}\n${val.modelo}`}</Text>
-                                    <View style={{ width: 16, height: 16, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }} />
+                                    {
+                                        val.color.includes('#') &&
+                                        <View style={{ width: 16, height: 16, marginLeft: 5, marginRight: 5, backgroundColor: val.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }} />
+                                    }
                                 </View>,
                                 val.placa,
                                 <TouchableOpacity

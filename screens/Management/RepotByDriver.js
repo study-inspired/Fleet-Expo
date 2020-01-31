@@ -14,11 +14,14 @@ import {
     StyleSheet,
     ActivityIndicator,
     RefreshControl,
-    Alert
+    Alert,
+    TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Card, Icon } from 'react-native-elements'
 import Globals from '../../constants/Globals';
+import NetInfo from '@react-native-community/netinfo';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default class ReportByDriver extends React.Component {
@@ -45,48 +48,94 @@ export default class ReportByDriver extends React.Component {
     }
 
     async componentDidMount(){
-        try {
-            const result = await fetch(`${Globals.server}:3006/webservice/interfaz54/obtener_conductores_de_propietario`,{
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_id_propietario: 1
-                }),
-            })
-
-            const data = await result.json();
-
-            if (data.datos.length != 0) {
-                let drivers = data.datos.map( d => {
-                    return {
-                        id: d.id_usuario, 
-                        nombre: d.nombre,
-                        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',// d.foto
-                    }
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+            try { 
+                console.log(`${Globals.server}:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario`);
+                const result = await fetch(`${Globals.server}:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        in_id_propietario: 2
+                    }),
                 })
-                this.setState({
-                    hasDrivers: true,
-                    drivers: drivers, 
-                    isLoading: false 
-                });
 
-            } else {
-                Alert.alert('Info', 'No hay conductores!');
+                const data = await result.json();
+
+                // console.log(data);
+
+                if (data.datos.length != 0) {
+                    let drivers = data.datos.map(async (d) => {
+                        let { nombre, fotografia } = await this._datosUsuario(d.id_chofer1);
+                        return {
+                            id_propietario: d.id_propietario,
+                            id_chofer: d.id_chofer1,
+                            id_cup: d.id_cup,
+                            nombre: nombre,
+                            fotografia: fotografia
+                        }
+                    });
+                    Promise.all(drivers).then(completed => {
+                        // console.log(completed);
+                        this.setState({
+                            hasDrivers: true,
+                            drivers: completed,
+                            isLoading: false
+                        });
+                    });
+                } else {
+                    Alert.alert('Información', 'No se encontrarón conductores.');
+                    this.setState({
+                        isLoading: false
+                    });
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Hubo un error.')
+                console.error(error);
                 this.setState({
+                    drivers: [],
                     isLoading: false
                 });
             }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
 
+    async _datosUsuario(id_usuario_chofer) {
+        try {
+            // console.log(`${Globals.server}:3006/webservice/datos_conductor`);
+            
+            const result = await fetch(`${Globals.server}:3006/webservice/datos_conductor`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_usuario: id_usuario_chofer
+                }),
+            })
+            // console.log(result);
+
+            const datos = await result.json();
+            // console.log(datos);
+
+            if (datos.datos.length > 0) {
+                return {
+                    nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
+                    fotografia: datos.datos[0].fotografia
+                }
+            } else {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                this.props.navigation.goBack();
+            }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
-            // this.props.navigation.goBack();
-            this.setState({
-                isLoading: false
-            });
         }
     }
 
@@ -108,66 +157,59 @@ export default class ReportByDriver extends React.Component {
 
     render() {
         return (
-            <ScrollView
-                refreshControl={this._refreshControl()}
-            >
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
                     <Text style={[styles.textoBold, { marginVertical: 25, marginLeft:16 }]}>Seleccione un conductor a consultar</Text>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'flex-end'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
-                <ScrollView style={styles.scrollView} contentInsetAdjustmentBehavior="automatic">
-                    <View style={{ marginBottom: 15 }}>
-                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        { !this.state.isLoading && this.state.hasDrivers &&
-                            this.state.drivers.map((c, i) => {
-                                return (
-                                    <Card key={i}>
-                                        <TouchableOpacity 
-                                            style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('ReportDriver', { driver: c }) }>
-                                            <Icon type='font-awesome' name="bar-chart" size={38} iconStyle={{ position:'absolute', left: 5 }} />
-                                            <View
-                                                style={styles.imageContainer}>
-                                                <Image
-                                                    style={styles.imagenConductor}
-                                                    resizeMode="cover"
-                                                    source={{ uri: c.avatar }}
-                                                />
-                                                <Text style={styles.textoBold}>{c.nombre}</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </Card>
-                                );
-                            })
-                        }
-                    </View>
-                </ScrollView>
+                {
+                    this.state.isLoading ? 
+                    <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }}/>
+                    :
+                    <ScrollView 
+                        style={styles.scrollView} 
+                        contentInsetAdjustmentBehavior="automatic"
+                        refreshControl={this._refreshControl()}
+                    >
+                        <View style={{ marginBottom: 15 }}>
+                            { !this.state.isLoading && this.state.hasDrivers &&
+                                this.state.drivers.map( c => {
+                                    return (
+                                        <Card key={c.id_chofer}>
+                                            <TouchableOpacity 
+                                                style={styles.touchableOpacity} 
+                                                onPress={ () => this.props.navigation.navigate('ReportDriver', { driver: c }) }>
+                                                <Icon type='font-awesome' name="bar-chart" size={38} iconStyle={{ position:'absolute', left: 5 }} />
+                                                <View
+                                                    style={styles.imageContainer}>
+                                                    <Image
+                                                        style={styles.imagenConductor}
+                                                        resizeMode="cover"
+                                                        source={{ uri: c.fotografia }}
+                                                    />
+                                                    <Text style={styles.textoBold}>{c.nombre}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </Card>
+                                    );
+                                })
+                            }
+                        </View>
+                    </ScrollView>
+                }
             </View>
-            </ScrollView>
         )
     }
 }

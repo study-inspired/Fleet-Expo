@@ -104,7 +104,7 @@ export default class VehiclesView extends React.Component {
                             id: v.id_unidad,
                             nombre: `${v.marca} ${v.modelo}`,
                             placas: v.placas,
-                            color: v.color.includes('#') ? v.color : '#a8a8a8',
+                            color: v.color,
                             imagen: v.foto.replace('/var/www/html', Globals.server),
                             vigencia: new Date(v.vigencia_operacion).toLocaleDateString(),
                             problema: problema,
@@ -215,7 +215,7 @@ export default class VehiclesView extends React.Component {
                         background={TouchableNativeFeedback.Ripple('#cacaca', true)}
                         onPress={() => this.addVehicle()}
                     >
-                        <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
                             <AntDesign
                                 name={'pluscircle'}
                                 size={32}
@@ -229,7 +229,7 @@ export default class VehiclesView extends React.Component {
                         background={TouchableNativeFeedback.Ripple('#ff8834', true)}
                         onPress={() => alert('Ayuda')}
                     >
-                        <View style={{flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15}}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
                             <Ionicons
                                 name={'ios-help-circle'}
                                 size={24}
@@ -277,7 +277,10 @@ export default class VehiclesView extends React.Component {
                                                         }}>
                                                         <View style={{ flexDirection: 'row' }}>
                                                             <Text style={styles.texto700}>{v.nombre}</Text>
-                                                            <View style={{ width: 16, height: 16, marginTop: 3, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                            {
+                                                                v.color.includes('#') &&
+                                                                <View style={{ width: 16, height: 16, marginTop: 3, marginLeft: 5, backgroundColor: v.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                                            }
                                                         </View>
 
                                                         <Text style={styles.texto600}>{v.placas}</Text>
