@@ -69,7 +69,7 @@ export default class StartScreen extends React.Component {
             <Image
               source={
                 __DEV__
-                  ? require('../assets/images/robot-dev.png')
+                  ? require('../assets/images/icon.png')
                   : require('../assets/images/robot-prod.png')
               }
               style={styles.welcomeImage}
@@ -78,9 +78,6 @@ export default class StartScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <DevelopmentModeNotice />
-            <Text style={[styles.getStartedText, styles.fontNormal]}>
-              Change this text and your app will automatically reload.
-            </Text>
           </View>
         </ScrollView>
         <View style={styles.tabBarInfoContainer}>
@@ -100,20 +97,20 @@ function DevelopmentModeNotice() {
   if (__DEV__) {
     const learnMoreButton = (
       <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
+        Ver más
       </Text>
     );
 
     return (
       <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use
-        useful development tools. {learnMoreButton}
+        El modo e desarrollo está activado: Tu aplicación será mas lenta pero puedes usar 
+        herramientas útiles de desarrollo. {learnMoreButton}
       </Text>
     );
   } else {
     return (
       <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
+        No estas en modo de desarrollo.
       </Text>
     );
   }

@@ -291,31 +291,42 @@ export default class Drivers extends React.Component {
 
     async _desvincularConductor(id_cup) {
         // console.log(id_cup);
-        try {
-            const response = await fetch(`${Globals.server}:3006/webservice/desvincular_chofer`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    p_id_cup: id_cup
-                })
-            });
-
-            const { datos, msg } = await response.json();
-
-            if (msg) {
-                Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
-                console.error(msg);
-            } else if (datos.length != 0) {
-                Alert.alert('Información', 'El conductor se ha desvinculado exitosamente.');
-                this._refreshListView();
+        Alert.alert('Atención', 'Está seguro que desea desvincular al conductor', [
+            {
+                text: 'Cancelar',
+                style: 'cancel'
+            },
+            {
+                text: 'Aceptar',
+                onPress: async () => {
+                    try {
+                        const response = await fetch(`${Globals.server}:3006/webservice/desvincular_chofer`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                p_id_cup: id_cup
+                            })
+                        });
+            
+                        const { datos, msg } = await response.json();
+            
+                        if (msg) {
+                            Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
+                            console.error(msg);
+                        } else if (datos.length != 0) {
+                            Alert.alert('Información', 'El conductor se ha desvinculado exitosamente.');
+                            this._refreshListView();
+                        }
+                    } catch (error) {
+                        Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
+                        console.error(error);
+                    }
+                }
             }
-        } catch (error) {
-            Alert.alert('Error', 'Servicio no disponible, intente dde nuevo más tarde.');
-            console.error(error);
-        }
+        ]);
     }
 
     render() {

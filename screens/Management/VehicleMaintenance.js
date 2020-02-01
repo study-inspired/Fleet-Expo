@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, SafeAreaView, ScrollVi
 import { Button, Card, Icon, Overlay } from 'react-native-elements';
 import { Table, Row, Rows, } from 'react-native-table-component';
 import { Ionicons } from '@expo/vector-icons';
+import Globals from '../../constants/Globals';
 
 /**
  * Esta vista es de las de gestion de mantenimiento vehiculo

@@ -46,18 +46,21 @@ export default class GeofenceActions extends React.Component {
 
 
     async componentDidMount() {
+        this.setState({
+            hasRecords: false,
+            isLoading: true
+        });
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try {
-                const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas`, {
+                const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas1`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_id_usuario: this.state.id_propietario,
-                        in_mes: this.state.mes,
+                        in_propietario: this.state.id_propietario,
                     }),
                 })
 
@@ -67,30 +70,35 @@ export default class GeofenceActions extends React.Component {
                     Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                     this.setState({ isLoading: false });
                     console.error(msg);
-                } else {
-                    if (datos.length != 0) {
+                } else if (datos.length != 0) {
+                    let ES = datos.map( async g => {
+                        let { entradas, salidas } = await this._obtenerEntradasSalidas(g.id_geocercas)
+                        return {
+                            id_geocerca: g.id_geocercas, 
+                            nombre: g.nombre, 
+                            entradas: entradas, 
+                            salidas: salidas
+                        }
+                    });
+
+                    Promise.all(ES).then(completed => {
                         this.setState({
-                            geofences: datos.map(g => {
-                                return {
-                                    id_geocerca: g.id_geocercas, 
-                                    nombre: g.nombre, 
-                                    entradas: g.entradas, 
-                                    salidas: g.salidas
-                                }
-                            }),
+                            geofences: completed,
                             hasRecords: true,
                             isLoading: false
                         });
-                        //console.log(this.state.geofences);
-                    } else {
-                        Alert.alert('Info', 'No hay alertas registradas en éste mes.');
-                        this.setState({
-                            geofences: [],
-                            hasRecords: false,
-                            isLoading: false
-                        });
-                    }
+                    })
+
+                    //console.log(this.state.geofences);
+                } else {
+                    Alert.alert('Info', 'No hay alertas registradas en éste mes.');
+                    this.setState({
+                        geofences: [],
+                        hasRecords: false,
+                        isLoading: false
+                    });
                 }
+
             } catch (error) {
                 Alert.alert('Error', 'Hubo un error.');
                 console.error(error);
@@ -98,6 +106,26 @@ export default class GeofenceActions extends React.Component {
         } else {
             Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
         }
+    }
+
+    async _obtenerEntradasSalidas(id_geocerca) {
+        const response = await fetch(`${Globals.server}:3006/webservice/obtener_geocercas`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                in_id_geocerca: id_geocerca,
+                in_mes: this.state.mes,
+            }),
+        });
+
+        // console.log(response);
+
+        const { datos } = await response.json();
+
+        return datos[0];
     }
 
     //Refresh control  

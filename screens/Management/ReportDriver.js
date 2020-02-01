@@ -50,7 +50,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteActual() {
         try {
-            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_actual`, {
+            const response = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_actual`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -61,7 +61,7 @@ export default class ReportDriver extends React.Component {
                 }),
             })
 
-            const { datos, msg } = await result.json();
+            const { datos, msg } = await response.json();
             // console.log(datos);
             if (msg) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -91,7 +91,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteSemanal() {
         try {
-            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_semanal`, {
+            const response = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_semanal`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -102,7 +102,7 @@ export default class ReportDriver extends React.Component {
                 }),
             })
 
-            const { datos, msg } = await result.json();
+            const { datos, msg } = await response.json();
             // console.log(datos);
 
             if (msg) {
@@ -134,7 +134,7 @@ export default class ReportDriver extends React.Component {
 
     async reporteMensual() {
         try {
-            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_mensual`, {
+            const response = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_conductor_mensual`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -145,7 +145,7 @@ export default class ReportDriver extends React.Component {
                 }),
             })
 
-            const { datos, msg } = await result.json();
+            const { datos, msg } = await response.json();
             // console.log(data);
             if (msg) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');

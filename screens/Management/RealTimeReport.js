@@ -12,10 +12,12 @@ import {
     StyleSheet,
     Dimensions,
     Alert,
+    TouchableNativeFeedback,
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
 import { Table, Row, Rows } from 'react-native-table-component';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class RealTimeReport extends React.Component {
     static navigationOptions = {
@@ -41,7 +43,7 @@ export default class RealTimeReport extends React.Component {
     async componentDidMount() {
         try {
             const result = await fetch('', {
-                method:'POST',
+                method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
@@ -75,7 +77,7 @@ export default class RealTimeReport extends React.Component {
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
-            
+
             //this.props.navigation.goBack();
             this.setState({
                 isLoading: false
@@ -87,31 +89,20 @@ export default class RealTimeReport extends React.Component {
 
         return (
             <View style={{ flex: 1 }}>
-                <View elevation={5} style={styles.subHeader}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'flex-end'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                <View elevation={2} style={styles.subHeader}>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <Card containerStyle={styles.card} >
                     <View
@@ -128,7 +119,7 @@ export default class RealTimeReport extends React.Component {
                         <Text style={[styles.textoNormal, { marginBottom: 10 }]}>Ganancia actual:  </Text>
                         <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this.state.tableData[0]} MXN</Text>
                     </View>
-                    <View style={{ flex: 4, width: Dimensions.get('window').width-40 }}>
+                    <View style={{ flex: 4, width: Dimensions.get('window').width - 40 }}>
                         <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
                             <Row data={this.state.tableHead} style={styles.head} textStyle={styles.text} />
                             <Rows data={this.state.tableData} textStyle={styles.text} />
@@ -140,38 +131,38 @@ export default class RealTimeReport extends React.Component {
     }
 }
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
     head: { height: 40, backgroundColor: '#f1f8ff' },
-    text: { margin: 6, fontSize:12 },
+    text: { margin: 6, fontSize: 12 },
     subHeader: {
-        height: 70, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between' 
+        height: 70,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     textoNormal: {
         fontFamily: 'aller-lt',
-        fontSize: 14, 
+        fontSize: 14,
     },
     textoBold: {
         fontFamily: 'aller-bd',
-        fontSize: 16, 
+        fontSize: 16,
     },
     scrollView: {
-        backgroundColor:  '#fafafa'
+        backgroundColor: '#fafafa'
     },
-    card: { 
-        flex: 1, 
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        marginBottom: 15 
+    card: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 15
     },
     imageContainer: {
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
         marginTop: 15
-    }, 
+    },
     cardText: {
         flex: 1,
         flexDirection: 'row',

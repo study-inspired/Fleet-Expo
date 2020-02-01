@@ -13,11 +13,13 @@ import {
     Image,
     StyleSheet,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableNativeFeedback
 } from 'react-native';
 
 import { Button, Card } from 'react-native-elements'
 import Globals from '../../constants/Globals';
+import { Ionicons } from '@expo/vector-icons';
 
 const conductores = [
     {
@@ -63,7 +65,7 @@ export default class RealTimeReports extends React.Component {
 
     async componentDidMount() {
         try {
-            const result = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_tiempo_real`, {
+            const response = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_tiempo_real`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -74,13 +76,16 @@ export default class RealTimeReports extends React.Component {
                 })
             });
 
-            const data = await result.json();
-            
-            if (data.datos.length != 0) {
+            const { datos, msg } = await response.json();
+
+            if (msg){
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(error);
+            } else if (datos.length != 0) {
                 this.setState({
-                    drivers: data.datos,
+                    drivers: datos,
+                    isLoading: false,
                     hasDrivers: true,
-                    isLoading: false
                 });
             } else {
                 Alert.alert('Info', 'No hay datos.');
@@ -88,14 +93,10 @@ export default class RealTimeReports extends React.Component {
                     isLoading: false
                 });
                 //this.props.navigation.goBack();
-                this.setState({
-                    isLoading: false
-                });
             }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
-            
             //this.props.navigation.goBack();
             this.setState({
                 isLoading: false
@@ -106,42 +107,31 @@ export default class RealTimeReports extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View elevation={5} style={styles.subHeader}>
-                    <Button
-                        type='clear'
-                        icon={{
-                            name: "help",
-                            size: 32,
-                            color: '#ff8834'
-                        }}
-                        containerStyle={{ flex: 1 }}
-                        buttonStyle={{
-                            position: 'absolute',
-                            flexDirection: 'column',
-                            alignSelf: 'flex-end'
-                        }}
-                        iconContainerStyle={{
-                            flex: 1,
-                        }}
-                        titleStyle={{
-                            flex: 1,
-                            fontFamily: 'aller-lt',
-                            fontSize: 12,
-                            bottom: 0
-                        }}
-                        title="Ayuda"
-                    />
+                <View elevation={2} style={styles.subHeader}>
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.Ripple('#ff8834', true)}
+                        onPress={() => alert('Ayuda')}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', position: 'absolute', top: 12, right: 15 }}>
+                            <Ionicons
+                                name={'ios-help-circle'}
+                                size={24}
+                                color='#ff8834'
+                            />
+                            <Text style={{ fontFamily: 'aller-bd', fontSize: 12, color: '#ff8834' }}>Ayuda</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
                     <View style={{ marginBottom: 15 }}>
-                    {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        { !this.state.isLoading && this.state.hasDrivers &&
+                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
+                        {!this.state.isLoading && this.state.hasDrivers &&
                             this.state.drivers.map((c, i) => {
                                 return (
                                     <Card key={i}>
-                                        <TouchableOpacity 
-                                            style={styles.touchableOpacity} 
-                                            onPress={ () => this.props.navigation.navigate('RealTimeReport', { driver: c }) } >
+                                        <TouchableOpacity
+                                            style={styles.touchableOpacity}
+                                            onPress={() => this.props.navigation.navigate('RealTimeReport', { driver: c })} >
                                             <View
                                                 style={styles.imagecontainer}>
                                                 <Image
@@ -154,7 +144,7 @@ export default class RealTimeReports extends React.Component {
                                             <View
                                                 style={styles.textoTouchable}>
                                                 <Text style={styles.textoBold}>Ganancia actual</Text>
-                                                <Text style={[styles.textoNormal, { marginBottom: 10, color:'#0e9bcf' }]}>$ {(+c.gananciaactual).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} MXN</Text>
+                                                <Text style={[styles.textoNormal, { marginBottom: 10, color: '#0e9bcf' }]}>$ {(+c.gananciaactual).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} MXN</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>
@@ -170,29 +160,29 @@ export default class RealTimeReports extends React.Component {
 
 const styles = StyleSheet.create({
     subHeader: {
-        height: 70, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between' 
+        height: 70,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     textoNormal: {
         fontFamily: 'aller-lt',
-        fontSize: 14, 
+        fontSize: 14,
         marginBottom: 10
     },
     textoBold: {
         fontFamily: 'aller-bd',
-        fontSize: 16, 
+        fontSize: 16,
     },
-    touchableOpacity: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
+    touchableOpacity: {
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'flex-start'
     },
     textoTouchable: {
         flex: 3,
         flexDirection: 'column',
         alignItems: 'center'
-    }, 
+    },
     imagecontainer: {
         flex: 2,
         flexDirection: 'column',

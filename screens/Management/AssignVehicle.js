@@ -181,7 +181,10 @@ export default class AssignVehicle extends React.Component {
                             <Text style={{ marginTop: 10, textAlign: 'center', fontFamily: 'aller-lt', fontSize: 16 }}>Has seleccionado el vehículo:</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.texto700}>{this.state.vehiculo.nombre}</Text>
-                                <View style={{ width: 16, height: 16, marginTop: 14, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehiculo.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                {
+                                    this.state.vehiculo.color && this.state.vehiculo.color.includes('#') &&
+                                    <View style={{ width: 16, height: 16, marginTop: 14, marginLeft: 5, marginRight: 5, backgroundColor: this.state.vehiculo.color, borderRadius: 8, borderColor: '#000', borderWidth: 1 }}></View>
+                                }
                                 <Text style={styles.texto600}>- {this.state.vehiculo.placas}</Text>
                             </View>
                             <Image
