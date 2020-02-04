@@ -126,13 +126,13 @@ export default class Drivers extends React.Component {
             })
             // console.log(result);
 
-            const datos = await result.json();
+            const { datos } = await result.json();
             // console.log(datos);
 
-            if (datos.datos.length > 0) {
+            if (datos.length > 0) {
                 return {
-                    nombre: `${datos.datos[0].nombre.split(' ')[0]} ${datos.datos[0].apellido.split(' ')[0]}`,
-                    fotografia: datos.datos[0].fotografia
+                    nombre: `${datos[0].nombre.split(' ')[0]} ${datos[0].apellido.split(' ')[0]}`,
+                    fotografia: datos[0].fotografia
                 }
             } else {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');

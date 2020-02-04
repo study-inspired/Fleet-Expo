@@ -130,9 +130,9 @@ export default class AddDriver extends React.Component {
 
     async obtenerConductor() {
         if (this.state.telefono != '') {
-            const state = await NetInfo.fetch();
-            if (state.isConnected) {
-                const result = await fetch(`${Globals.server}:3006/webservice/id_usuario_geocerca`, {
+            const { isConnected } = await NetInfo.fetch();
+            if (isConnected) {
+                const response = await fetch(`${Globals.server}:3006/webservice/id_usuario_geocerca`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -143,9 +143,11 @@ export default class AddDriver extends React.Component {
                     })
                 });
 
-                const datos = await result.json();
+                const { datos, msg } = await response.json();
 
-                if (datos.datos.length == 0) {
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                } else if (datos.length == 0) {
                     console.log('No hay conductor asociado al teléfono proporcionado.');
                     this.setState({
                         mensaje: 'No hay conductor asociado al teléfono proporcionado.',
@@ -277,7 +279,7 @@ export default class AddDriver extends React.Component {
                                                     latitude: conductor.latitude,
                                                     longitude: conductor.longitude
                                                 }}
-                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, socket: this.socket, id_usuario: conductor.id_conductor, id_propietario: this.state.id_propietario })}
+                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, id_usuario: conductor.id_conductor, id_propietario: this.state.id_propietario })}
                                             >
                                                 <Icon
                                                     type='font-awesome'

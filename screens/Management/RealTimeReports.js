@@ -17,9 +17,10 @@ import {
     TouchableNativeFeedback
 } from 'react-native';
 
-import { Button, Card } from 'react-native-elements'
+import { Card } from 'react-native-elements';
 import Globals from '../../constants/Globals';
 import { Ionicons } from '@expo/vector-icons';
+import NetInfo from '@react-native-community/netinfo';
 
 const conductores = [
     {
@@ -64,44 +65,107 @@ export default class RealTimeReports extends React.Component {
     }
 
     async componentDidMount() {
-        try {
-            const response = await fetch(`${Globals.server}:3006/webservice/interfaz134/reporte_tiempo_real`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    p_id_propietario: 1
+        const { isConnected } = await NetInfo.fetch();
+        if (isConnected) {
+            try {
+                const response = await fetch(`${Globals.server}:3006/webservice/interfaz/obtener_unidades_conductores_de_propietario`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        in_id_propietario: 2
+                    }),
                 })
-            });
+                const { datos, msg } = await response.json();
 
-            const { datos, msg } = await response.json();
-
-            if (msg){
+                if (msg) {
+                    Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.')
+                    console.error(msg);
+                } else if (datos.length != 0) {
+                    let drivers = datos.map(async (d) => {
+                        let { nombre, fotografia } = await this._datosUsuario(d.id_chofer1);
+                        return {
+                            id_propietario: d.id_propietario,
+                            id_chofer: d.id_chofer1,
+                            id_cup: d.id_cup,
+                            nombre: nombre,
+                            fotografia: fotografia,
+                            ganancia: 0
+                        }
+                    });
+                    Promise.all(drivers).then(completed => {
+                        // console.log(completed);
+                        this.setState({
+                            hasDrivers: true,
+                            drivers: completed,
+                            isLoading: false
+                        });
+                    });
+                } else {
+                    Alert.alert('Información', 'No se encontrarón conductores.');
+                    this.setState({
+                        drivers: [],
+                        isLoading: false
+                    });
+                }
+            } catch (error) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 console.error(error);
-            } else if (datos.length != 0) {
-                this.setState({
-                    drivers: datos,
-                    isLoading: false,
-                    hasDrivers: true,
-                });
-            } else {
-                Alert.alert('Info', 'No hay datos.');
+                //this.props.navigation.goBack();
                 this.setState({
                     isLoading: false
                 });
-                //this.props.navigation.goBack();
+            }
+        } else {
+            Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
+        }
+    }
+
+    async _datosUsuario(id_usuario_chofer) {
+        try {
+            // console.log(`${Globals.server}:3006/webservice/datos_conductor`);
+
+            const response = await fetch(`${Globals.server}:3006/webservice/datos_conductor`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_usuario: id_usuario_chofer
+                }),
+            })
+            // console.log(result);
+
+            const { datos } = await response.json();
+            // console.log(datos);
+
+            if (datos.length > 0) {
+                return {
+                    nombre: `${datos[0].nombre.split(' ')[0]} ${datos[0].apellido.split(' ')[0]}`,
+                    fotografia: datos[0].fotografia
+                }
+            } else {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                this.props.navigation.goBack();
             }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
             console.error(error);
-            //this.props.navigation.goBack();
-            this.setState({
-                isLoading: false
-            });
         }
+    }
+
+    /**
+     * Convierte un valor numerico a una cadena que representa valores monetarios con 2 decimales.
+     * 12 => 12.00
+     * 1234567 => 1,234,567.00
+     * 1234567.89 => 1,234,567.89
+     * @param {number} number 
+     */
+    _formatCurrency(number) {
+        return (+number).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
     }
 
     render() {
@@ -124,27 +188,33 @@ export default class RealTimeReports extends React.Component {
                 </View>
                 <ScrollView contentInsetAdjustmentBehavior="automatic">
                     <View style={{ marginBottom: 15 }}>
-                        {this.state.isLoading && <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} />}
-                        {!this.state.isLoading && this.state.hasDrivers &&
-                            this.state.drivers.map((c, i) => {
+                        {
+                            this.state.isLoading ? 
+                            <ActivityIndicator size="large" color="#ff8834" animating={this.state.isLoading} style={{ flex: 1 }} />:
+                            this.state.hasDrivers && this.state.drivers.map(c => {
                                 return (
-                                    <Card key={i}>
+                                    <Card key={c.id_chofer} wrapperStyle={{borderRadius:3}}>
                                         <TouchableOpacity
                                             style={styles.touchableOpacity}
-                                            onPress={() => this.props.navigation.navigate('RealTimeReport', { driver: c })} >
+                                            onPress={() => this.props.navigation.navigate('RealTimeReport', { driver: c })} 
+                                        >
                                             <View
                                                 style={styles.imagecontainer}>
-                                                <Image
+                                                {false && <Image
                                                     style={styles.image}
                                                     resizeMode="cover"
-                                                    source={{ uri: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png' }} // c.avatar
+                                                    source={{ uri: c.fotografia }}
+                                                />}
+                                                <Ionicons
+                                                    name={'md-contact'}
+                                                    size={76}
                                                 />
                                                 <Text style={styles.textoBold}>{c.nombre}</Text>
                                             </View>
                                             <View
                                                 style={styles.textoTouchable}>
                                                 <Text style={styles.textoBold}>Ganancia actual</Text>
-                                                <Text style={[styles.textoNormal, { marginBottom: 10, color: '#0e9bcf' }]}>$ {(+c.gananciaactual).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} MXN</Text>
+                                                <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this._formatCurrency(c.ganancia)} MXN</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>
@@ -160,9 +230,10 @@ export default class RealTimeReports extends React.Component {
 
 const styles = StyleSheet.create({
     subHeader: {
-        height: 70,
+        height: 65,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: '#fff'
     },
     textoNormal: {
         fontFamily: 'aller-lt',

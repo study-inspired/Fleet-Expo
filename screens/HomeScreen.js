@@ -9,9 +9,7 @@ import {
   View
 } from 'react-native';
 
-import { MonoText } from '../components/StyledText';
-
-// var token;
+// import { MonoText } from '../components/StyledText';
 
 export default class StartScreen extends React.Component {
   static navigationOptions = {
@@ -80,14 +78,14 @@ export default class StartScreen extends React.Component {
             <DevelopmentModeNotice />
           </View>
         </ScrollView>
-        <View style={styles.tabBarInfoContainer}>
+        {/* <View style={styles.tabBarInfoContainer}>
           <View
             style={[styles.codeHighlightContainer, styles.navigationFilename]}>
             <MonoText style={styles.codeHighlightText}>
               navigation/MainTabNavigator.js
             </MonoText>
           </View>
-        </View>
+        </View> */}
       </View>
     );
   }
@@ -119,12 +117,6 @@ function DevelopmentModeNotice() {
 function handleLearnMorePress() {
   WebBrowser.openBrowserAsync(
     'https://docs.expo.io/versions/latest/workflow/development-mode/'
-  );
-}
-
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes'
   );
 }
 

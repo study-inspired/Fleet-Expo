@@ -37,6 +37,29 @@ Notifications.createCategoryAsync('aprove', [
   },
 ]);
 
+const registerForPushNotificationsAsync = async () => {
+  if (Constants.isDevice) {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(
+        Permissions.NOTIFICATIONS
+      );
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('No se pudo obtener el permiso para mostrar notificaciónes!');
+      return;
+    }
+    const token = await Notifications.getExpoPushTokenAsync();
+    console.log('token:', token);
+  } else {
+    alert('Debes usar un dispositivo real para usar las notificaciones.');
+  }
+};
+
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   NetInfo.addEventListener(state => {
@@ -57,7 +80,7 @@ export default function App(props) {
     );
   } else {
     // enviarNotificacionLocal('Listo', 'Se inicio la aplicación');
-    enviarNotificacionLocalAprobar('Listo', 'Se inicio la aplicación');
+    // enviarNotificacionLocalAprobar('Listo', 'Se inicio la aplicación');
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#ff8834" barStyle="dark-content-content" />
@@ -66,29 +89,6 @@ export default function App(props) {
     );
   }
 }
-
-const registerForPushNotificationsAsync = async () => {
-  if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(
-        Permissions.NOTIFICATIONS
-      );
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('No se pudo obtener el permmiso para las notificaciónes!');
-      return;
-    }
-    // token = await Notifications.getExpoPushTokenAsync();
-    // console.log('token:', token);
-  } else {
-    alert('Debes usar un dispositivo real para usar las notificaciones.');
-  }
-};
 
 const enviarNotificacionLocal = async (title, body) => {
   // let notificationId = 

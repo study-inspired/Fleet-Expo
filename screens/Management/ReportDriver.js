@@ -16,8 +16,7 @@ import {
     Alert
 } from 'react-native';
 
-import { Button, Card, ButtonGroup } from 'react-native-elements'
-import { Table, Row, Rows } from 'react-native-table-component';
+import { ButtonGroup } from 'react-native-elements';
 import Globals from '../../constants/Globals';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
@@ -44,9 +43,9 @@ export default class ReportDriver extends React.Component {
         driver: this.props.navigation.getParam('driver', {})
     }
 
-    // componentDidMount() {
-    //     this.reporteActual();
-    // }
+    componentDidMount() {
+        this.reporteActual();
+    }
 
     async reporteActual() {
         try {
@@ -65,14 +64,13 @@ export default class ReportDriver extends React.Component {
             // console.log(datos);
             if (msg) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                console.error(error);
+                console.error(msg);
             } else if (datos.length != 0) {
                 this.setState({
                     info: datos[0],
                     isLoading: false,
                     hasInfo: true,
                 });
-
             } else {
                 Alert.alert('Información', 'No se encontró información.');
                 this.setState({
@@ -107,7 +105,7 @@ export default class ReportDriver extends React.Component {
 
             if (msg) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                console.error(error);
+                console.error(msg);
             } else if (datos.length != 0) {
                 this.setState({
                     info: datos[0],
@@ -149,7 +147,7 @@ export default class ReportDriver extends React.Component {
             // console.log(data);
             if (msg) {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-                console.error(error);
+                console.error(msg);
             } else if (datos.length != 0) {
                 this.setState({
                     info: datos[0],
@@ -379,9 +377,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-        // borderColor: '#000',
-        // borderWidth: 1,
-        // borderRadius: 2
     },
     viewContent: {
         height: 35,
@@ -389,9 +384,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-        // borderColor: '#000',
-        // borderWidth: 1,
-        // borderRadius: 2
     },
     viewContainer: {
         borderColor: '#000',

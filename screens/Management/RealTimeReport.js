@@ -14,9 +14,6 @@ import {
     Alert,
     TouchableNativeFeedback,
 } from 'react-native';
-
-import { Button, Card } from 'react-native-elements'
-import { Table, Row, Rows } from 'react-native-table-component';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class RealTimeReport extends React.Component {
@@ -40,50 +37,50 @@ export default class RealTimeReport extends React.Component {
         driver: this.props.navigation.getParam('driver', {}),
     }
 
-    async componentDidMount() {
-        try {
-            const result = await fetch('', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    p_id_propietario: this.state.driver.id_chofer1 // cual id es?
-                })
-            });
+    // async componentDidMount() {
+    //     try {
+    //         const result = await fetch('', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Accept: 'application/json',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({
+    //                 p_id_propietario: this.state.driver.id_chofer1 // cual id es?
+    //             })
+    //         });
 
-            const data = await result.json();
+    //         const data = await result.json();
 
-            if (data.datos.length != 0) {
-                this.setState({
-                    hasInfo: true,
-                    tableData: [
-                        data.datos[0].GananciaActual,
-                        data.datos[0].Efectivo,
-                        data.datos[0].Tarjeta,
-                        data.datos[0].comision,
-                        data.datos[0].gananciafin
-                    ],
-                    isLoading: false,
-                });
-            } else {
-                Alert.alert('Info', 'No hay datos.');
-                //this.props.navigation.goBack();
-                this.setState({
-                    isLoading: false
-                });
-            }
-        } catch (error) {
-            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-            console.error(error);
+    //         if (data.datos.length != 0) {
+    //             this.setState({
+    //                 hasInfo: true,
+    //                 tableData: [
+    //                     data.datos[0].GananciaActual,
+    //                     data.datos[0].Efectivo,
+    //                     data.datos[0].Tarjeta,
+    //                     data.datos[0].comision,
+    //                     data.datos[0].gananciafin
+    //                 ],
+    //                 isLoading: false,
+    //             });
+    //         } else {
+    //             Alert.alert('Info', 'No hay datos.');
+    //             //this.props.navigation.goBack();
+    //             this.setState({
+    //                 isLoading: false
+    //             });
+    //         }
+    //     } catch (error) {
+    //         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+    //         console.error(error);
 
-            //this.props.navigation.goBack();
-            this.setState({
-                isLoading: false
-            });
-        }
-    }
+    //         //this.props.navigation.goBack();
+    //         this.setState({
+    //             isLoading: false
+    //         });
+    //     }
+    // }
 
     render() {
 
@@ -104,28 +101,42 @@ export default class RealTimeReport extends React.Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
-                <Card containerStyle={styles.card} >
-                    <View
-                        style={styles.imageContainer}>
-                        <Image
-                            style={styles.image}
-                            resizeMode="cover"
-                            source={{ uri: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png' }} // this.state.driver.avatar
-                        />
-                        <Text style={styles.textoBold}>{this.state.driver.nombre}</Text>
+
+                <View
+                    style={styles.imageContainer}>
+                    {false && <Image
+                        style={styles.image}
+                        resizeMode="cover"
+                        source={{ uri: this.state.driver.fotografia }}
+                    />}
+                    <Ionicons
+                        name={'md-contact'}
+                        size={76}
+                    />
+                    <Text style={styles.textoBold}>{this.state.driver.nombre}</Text>
+                </View>
+                <View style={styles.viewContainer}>
+                    <View style={styles.viewTitle}>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>TOTAL</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Efectivo</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Tarjeta</Text>
                     </View>
-                    <View
-                        style={styles.cardText}>
-                        <Text style={[styles.textoNormal, { marginBottom: 10 }]}>Ganancia actual:  </Text>
-                        <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this.state.tableData[0]} MXN</Text>
+                    <View style={styles.viewContent}>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
                     </View>
-                    <View style={{ flex: 4, width: Dimensions.get('window').width - 40 }}>
-                        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Row data={this.state.tableHead} style={styles.head} textStyle={styles.text} />
-                            <Rows data={this.state.tableData} textStyle={styles.text} />
-                        </Table>
+                </View>
+                <View style={styles.viewContainer}>
+                    <View style={styles.viewTitle}>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Comisión</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Ganancia final</Text>
                     </View>
-                </Card>
+                    <View style={styles.viewContent}>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                    </View>
+                </View>
             </View>
         )
     }
@@ -136,9 +147,10 @@ const styles = StyleSheet.create({
     head: { height: 40, backgroundColor: '#f1f8ff' },
     text: { margin: 6, fontSize: 12 },
     subHeader: {
-        height: 70,
+        height: 65,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: '#fff'
     },
     textoNormal: {
         fontFamily: 'aller-lt',
@@ -158,10 +170,9 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     imageContainer: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        marginTop: 15
+        marginVertical: 15
     },
     cardText: {
         flex: 1,
@@ -173,5 +184,26 @@ const styles = StyleSheet.create({
         borderRadius: 38,
         width: 76,
         height: 76,
+    },
+    viewTitle: {
+        height: 30,
+        backgroundColor: '#cacaca',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    viewContent: {
+        height: 35,
+        backgroundColor: '#eaeaea',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    viewContainer: {
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 2,
+        marginHorizontal: 10,
+        marginVertical: 5
     }
 });

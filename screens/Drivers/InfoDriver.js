@@ -22,6 +22,7 @@ import { Button, Icon, Divider, Badge } from 'react-native-elements';
 import NetInfo from '@react-native-community/netinfo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Globals from '../../constants/Globals';
+import { Notifications } from 'expo';
 
 export default class InfoDriver extends React.Component {
 
@@ -43,6 +44,7 @@ export default class InfoDriver extends React.Component {
       comentarios: [],
       id_propietario: this.props.navigation.getParam('id_propietario', 0),
       id_conductor: this.props.navigation.getParam('id_usuario', 0),
+      socket_id: this.props.navigation.getParam('socket_id', ''),
       notification: {}
     }
 
@@ -59,10 +61,12 @@ export default class InfoDriver extends React.Component {
   // };
 
   async componentDidMount() {
-    this.socket.on('respuesta_invitacion', (res) => {
-      console.log('Respuesta invitación:', res);
-      this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);    
-    });
+    if (this.state.socket_id != '') {
+      this.socket.on('respuesta_invitacion', (res) => {
+        console.log('Respuesta invitación:', res);
+        this.props.screenProps.enviarNotificacionLocal('Respuesta a invitación', `El conductor, ${this.state.conductor.nombre} ${this.state.conductor.apellido} ${res.respuesta == "0" ? 'no' : ''} ha aceptado tu invitación de colaboración.`);    
+      });
+    }
 
     await this.comentarios();
     await this.datos_conductor();
@@ -172,16 +176,40 @@ export default class InfoDriver extends React.Component {
 
   async _invitarConductor() {
     try {
-      let datos = {
-        socket_id: this.props.navigation.getParam('socket_id', ''),
-        id_conductor: this.state.id_conductor,
-        id_propietario: this.state.id_propietario
-      };
+      if (this.state.socket_id != '') { // invitar por selección en mapa
+        this.socket.emit('enviarInvitacion', {
+          socket_id: socket_id,
+          id_conductor: this.state.id_conductor,
+          id_propietario: this.state.id_propietario
+        });
+      } else { // invitar escribiendo el teléfono
+        const token = await Notifications.getExpoPushTokenAsync();
+        console.log(token);
+        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: 'ExponentPushToken[XRjH88BMaDA_qBrJNgzSDn]',
+            title: 'Invitación de colaboración',
+            body: 'El usuario Carlos Larios te envia una solicitud para colaborar.',
+            data: {
+              id_propietario: this.state.id_propietario,
+              id_conductor: this.state.id_conductor,
+              nombre: `${this.state.conductor.nombre} ${this.state.conductor.apellido}`,
+              token: token
+            },
+            categoryId: 'aprove',
+          })
+        });
 
-      this.socket.emit('enviarInvitacion', datos);
+        console.log(response);
+      }
       // console.log('Enviar invitación');
 
-      const result = await fetch('http://35.203.42.33:3006/webservice/interfaz55/invitar_conductor', {
+      const result = await fetch(`${Globals.server}:3006/webservice/interfaz55/invitar_conductor`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -195,7 +223,7 @@ export default class InfoDriver extends React.Component {
 
       const data = await result.json();
       // console.log(data);
-
+      Alert.alert('Información', 'La invitación fué enviada, espera la respuesta del conductor.');
       if (data.msg) {
         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
         console.error(data.msg);
