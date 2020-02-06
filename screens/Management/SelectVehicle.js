@@ -56,16 +56,17 @@ export default class SelectVehicle extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carlos@gmail.com',
-                    p_pass: '123456',
+                    p_id_propietario: this.props.screenProps.id_propietario
                 }),
             })
 
-            const data = await result.json();
+            const {datos, msg} = await result.json();
             // console.log(data);
-
-            if (data.datos.length != 0) {
-                let vehicles = data.datos.map((v) => {
+            if (msg) {
+                Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+                console.error(msg);
+            } else if (datos.length != 0) {
+                let vehicles = datos.map((v) => {
                     return {
                         id: v.id_unidad,
                         nombre: `${v.marca} ${v.modelo}`,

@@ -41,7 +41,7 @@ export default class GeofenceActions extends React.Component {
         hasRecords: false,
         geofences: [],
         mes: new Date().getMonth() + 1,
-        id_propietario: 2
+        id_propietario: this.props.screenProps.id_propietario
     }
 
 
@@ -205,7 +205,7 @@ export default class GeofenceActions extends React.Component {
                                             return (
                                                 <TouchableOpacity
                                                     key={i}
-                                                    onPress={() => this.props.navigation.navigate('GeofenceAlerts', { id_geocerca: a.id_geocerca, nombre: a.nombre, id_propietario: this.state.id_propietario, mes: this.state.mes })}
+                                                    onPress={() => this.props.navigation.navigate('GeofenceAlerts', { id_geocerca: a.id_geocerca, nombre: a.nombre/*, id_propietario: this.state.id_propietario*/, mes: this.state.mes })}
                                                 >
                                                     <Card wrapperStyle={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                         <View

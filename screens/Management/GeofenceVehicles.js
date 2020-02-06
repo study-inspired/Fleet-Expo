@@ -50,7 +50,7 @@ export default class GeofenceVehicles extends React.Component {
             entrada: false,
             salida: false,
             id_geocerca: this.props.navigation.getParam('id_geocerca', 0),
-            id_propietario: this.props.navigation.getParam('id_propietario', 0),
+            id_propietario: this.props.screenProps.id_propietario,
         }
     }
 

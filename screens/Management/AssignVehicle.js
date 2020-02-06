@@ -57,8 +57,7 @@ export default class AssignVehicle extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carlos@gmail.com',
-                    p_pass: '123456',
+                    p_id_propietario: this.props.screenProps.id_propietario,
                 }),
             })
 
@@ -108,7 +107,7 @@ export default class AssignVehicle extends React.Component {
                         p_id_geocercas: this.props.navigation.getParam('id_geocerca', 0),
                         alertaentrada: this.state.entrada ? 1 : 0,
                         alertasalida: this.state.salida ? 1 : 0,
-                        p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
+                        p_id_propietario: this.props.screenProps.id_propietario,
                     }),
                 });
 

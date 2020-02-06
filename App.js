@@ -84,7 +84,7 @@ export default function App(props) {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#ff8834" barStyle="dark-content-content" />
-        <AppNavigator screenProps={{ socket: socket, enviarNotificacionLocal: enviarNotificacionLocal }}/>
+        <AppNavigator screenProps={{ socket: socket, enviarNotificacionLocal: enviarNotificacionLocal, id_propietario: 7 }}/>
       </View>
     );
   }

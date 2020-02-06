@@ -50,6 +50,8 @@ export default class Drivers extends React.Component {
     }
 
     async componentDidMount() {
+        console.log(this.props.screenProps.id_propietario);
+        
         const state = await NetInfo.fetch();
         if (state.isConnected) {
             try { 
@@ -61,7 +63,7 @@ export default class Drivers extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        in_id_propietario: 2
+                        in_id_propietario: this.props.screenProps.id_propietario
                     }),
                 })
 

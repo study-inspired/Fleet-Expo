@@ -63,7 +63,7 @@ export default class AddDriver extends React.Component {
             marker: {},
             conductores: [],
             radio: 5000,
-            id_propietario: this.props.navigation.getParam('id_propietario', 0)
+            id_propietario: this.props.screenProps.id_propietario //this.props.navigation.getParam('id_propietario', 0)
         }
 
         this.socket = this.props.screenProps.socket;
@@ -156,7 +156,7 @@ export default class AddDriver extends React.Component {
                     });
                 } else {
                     // console.log(datos.datos);
-                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, id_propietario: this.state.id_propietario });
+                    this.props.navigation.navigate('InfoDriver', { id_usuario: datos.datos[0].out_id_usuario, /*id_propietario: this.state.id_propietario */});
                 }
             } else {
                 Alert.alert('Sin conexión', 'Verifique su conexión e intente nuevamente.');
@@ -279,7 +279,7 @@ export default class AddDriver extends React.Component {
                                                     latitude: conductor.latitude,
                                                     longitude: conductor.longitude
                                                 }}
-                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, id_usuario: conductor.id_conductor, id_propietario: this.state.id_propietario })}
+                                                onPress={() => this.props.navigation.navigate('InfoDriver', { socket_id: conductor.id_socket, id_usuario: conductor.id_conductor/*, id_propietario: this.props.screenProps.id_propietario*/ })}
                                             >
                                                 <Icon
                                                     type='font-awesome'

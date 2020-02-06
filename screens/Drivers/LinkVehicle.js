@@ -39,6 +39,7 @@ export default class LinkVehicle extends React.Component {
         isLoading: true,
         hasVehicles: false,
         vehicles: {},
+        id_propietario: this.props.screenProps.id_propietario
     }
 
     async componentDidMount() {
@@ -52,7 +53,7 @@ export default class LinkVehicle extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_id_propietario: 2
+                        p_id_propietario: this.state.id_propietario
                     }),
                 })
 
@@ -100,7 +101,7 @@ export default class LinkVehicle extends React.Component {
                     },
                     body: JSON.stringify({
                         p_id_unidad: unidad,
-                        p_id_propietario: this.props.navigation.getParam('id_propietario', 0),
+                        p_id_propietario: this.state.id_propietario,
                         p_id_chofer1: this.props.navigation.getParam('id_chofer', 0)
                     }),
                 });

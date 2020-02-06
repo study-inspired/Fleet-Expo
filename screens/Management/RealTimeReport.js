@@ -37,53 +37,18 @@ export default class RealTimeReport extends React.Component {
         driver: this.props.navigation.getParam('driver', {}),
     }
 
-    // async componentDidMount() {
-    //     try {
-    //         const result = await fetch('', {
-    //             method: 'POST',
-    //             headers: {
-    //                 Accept: 'application/json',
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify({
-    //                 p_id_propietario: this.state.driver.id_chofer1 // cual id es?
-    //             })
-    //         });
-
-    //         const data = await result.json();
-
-    //         if (data.datos.length != 0) {
-    //             this.setState({
-    //                 hasInfo: true,
-    //                 tableData: [
-    //                     data.datos[0].GananciaActual,
-    //                     data.datos[0].Efectivo,
-    //                     data.datos[0].Tarjeta,
-    //                     data.datos[0].comision,
-    //                     data.datos[0].gananciafin
-    //                 ],
-    //                 isLoading: false,
-    //             });
-    //         } else {
-    //             Alert.alert('Info', 'No hay datos.');
-    //             //this.props.navigation.goBack();
-    //             this.setState({
-    //                 isLoading: false
-    //             });
-    //         }
-    //     } catch (error) {
-    //         Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
-    //         console.error(error);
-
-    //         //this.props.navigation.goBack();
-    //         this.setState({
-    //             isLoading: false
-    //         });
-    //     }
-    // }
+    /**
+     * Convierte un valor numerico a una cadena que representa valores monetarios con 2 decimales.
+     * 12 => 12.00
+     * 1234567 => 1,234,567.00
+     * 1234567.89 => 1,234,567.89
+     * @param {number} number 
+     */
+    _formatCurrency(number) {
+        return (+number).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+    }
 
     render() {
-
         return (
             <View style={{ flex: 1 }}>
                 <View elevation={2} style={styles.subHeader}>
@@ -122,9 +87,9 @@ export default class RealTimeReport extends React.Component {
                         <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Tarjeta</Text>
                     </View>
                     <View style={styles.viewContent}>
-                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
-                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
-                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this._formatCurrency(this.state.driver.ganancias.out_total)} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this._formatCurrency(this.state.driver.ganancias.out_efectivo)} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this._formatCurrency(this.state.driver.ganancias.out_tarjeta)} MXN`}</Text>
                     </View>
                 </View>
                 <View style={styles.viewContainer}>
@@ -133,8 +98,8 @@ export default class RealTimeReport extends React.Component {
                         <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>Ganancia final</Text>
                     </View>
                     <View style={styles.viewContent}>
-                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
-                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${'0,000.00'} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this._formatCurrency(this.state.driver.ganancias.out_comision)} MXN`}</Text>
+                        <Text style={[styles.textoNormal, { flex: 1, textAlign: 'center' }]}>{`$${this._formatCurrency(this.state.driver.ganancias.out_ganancia_final)} MXN`}</Text>
                     </View>
                 </View>
             </View>

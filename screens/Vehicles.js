@@ -85,9 +85,7 @@ export default class VehiclesView extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        p_correo: 'carlos@gmail.com',
-                        p_pass: '123456',
-                        p_id_propietario: 2,
+                        p_id_propietario: this.props.screenProps.id_propietario,
                     }),
                 })
 

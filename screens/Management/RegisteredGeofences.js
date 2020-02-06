@@ -114,7 +114,7 @@ export default class RegisteredGeofences extends React.Component {
                 },
                 body: JSON.stringify({
                     p_id_geocercas: id,
-                    p_id_propietario: 2,
+                    p_id_propietario: this.props.screenProps.id_propietario,
                 }),
             });
 
@@ -212,7 +212,7 @@ export default class RegisteredGeofences extends React.Component {
                                                         flexDirection: 'row',
                                                         alignItems: 'center',
                                                     }}
-                                                    onPress={() => this.props.navigation.navigate('GeofenceVehicles', { id_propietario: 2, id_geocerca: g.id_geocercas, nombre_geocerca: g.nombre })}
+                                                    onPress={() => this.props.navigation.navigate('GeofenceVehicles', { /*id_propietario: 2, */id_geocerca: g.id_geocercas, nombre_geocerca: g.nombre })}
                                                 >
                                                     <Icon type='material-community' name="map" size={42} iconStyle={{ flex: 1, marginHorizontal: 5 }} />
                                                     <Text style={{ flex: 1, fontFamily: 'aller-bd', fontSize: 16, }}>{g.nombre}</Text>
@@ -231,7 +231,7 @@ export default class RegisteredGeofences extends React.Component {
                                                 </TouchableNativeFeedback>
                                                 <TouchableNativeFeedback
                                                     background={TouchableNativeFeedback.Ripple('#ff8834', true)}
-                                                    onPress={() => this.props.navigation.navigate('AssignVehicle', { id_geocerca: g.id_geocercas, id_propietario: 2 })}
+                                                    onPress={() => this.props.navigation.navigate('AssignVehicle', { id_geocerca: g.id_geocercas/*, id_propietario: 2 */})}
                                                 >
                                                     <View style={{
                                                         flex: 1,

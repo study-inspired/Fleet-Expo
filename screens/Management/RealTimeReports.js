@@ -22,29 +22,6 @@ import Globals from '../../constants/Globals';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
 
-const conductores = [
-    {
-        name: 'Laura Gutierrez',
-        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-        ganancia: '2,000.00 MXN'
-    },
-    {
-        name: 'Manuel Leyva',
-        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-        ganancia: '1,750.00 MXN'
-    },
-    {
-        name: 'Leonel Ortega',
-        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-        ganancia: '2,080.00 MXN'
-    },
-    {
-        name: 'Otro',
-        avatar: 'https://www.klrealty.com.au/wp-content/uploads/2018/11/user-image-.png',
-        ganancia: '2,100.00 MXN'
-    },
-]
-
 export default class RealTimeReports extends React.Component {
     static navigationOptions = {
         title: 'Reportes en tiempo real',
@@ -75,7 +52,7 @@ export default class RealTimeReports extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        in_id_propietario: 2
+                        in_id_propietario: this.props.screenProps.id_propietario
                     }),
                 })
                 const { datos, msg } = await response.json();
@@ -86,13 +63,14 @@ export default class RealTimeReports extends React.Component {
                 } else if (datos.length != 0) {
                     let drivers = datos.map(async (d) => {
                         let { nombre, fotografia } = await this._datosUsuario(d.id_chofer1);
+                        let ganancias = await this._reporteTiempoReal(d.id_chofer1);
                         return {
                             id_propietario: d.id_propietario,
                             id_chofer: d.id_chofer1,
                             id_cup: d.id_cup,
                             nombre: nombre,
                             fotografia: fotografia,
-                            ganancia: 0
+                            ganancias: ganancias
                         }
                     });
                     Promise.all(drivers).then(completed => {
@@ -123,6 +101,11 @@ export default class RealTimeReports extends React.Component {
         }
     }
 
+    /**
+     * Obtiene los datos del usuario conductor (Nombre, Apellidos, Fotografía, etc.)
+     * @param {number} id_usuario_chofer Id del usuario conductor.
+     * @returns {Promise<{nombre: string, fotografia: string}>} Primer nombre con primer apellido y fotografia del conductor.
+     */
     async _datosUsuario(id_usuario_chofer) {
         try {
             // console.log(`${Globals.server}:3006/webservice/datos_conductor`);
@@ -150,6 +133,40 @@ export default class RealTimeReports extends React.Component {
             } else {
                 Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
                 this.props.navigation.goBack();
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
+            console.error(error);
+        }
+    }
+
+    /**
+     * Obtiene los datos del usuario conductor (Nombre, Apellidos, Fotografía, etc.)
+     * @param {number} id_usuario_chofer Id del usuario conductor.
+     * @returns {Promise<{out_total: number, out_efectivo: number, out_tarjeta: number, out_comision: number, out_ganancia_final: number }>}
+     */
+    async _reporteTiempoReal(id_usuario_chofer) {
+        try {
+            // console.log(`${Globals.server}:3006/webservice/datos_conductor`);
+
+            const response = await fetch(`${Globals.server}:3006/webservice/cinterfaz121_fleettiempo_real`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    in_id_usuario: id_usuario_chofer
+                }),
+            })
+            // console.log(result);
+
+            const { datos } = await response.json();
+            // console.log(datos);
+
+            if (datos.length > 0) {
+                console.log(id_usuario_chofer, datos[0])
+                return datos[0];
             }
         } catch (error) {
             Alert.alert('Error', 'Servicio no disponible, intente de nuevo más tarde.');
@@ -214,7 +231,7 @@ export default class RealTimeReports extends React.Component {
                                             <View
                                                 style={styles.textoTouchable}>
                                                 <Text style={styles.textoBold}>Ganancia actual</Text>
-                                                <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this._formatCurrency(c.ganancia)} MXN</Text>
+                                                <Text style={[styles.textoBold, { marginBottom: 10, color: '#0e9bcf' }]}>$ {this._formatCurrency(c.ganancias.out_total)} MXN</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </Card>

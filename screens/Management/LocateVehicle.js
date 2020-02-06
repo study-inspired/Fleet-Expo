@@ -78,8 +78,7 @@ export default class LocateVehicle extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    p_correo: 'carlos@gmail.com',
-                    p_pass: '123456',
+                    p_id_propietario: this.props.screenProps.id_propietario,
                 }),
             })
 
@@ -230,7 +229,7 @@ export default class LocateVehicle extends React.Component {
                                         latitude: this.state.latitude,
                                         longitude: this.state.longitude
                                     }}
-                                    onPress={() => this.props.navigation.navigate('InfoDriver', { id_usuario: conductor.id_conductor, id_propietario: this.props.navigation.getParam('id_propietario', 0) })}
+                                    onPress={() => this.props.navigation.navigate('InfoDriver', { id_usuario: conductor.id_conductor/*, id_propietario: this.props.navigation.getParam('id_propietario', 0) */})}
                                 >
                                     <Icon
                                         type='material-community'

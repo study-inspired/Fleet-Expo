@@ -37,7 +37,7 @@ export default class VehicleMaintenance extends Component {
       const result = await fetch(`${Globals.server}:3006/webservice/interfaz124/obtener_status_motor`, {
         method: 'POST',
         headers: {
-          Accept: 'application/json',
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

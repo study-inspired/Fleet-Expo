@@ -58,7 +58,7 @@ export default class ReportByDriver extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        in_id_propietario: 2
+                        in_id_propietario: this.props.screenProps.id_propietario
                     }),
                 })
 

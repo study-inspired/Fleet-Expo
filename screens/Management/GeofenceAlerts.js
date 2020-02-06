@@ -32,7 +32,7 @@ export default class GeofenceAlerts extends Component {
             tableHead: ['Ent', 'Sal', 'Vehículo', 'Placa', ''],
             widthArr: [40, 40, 145, 95, 40],
             data: [<Text style={{ fontFamily: 'aller-lt' }}>No se encontrarón alertas.</Text>],
-            id_propietario: this.props.navigation.getParam('id_propietario', 0),
+            id_propietario: this.props.screenProps.id_propietario, //this.props.navigation.getParam('id_propietario', 0),
             mes: this.props.navigation.getParam('mes', 0),
             id_geocerca: this.props.navigation.getParam('id_geocerca', 0),
         }

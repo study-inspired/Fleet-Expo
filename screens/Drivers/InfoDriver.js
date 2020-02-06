@@ -42,7 +42,7 @@ export default class InfoDriver extends React.Component {
         viajesconFestrellas: "90"
       },
       comentarios: [],
-      id_propietario: this.props.navigation.getParam('id_propietario', 0),
+      id_propietario: this.props.screenProps.id_propietario, //this.props.navigation.getParam('id_propietario', 0),
       id_conductor: this.props.navigation.getParam('id_usuario', 0),
       socket_id: this.props.navigation.getParam('socket_id', ''),
       notification: {}
